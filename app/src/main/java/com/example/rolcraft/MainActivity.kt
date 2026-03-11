@@ -3,27 +3,32 @@ package com.example.rolcraft
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.activity.viewModels
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.rolcraft.ui.theme.RolcraftTheme
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.rolcraft.Personaje.PantallaCrearPersonaje1
+import com.example.rolcraft.Personaje.PantallaCrearPersonaje2
+import com.example.rolcraft.Personaje.PantallaFichaPersonaje
+import com.example.rolcraft.Personaje.PersonajeViewModel
+import com.example.rolcraft.ui.theme.RolCraftTheme
 
 class MainActivity : ComponentActivity() {
+
+    private val viewModel: PersonajeViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
         setContent {
-            RolcraftTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+            RolCraftTheme {
+                Surface(
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    AppNavegacion(viewModel)
                 }
             }
         }
@@ -31,17 +36,57 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+fun AppNavegacion(viewModel: PersonajeViewModel) {
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    RolcraftTheme {
-        Greeting("Android")
+    val navController = rememberNavController()
+
+    NavHost(
+        navController = navController,
+        startDestination = "pantalla1"
+    ) {
+
+        // ⭐ PANTALLA 1
+        composable("pantalla1") {
+            PantallaCrearPersonaje1(
+                viewModel = viewModel,
+                onSiguiente = {
+                    navController.navigate("pantalla2")
+                }
+            )
+        }
+
+        // ⭐ PANTALLA 2
+        composable("pantalla2") {
+            PantallaCrearPersonaje2(
+                viewModel = viewModel,
+                onAnterior = {
+                    navController.popBackStack()
+                },
+                onSiguiente = {
+                    navController.navigate("ficha")
+                }
+            )
+        }
+
+        // ⭐ FICHA FINAL
+        composable("ficha") {
+            PantallaFichaPersonaje(
+                viewModel = viewModel,
+                onAnterior = {
+                    navController.popBackStack()
+                },
+                onGuardar = {
+                    viewModel.guardarPersonaje()
+                },
+                onNuevoPersonaje = {
+
+                    viewModel.resetearPersonaje()
+
+                    navController.navigate("pantalla1") {
+                        popUpTo("pantalla1") { inclusive = true }
+                    }
+                }
+            )
+        }
     }
 }
