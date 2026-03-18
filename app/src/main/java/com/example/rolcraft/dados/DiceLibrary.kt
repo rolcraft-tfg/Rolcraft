@@ -1,7 +1,6 @@
-package com.example.pruebafisicasdados
+package com.example.rolcraft.dados
 
 import com.example.rolcraft.R
-import com.example.rolcraft.dados.DiceType
 
 object DiceLibrary {
 

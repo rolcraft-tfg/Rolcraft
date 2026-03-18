@@ -37,7 +37,12 @@ class DiceAnimator(private val context: Context) {
         imageView.startAnimation(anim)
     }
 
-    fun animateDice(imageView: ImageView, dice: DiceType, result: Int) {
+    fun animateDice(
+        imageView: ImageView,
+        dice: DiceType,
+        result: Int,
+        onFinish: () -> Unit
+    ) {
         val parent = imageView.parent as View
         val maxX = parent.width - imageView.width
         val maxY = parent.height - imageView.height
@@ -46,10 +51,13 @@ class DiceAnimator(private val context: Context) {
 
         fun mover(rebotes: Int) {
             if (rebotes == 0) {
+
                 imageView.setImageResource(dice.images[result - 1])
                 imageView.alpha = 1f
                 bounce(imageView)
                 vibrar(60)
+
+                imageView.post { onFinish() }
                 return
             }
 
