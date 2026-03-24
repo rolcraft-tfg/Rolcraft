@@ -1,4 +1,4 @@
-package com.example.rolcraft.Personaje
+package com.example.rolcraft.crearPersonaje
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue

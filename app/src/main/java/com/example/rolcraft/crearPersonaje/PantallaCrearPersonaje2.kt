@@ -1,4 +1,4 @@
-package com.example.rolcraft.Personaje
+package com.example.rolcraft.crearPersonaje
 
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable

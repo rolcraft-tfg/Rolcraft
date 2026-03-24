@@ -1,4 +1,4 @@
-package com.example.rolcraft.Personaje
+package com.example.rolcraft.crearPersonaje
 
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -17,7 +17,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 
 @Composable
-fun PantallaFichaPersonaje(
+fun PantallaCrearPersonaje3(
     viewModel: PersonajeViewModel,
     onAnterior: () -> Unit,
     onGuardar: () -> Unit,
