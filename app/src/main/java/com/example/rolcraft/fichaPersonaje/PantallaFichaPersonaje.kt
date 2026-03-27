@@ -21,13 +21,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.zIndex
+import com.example.rolcraft.crearPersonaje.PersonajeViewModel
 import com.example.rolcraft.dados.DiceAnimatorCompose
 import com.example.rolcraft.dados.DiceLibrary
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun PantallaFichaPersonaje() {
+fun PantallaFichaPersonaje(
+    onNuevoPersonaje: () -> Unit,
+    onGuardar: () -> Unit,
+    onAnterior: () -> Boolean,
+    viewModel: PersonajeViewModel
+) {
 
     val context = LocalContext.current
     val animator = remember { DiceAnimatorCompose(context) }
