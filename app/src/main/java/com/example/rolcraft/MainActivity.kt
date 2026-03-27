@@ -3,10 +3,6 @@ package com.example.rolcraft
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -20,28 +16,13 @@ import com.example.rolcraft.ui.login.PantallaRecuperar
 import com.example.rolcraft.ui.theme.RolCraftTheme
 
 class MainActivity : ComponentActivity() {
-
-    private val viewModel: PersonajeViewModel by viewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            RolCraftTheme {
-                Surface(
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    AppNavegacion(viewModel)
-                }
-            }
-        }
-    }
-}
+            val nav = rememberNavController()
 
-@Composable
-fun AppNavegacion(viewModel: PersonajeViewModel) {
-
-    val navController = rememberNavController()
+            NavHost(navController = nav, startDestination = "ficha") {
 
     NavHost(
         navController = navController,

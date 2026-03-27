@@ -1,11 +1,10 @@
-package com.example.rolcraft.Personaje
+package com.example.rolcraft.crearPersonaje
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.rolcraft.Personaje.PersonajeViewModel
 
 @Composable
 fun PantallaCrearPersonaje1(
