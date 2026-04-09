@@ -1,4 +1,4 @@
-package com.example.rolcraft.Personaje
+package com.example.rolcraft.CrearPersonaje
 
 val listaGeneros = listOf("Masculino", "Femenino", "No binario")
 

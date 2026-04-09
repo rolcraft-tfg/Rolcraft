@@ -1,4 +1,4 @@
-package com.example.rolcraft.Personaje
+package com.example.rolcraft.CrearPersonaje
 
 data class Personaje(
     val nombre: String = "",

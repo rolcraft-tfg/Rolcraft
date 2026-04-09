@@ -1,4 +1,4 @@
-package com.example.rolcraft.Personaje
+package com.example.rolcraft.CrearPersonaje
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
