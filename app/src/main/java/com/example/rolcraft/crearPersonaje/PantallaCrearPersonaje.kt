@@ -1,4 +1,4 @@
-package com.example.rolcraft.CrearPersonaje
+package com.example.rolcraft.crearPersonaje
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -16,6 +16,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
+import com.example.rolcraft.CrearPersonaje.Desplegable
+import com.example.rolcraft.CrearPersonaje.PersonajeViewModel
+import com.example.rolcraft.CrearPersonaje.descripcionAlineamiento
+import com.example.rolcraft.CrearPersonaje.descripcionClase
+import com.example.rolcraft.CrearPersonaje.descripcionRaza
+import com.example.rolcraft.CrearPersonaje.descripcionSubclase
+import com.example.rolcraft.CrearPersonaje.descripcionTrasfondo
+import com.example.rolcraft.CrearPersonaje.listaAlineamientos
+import com.example.rolcraft.CrearPersonaje.listaClases
+import com.example.rolcraft.CrearPersonaje.listaGeneros
+import com.example.rolcraft.CrearPersonaje.listaRazas
+import com.example.rolcraft.CrearPersonaje.listaSubclases
+import com.example.rolcraft.CrearPersonaje.listaTrasfondos
 
 @Composable
 fun PantallaCrearPersonaje(

@@ -10,9 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.rolcraft.CrearPersonaje.PantallaCrearPersonaje
 import com.example.rolcraft.CrearPersonaje.PersonajeViewModel
+import com.example.rolcraft.crearPersonaje.PantallaCrearPersonaje
 import com.example.rolcraft.Inicio.PantallaInicio
+import com.example.rolcraft.fichaPersonaje.PantallaDatosPersonaje
 import com.example.rolcraft.ui.login.PantallaLogin
 import com.example.rolcraft.ui.login.PantallaRecuperar
 import com.example.rolcraft.ui.login.PantallaRegistro
@@ -104,7 +105,7 @@ fun AppNavegacion(viewModel: PersonajeViewModel) {
 
                 // ⭐ Botón "Dados"
                 onDados = {
-                    // Aquí irá tu futura pantalla de dados
+                    navController.navigate("dados")
                 },
 
                 // ⭐ Botón "Mi campaña"
@@ -140,13 +141,14 @@ fun AppNavegacion(viewModel: PersonajeViewModel) {
 
         // ⭐ FICHA FINAL DEL PERSONAJE
         composable("ficha") {
-            PantallaFichaPersonaje(
+            PantallaDatosPersonaje(
                 viewModel = viewModel,
 
                 // ⭐ Volver a la pantalla de crear personaje
                 onAnterior = {
                     navController.popBackStack()
                 },
+
 
                 // ⭐ Guardar personaje y volver a inicio
                 onGuardar = {
