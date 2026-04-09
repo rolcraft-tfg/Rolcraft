@@ -11,7 +11,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.rolcraft.CrearPersonaje.PantallaCrearPersonaje
-import com.example.rolcraft.CrearPersonaje.PantallaFichaPersonaje
 import com.example.rolcraft.CrearPersonaje.PersonajeViewModel
 import com.example.rolcraft.Inicio.PantallaInicio
 import com.example.rolcraft.ui.login.PantallaLogin
