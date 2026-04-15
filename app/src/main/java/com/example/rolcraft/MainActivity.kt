@@ -3,44 +3,72 @@ package com.example.rolcraft
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.activity.viewModels
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.rolcraft.crearPersonaje.PantallaCrearPersonaje1
-import com.example.rolcraft.crearPersonaje.PantallaCrearPersonaje2
-import com.example.rolcraft.crearPersonaje.PantallaCrearPersonaje3
+import com.example.rolcraft.CrearPersonaje.PersonajeViewModel
+import com.example.rolcraft.crearPersonaje.PantallaCrearPersonaje
+import com.example.rolcraft.Inicio.PantallaInicio
+import com.example.rolcraft.fichaPersonaje.PantallaDatosPersonaje
 import com.example.rolcraft.ui.login.PantallaLogin
-import com.example.rolcraft.ui.login.PantallaRegistro
 import com.example.rolcraft.ui.login.PantallaRecuperar
-import com.example.rolcraft.crearPersonaje.PersonajeViewModel
+import com.example.rolcraft.ui.login.PantallaRegistro
+import com.example.rolcraft.ui.theme.RolCraftTheme
 
 class MainActivity : ComponentActivity() {
+
+    // ⭐ ViewModel compartido entre todas las pantallas
+    private val viewModel: PersonajeViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
+            RolCraftTheme {
+                Surface(
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    AppNavegacion(viewModel)
+                }
+            }
+        }
+    }
+}
 
-            val navController = rememberNavController()
+@Composable
+fun AppNavegacion(viewModel: PersonajeViewModel) {
 
-            NavHost(
-                navController = navController,
-                startDestination = "login"
-            ) {
+    // ⭐ Controlador de navegación
+    val navController = rememberNavController()
 
-                // ⭐ LOGIN
-                composable("login") {
-                    PantallaLogin(
-                        onLoginClick = { _, _ ->
-                            navController.navigate("pantalla1")
-                        },
-                        onRegisterClick = {
-                            navController.navigate("registro")
-                        },
-                        onForgotPasswordClick = {
-                            navController.navigate("recuperar")
-                        }
-                    )
+    NavHost(
+        navController = navController,
+
+        // ⭐ Pantalla inicial de la app
+        startDestination = "login"
+    ) {
+
+        // ⭐ LOGIN
+        composable("login") {
+            PantallaLogin(
+
+                // ⭐ Si inicia sesión, va a la pantalla principal
+                onLoginClick = { _, _ ->
+                    navController.navigate("inicio")
+                },
+
+                // ⭐ Ir a registro
+                onRegisterClick = {
+                    navController.navigate("registro")
+                },
+
+                // ⭐ Ir a recuperar contraseña
+                onForgotPasswordClick = {
+                    navController.navigate("recuperar")
                 }
 
                 // ⭐ REGISTRO
@@ -57,55 +85,77 @@ class MainActivity : ComponentActivity() {
                     )
                 }
 
-                // ⭐ PANTALLA CREAR PERSONAJE 1
-                composable("pantalla1") {
-                    val viewModel: PersonajeViewModel = viewModel()
-                    PantallaCrearPersonaje1(
-                        viewModel = viewModel,
-                        onSiguiente = { navController.navigate("pantalla2") }
-                    )
+        // ⭐ PANTALLA PRINCIPAL CON LOS PERSONAJES
+        composable("inicio") {
+            PantallaInicio(
+
+                // ⭐ Lista de personajes guardados
+                personajes = viewModel.personajesGuardados,
+
+                // ⭐ Botón "Crear personaje"
+                onCrearPersonaje = {
+                    navController.navigate("crear")
+                },
+
+                // ⭐ Botón "Dados"
+                onDados = {
+                    navController.navigate("dados")
+                },
+
+                // ⭐ Botón "Mi campaña"
+                onCampania = {
+                    // Aquí irá tu futura pantalla de campaña
+                },
+
+                // ⭐ Botón "Cerrar sesión"
+                onCerrarSesion = {
+                    navController.navigate("login") {
+                        popUpTo("inicio") { inclusive = true }
+                    }
                 }
 
-                // ⭐ PANTALLA CREAR PERSONAJE 2
-                composable("pantalla2") {
-                    val viewModel: PersonajeViewModel = viewModel()
-                    PantallaCrearPersonaje2(
-                        viewModel = viewModel,
-                        onAnterior = { navController.popBackStack() },
-                        onSiguiente = { navController.navigate("pantalla3") }
-                    )
+        // ⭐ PANTALLA PARA CREAR PERSONAJE
+        composable("crear") {
+            PantallaCrearPersonaje(
+                viewModel = viewModel,
+
+                // ⭐ Ir a la ficha final
+                onSiguiente = {
+                    navController.navigate("ficha")
+                },
+
+                // ⭐ Volver a la pantalla principal
+                onVolver = {
+                    navController.popBackStack()
                 }
 
-                // ⭐ PANTALLA CREAR PERSONAJE 3 (FICHA FINAL)
-                composable("pantalla3") {
-                    val viewModel: PersonajeViewModel = viewModel()
-                    PantallaCrearPersonaje3(
-                        viewModel = viewModel,
-                        onAnterior = { navController.popBackStack() },
-                        onGuardar = { viewModel.guardarPersonaje() },
-                        onNuevoPersonaje = {
-                            viewModel.resetearPersonaje()
-                            navController.navigate("pantalla1") {
-                                popUpTo("pantalla1") { inclusive = true }
-                            }
-                        }
-                    )
-                }
+        // ⭐ FICHA FINAL DEL PERSONAJE
+        composable("ficha") {
+            PantallaDatosPersonaje(
+                viewModel = viewModel,
 
-                // ⭐ FICHA PERSONAJE
-                composable("ficha") {
-                    val viewModel: PersonajeViewModel = viewModel()
-                    PantallaFichaPersonaje(
-                        viewModel = viewModel,
-                        onAnterior = { navController.popBackStack() },
-                        onGuardar = { viewModel.guardarPersonaje() },
-                        onNuevoPersonaje = {
-                            viewModel.resetearPersonaje()
-                            navController.navigate("pantalla1") {
-                                popUpTo("pantalla1") { inclusive = true }
-                            }
-                        }
-                    )
+                // ⭐ Volver a la pantalla de crear personaje
+                onAnterior = {
+                    navController.popBackStack()
+                },
+
+
+                // ⭐ Guardar personaje y volver a inicio
+                onGuardar = {
+                    viewModel.guardarPersonaje()
+
+                    navController.navigate("inicio") {
+                        popUpTo("inicio") { inclusive = true }
+                    }
+                },
+
+                // ⭐ Crear otro personaje directamente
+                onNuevoPersonaje = {
+                    viewModel.resetearPersonaje()
+
+                    navController.navigate("crear") {
+                        popUpTo("crear") { inclusive = true }
+                    }
                 }
             }
         }
