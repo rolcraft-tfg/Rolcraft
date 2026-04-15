@@ -1,4 +1,4 @@
-package com.example.rolcraft
+package com.example.rolcraft.FichaPersonaje
 
 import androidx.compose.animation.*
 import androidx.compose.foundation.Image
@@ -20,10 +20,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.zIndex
-import com.example.rolcraft.crearPersonaje.PersonajeViewModel
-import com.example.rolcraft.dados.DiceAnimatorCompose
-import com.example.rolcraft.dados.DiceLibrary
+import com.example.rolcraft.CrearPersonaje.PersonajeViewModel
+import com.example.rolcraft.Dados.DiceAnimatorCompose
+import com.example.rolcraft.Dados.DiceLibrary
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -57,21 +58,20 @@ fun PantallaFichaPersonaje(
     var screenWidth by remember { mutableStateOf(0f) }
     var screenHeight by remember { mutableStateOf(0f) }
 
-    // ANIMACIÓN SUAVE CONTINUA
+    var bloqueado by remember { mutableStateOf(false) }
+
+    // ANIMACIÓN
     LaunchedEffect(Unit) {
         while (true) {
             if (volverAlCentro) {
-                // fase de regreso al centro
                 smoothX += (0f - smoothX) * 0.08f
                 smoothY += (0f - smoothY) * 0.08f
                 smoothRot += (0f - smoothRot) * 0.08f
             } else {
-                // fase de física: seguir la posición/rotación reales
                 smoothX += (position.x - smoothX) * 0.20f
                 smoothY += (position.y - smoothY) * 0.20f
                 smoothRot += (rotation - smoothRot) * 0.20f
             }
-
             delay(16)
         }
     }
@@ -84,10 +84,7 @@ fun PantallaFichaPersonaje(
                 screenHeight = it.size.height.toFloat() / 2f
             }
     ) {
-
-        // ----------------------------------------------------
-        //  BARRA SUPERIOR CONTINUA CON BOTONES CUADRADOS
-        // ----------------------------------------------------
+        // BARRA SUPERIOR CON BOTONES DE DADOS
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -120,6 +117,7 @@ fun PantallaFichaPersonaje(
                 ) {
                     Button(
                         onClick = {
+                            bloqueado = true
                             mostrarResultado = false
                             volverAlCentro = false
                             dadoVisible = true
@@ -133,10 +131,7 @@ fun PantallaFichaPersonaje(
                                     onUpdatePosition = { position = it },
                                     onUpdateRotation = { rotation = it },
                                     onFinish = { res ->
-                                        // la física ha terminado aquí
                                         resultado = res
-
-
                                         launch {
                                             delay(800)
                                             volverAlCentro = true
@@ -155,18 +150,13 @@ fun PantallaFichaPersonaje(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(0.dp)
                     ) {
-                        Text(
-                            text = dice.name,
-                            textAlign = TextAlign.Center
-                        )
+                        Text(text = dice.name, textAlign = TextAlign.Center)
                     }
                 }
             }
         }
 
-        // -------------------------
-        //  DADO
-        // -------------------------
+        // DADO ANIMADO
         if (dadoVisible) {
             imagenActual?.let { img ->
                 Image(
@@ -180,15 +170,14 @@ fun PantallaFichaPersonaje(
                             rotationZ = smoothRot
                         }
                         .align(Alignment.Center)
-                        .zIndex(1f),
+                        .zIndex(30f),
                     contentScale = ContentScale.Fit
                 )
             }
         }
 
-        // -------------------------
-        //  MENSAJE DEBAJO DEL DADO
-        // -------------------------
+
+        // MENSAJE DE RESULTADO
         AnimatedVisibility(
             visible = mostrarResultado,
             enter = fadeIn() + scaleIn(),
@@ -196,7 +185,7 @@ fun PantallaFichaPersonaje(
             modifier = Modifier
                 .align(Alignment.Center)
                 .offset(y = 180.dp)
-                .zIndex(5f)
+                .zIndex(20f)
         ) {
             Column(
                 modifier = Modifier
@@ -217,10 +206,23 @@ fun PantallaFichaPersonaje(
                     mostrarResultado = false
                     dadoVisible = false
                     volverAlCentro = false
+                    bloqueado = false
                 }) {
                     Text("Aceptar")
                 }
             }
+        }
+
+
+        // CAPA QUE BLOQUEA LA PANTALLA
+        if (bloqueado) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0x88000000))
+                    .zIndex(10f) // Marca la capa que se bloquea
+                    .pointerInput(Unit) {} // Bloquea los toques
+            )
         }
     }
 }

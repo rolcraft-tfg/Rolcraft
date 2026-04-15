@@ -11,12 +11,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.rolcraft.CrearPersonaje.PersonajeViewModel
-import com.example.rolcraft.crearPersonaje.PantallaCrearPersonaje
 import com.example.rolcraft.Inicio.PantallaInicio
-import com.example.rolcraft.fichaPersonaje.PantallaDatosPersonaje
-import com.example.rolcraft.ui.login.PantallaLogin
-import com.example.rolcraft.ui.login.PantallaRecuperar
-import com.example.rolcraft.ui.login.PantallaRegistro
+import com.example.rolcraft.CrearPersonaje.PantallaCrearPersonaje
+import com.example.rolcraft.FichaPersonaje.PantallaFichaPersonaje
+import com.example.rolcraft.Login.PantallaLogin
+import com.example.rolcraft.RecuperarContrasenya.PantallaRecuperar
+import com.example.rolcraft.Registro.PantallaRegistro
 import com.example.rolcraft.ui.theme.RolCraftTheme
 
 class MainActivity : ComponentActivity() {
@@ -70,20 +70,26 @@ fun AppNavegacion(viewModel: PersonajeViewModel) {
                 onForgotPasswordClick = {
                     navController.navigate("recuperar")
                 }
+            )
+        }
 
-                // ⭐ REGISTRO
-                composable("registro") {
-                    PantallaRegistro(
-                        onVolver = { navController.popBackStack() }
-                    )
+        // ⭐ REGISTRO
+        composable("registro") {
+            PantallaRegistro(
+                onVolver = {
+                    navController.popBackStack()
                 }
+            )
+        }
 
-                // ⭐ RECUPERAR CONTRASEÑA
-                composable("recuperar") {
-                    PantallaRecuperar(
-                        onVolver = { navController.popBackStack() }
-                    )
+        // ⭐ RECUPERAR CONTRASEÑA
+        composable("recuperar") {
+            PantallaRecuperar(
+                onVolver = {
+                    navController.popBackStack()
                 }
+            )
+        }
 
         // ⭐ PANTALLA PRINCIPAL CON LOS PERSONAJES
         composable("inicio") {
@@ -98,8 +104,8 @@ fun AppNavegacion(viewModel: PersonajeViewModel) {
                 },
 
                 // ⭐ Botón "Dados"
-                onDados = {
-                    navController.navigate("dados")
+                onPantallaFichaPersonaje = {
+                    navController.navigate("ficha")
                 },
 
                 // ⭐ Botón "Mi campaña"
@@ -113,6 +119,8 @@ fun AppNavegacion(viewModel: PersonajeViewModel) {
                         popUpTo("inicio") { inclusive = true }
                     }
                 }
+            )
+        }
 
         // ⭐ PANTALLA PARA CREAR PERSONAJE
         composable("crear") {
@@ -128,10 +136,12 @@ fun AppNavegacion(viewModel: PersonajeViewModel) {
                 onVolver = {
                     navController.popBackStack()
                 }
+            )
+        }
 
         // ⭐ FICHA FINAL DEL PERSONAJE
         composable("ficha") {
-            PantallaDatosPersonaje(
+            PantallaFichaPersonaje(
                 viewModel = viewModel,
 
                 // ⭐ Volver a la pantalla de crear personaje
@@ -157,7 +167,7 @@ fun AppNavegacion(viewModel: PersonajeViewModel) {
                         popUpTo("crear") { inclusive = true }
                     }
                 }
-            }
+            )
         }
     }
 }

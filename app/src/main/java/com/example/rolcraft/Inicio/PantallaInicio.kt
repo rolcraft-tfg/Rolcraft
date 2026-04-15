@@ -28,7 +28,7 @@ import com.example.rolcraft.R
 fun PantallaInicio(
     personajes: List<Personaje>,
     onCrearPersonaje: () -> Unit,
-    onDados: () -> Unit,
+    onPantallaFichaPersonaje: () -> Unit,
     onCampania: () -> Unit,
     onCerrarSesion: () -> Unit
 ) {
@@ -61,10 +61,10 @@ fun PantallaInicio(
                     }
                 )
 
-                // ⭐ Botón dados
+                // ⭐ Botón ficha personaje
                 NavigationBarItem(
                     selected = false,
-                    onClick = onDados,
+                    onClick = onPantallaFichaPersonaje,
                     icon = {
                         Icon(
                             imageVector = Icons.Default.Casino,

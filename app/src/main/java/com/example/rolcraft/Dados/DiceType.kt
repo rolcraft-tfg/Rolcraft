@@ -1,4 +1,4 @@
-package com.example.rolcraft.dados
+package com.example.rolcraft.Dados
 
 data class DiceType(
     val name: String,
