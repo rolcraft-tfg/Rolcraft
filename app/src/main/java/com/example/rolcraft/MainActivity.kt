@@ -70,26 +70,20 @@ fun AppNavegacion(viewModel: PersonajeViewModel) {
                 onForgotPasswordClick = {
                     navController.navigate("recuperar")
                 }
-            )
-        }
 
-        // ⭐ REGISTRO
-        composable("registro") {
-            PantallaRegistro(
-                onVolver = {
-                    navController.popBackStack()
+                // ⭐ REGISTRO
+                composable("registro") {
+                    PantallaRegistro(
+                        onVolver = { navController.popBackStack() }
+                    )
                 }
-            )
-        }
 
-        // ⭐ RECUPERAR CONTRASEÑA
-        composable("recuperar") {
-            PantallaRecuperar(
-                onVolver = {
-                    navController.popBackStack()
+                // ⭐ RECUPERAR CONTRASEÑA
+                composable("recuperar") {
+                    PantallaRecuperar(
+                        onVolver = { navController.popBackStack() }
+                    )
                 }
-            )
-        }
 
         // ⭐ PANTALLA PRINCIPAL CON LOS PERSONAJES
         composable("inicio") {
@@ -119,8 +113,6 @@ fun AppNavegacion(viewModel: PersonajeViewModel) {
                         popUpTo("inicio") { inclusive = true }
                     }
                 }
-            )
-        }
 
         // ⭐ PANTALLA PARA CREAR PERSONAJE
         composable("crear") {
@@ -136,8 +128,6 @@ fun AppNavegacion(viewModel: PersonajeViewModel) {
                 onVolver = {
                     navController.popBackStack()
                 }
-            )
-        }
 
         // ⭐ FICHA FINAL DEL PERSONAJE
         composable("ficha") {
@@ -167,7 +157,7 @@ fun AppNavegacion(viewModel: PersonajeViewModel) {
                         popUpTo("crear") { inclusive = true }
                     }
                 }
-            )
+            }
         }
     }
 }
