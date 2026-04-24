@@ -14,13 +14,9 @@ import androidx.room.Room
 import com.example.rolcraft.CrearPersonaje.PersonajeViewModel
 import com.example.rolcraft.CrearPersonaje.PersonajeViewModelFactory
 import com.example.rolcraft.CrearPersonaje.PantallaCrearPersonaje
-import com.example.rolcraft.CrearPersonaje.PantallaDatosPersonaje
 import com.example.rolcraft.Data.Local.AppDatabase
 import com.example.rolcraft.Data.Repository.PersonajeRepository
 import com.example.rolcraft.Inicio.PantallaInicio
-import com.example.rolcraft.ui.login.PantallaLogin
-import com.example.rolcraft.ui.login.PantallaRecuperar
-import com.example.rolcraft.ui.login.PantallaRegistro
 import com.example.rolcraft.FichaPersonaje.PantallaFichaPersonaje
 import com.example.rolcraft.Login.PantallaLogin
 import com.example.rolcraft.RecuperarContrasenya.PantallaRecuperar
