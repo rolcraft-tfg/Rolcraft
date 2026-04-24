@@ -18,9 +18,6 @@ import com.example.rolcraft.CrearPersonaje.PantallaDatosPersonaje
 import com.example.rolcraft.Data.Local.AppDatabase
 import com.example.rolcraft.Data.Repository.PersonajeRepository
 import com.example.rolcraft.Inicio.PantallaInicio
-import com.example.rolcraft.ui.login.PantallaLogin
-import com.example.rolcraft.ui.login.PantallaRecuperar
-import com.example.rolcraft.ui.login.PantallaRegistro
 import com.example.rolcraft.FichaPersonaje.PantallaFichaPersonaje
 import com.example.rolcraft.Login.PantallaLogin
 import com.example.rolcraft.RecuperarContrasenya.PantallaRecuperar
@@ -133,14 +130,33 @@ fun AppNavegacion(viewModel: PersonajeViewModel) {
             PantallaCrearPersonaje(
                 viewModel = viewModel,
                 onSiguiente = {
-                    navController.navigate("ficha")
+                    navController.navigate("verFicha")
                 },
                 onVolver = {
                     navController.popBackStack()
                 }
             )
         }
-
+        composable("verFicha") {
+            PantallaDatosPersonaje(
+                viewModel = viewModel,
+                onAnterior = {
+                    navController.popBackStack()
+                },
+                onGuardar = {
+                    viewModel.guardarPersonaje()
+                    navController.navigate("inicio") {
+                        popUpTo("inicio") { inclusive = true }
+                    }
+                },
+                onNuevoPersonaje = {
+                    viewModel.resetearPersonaje()
+                    navController.navigate("crear") {
+                        popUpTo("crear") { inclusive = true }
+                    }
+                }
+            )
+        }
         // ⭐ FICHA FINAL
         composable("ficha") {
             PantallaFichaPersonaje(
