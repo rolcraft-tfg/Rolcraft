@@ -129,14 +129,33 @@ fun AppNavegacion(viewModel: PersonajeViewModel) {
             PantallaCrearPersonaje(
                 viewModel = viewModel,
                 onSiguiente = {
-                    navController.navigate("ficha")
+                    navController.navigate("verFicha")
                 },
                 onVolver = {
                     navController.popBackStack()
                 }
             )
         }
-
+        composable("verFicha") {
+            PantallaDatosPersonaje(
+                viewModel = viewModel,
+                onAnterior = {
+                    navController.popBackStack()
+                },
+                onGuardar = {
+                    viewModel.guardarPersonaje()
+                    navController.navigate("inicio") {
+                        popUpTo("inicio") { inclusive = true }
+                    }
+                },
+                onNuevoPersonaje = {
+                    viewModel.resetearPersonaje()
+                    navController.navigate("crear") {
+                        popUpTo("crear") { inclusive = true }
+                    }
+                }
+            )
+        }
         // ⭐ FICHA FINAL
         composable("ficha") {
             PantallaFichaPersonaje(

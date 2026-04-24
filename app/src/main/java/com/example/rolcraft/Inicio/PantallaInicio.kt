@@ -2,6 +2,7 @@ package com.example.rolcraft.Inicio
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -114,7 +115,8 @@ fun PantallaInicio(
                         personaje = personaje,
                         onEliminar = {
                             viewModel.eliminarPersonaje(personaje)
-                        }
+                        },
+                        onClick = onPantallaFichaPersonaje
                     )
                 }
             }
@@ -125,7 +127,8 @@ fun PantallaInicio(
 @Composable
 fun TarjetaPersonaje(
     personaje: Personaje,
-    onEliminar: () -> Unit
+    onEliminar: () -> Unit,
+    onClick: () -> Unit
 ) {
 
     var mostrarDialogo by remember { mutableStateOf(false) }
@@ -154,7 +157,8 @@ fun TarjetaPersonaje(
     }
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth()
+            .clickable { onClick() },
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFF1B2733)
         ),
