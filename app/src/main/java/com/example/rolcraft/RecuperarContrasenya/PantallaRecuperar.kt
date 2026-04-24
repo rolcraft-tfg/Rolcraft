@@ -1,4 +1,4 @@
-package com.example.rolcraft.ui.login
+package com.example.rolcraft.RecuperarContrasenya
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import com.example.rolcraft.Registro.esPasswordValida
 
 @Composable
 fun PantallaRecuperar(

@@ -1,4 +1,4 @@
-package com.example.rolcraft.ui.login
+package com.example.rolcraft.Registro
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*

@@ -21,6 +21,10 @@ import com.example.rolcraft.Inicio.PantallaInicio
 import com.example.rolcraft.ui.login.PantallaLogin
 import com.example.rolcraft.ui.login.PantallaRecuperar
 import com.example.rolcraft.ui.login.PantallaRegistro
+import com.example.rolcraft.FichaPersonaje.PantallaFichaPersonaje
+import com.example.rolcraft.Login.PantallaLogin
+import com.example.rolcraft.RecuperarContrasenya.PantallaRecuperar
+import com.example.rolcraft.Registro.PantallaRegistro
 import com.example.rolcraft.ui.theme.RolCraftTheme
 
 class MainActivity : ComponentActivity() {
@@ -92,7 +96,7 @@ fun AppNavegacion(viewModel: PersonajeViewModel) {
             )
         }
 
-        // ⭐ RECUPERAR
+        // ⭐ RECUPERAR CONTRASEÑA
         composable("recuperar") {
             PantallaRecuperar(
                 onVolver = {
@@ -108,8 +112,10 @@ fun AppNavegacion(viewModel: PersonajeViewModel) {
                 onCrearPersonaje = {
                     navController.navigate("crear")
                 },
-                onDados = {
-                    navController.navigate("dados")
+
+                // ⭐ Botón "Dados"
+                onPantallaFichaPersonaje = {
+                    navController.navigate("ficha")
                 },
                 onCampania = {
                     // futura pantalla
@@ -137,7 +143,7 @@ fun AppNavegacion(viewModel: PersonajeViewModel) {
 
         // ⭐ FICHA FINAL
         composable("ficha") {
-            PantallaDatosPersonaje(
+            PantallaFichaPersonaje(
                 viewModel = viewModel,
                 onAnterior = {
                     navController.popBackStack()
