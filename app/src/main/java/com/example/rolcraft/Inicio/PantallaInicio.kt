@@ -9,10 +9,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Casino
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.material.icons.filled.MenuBook
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,43 +23,36 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.rolcraft.CrearPersonaje.Personaje
+import com.example.rolcraft.CrearPersonaje.PersonajeViewModel
 import com.example.rolcraft.R
 
 @Composable
 fun PantallaInicio(
-    personajes: List<Personaje>,
+    viewModel: PersonajeViewModel,
     onCrearPersonaje: () -> Unit,
     onPantallaFichaPersonaje: () -> Unit,
     onCampania: () -> Unit,
     onCerrarSesion: () -> Unit
 ) {
 
-    // ⭐ Scaffold para tener la barra inferior fija
+    LaunchedEffect(Unit) {
+        viewModel.cargarPersonajes()
+    }
+
+    val personajes = viewModel.personajesGuardados
+
     Scaffold(
-
-        // ⭐ Color de fondo general de la pantalla
         containerColor = Color(0xFF0F1720),
-
-        // ⭐ Barra inferior estilo D&D Beyond
         bottomBar = {
-
             NavigationBar(
                 containerColor = Color(0xFF16202A)
             ) {
 
-                // ⭐ Botón crear personaje
                 NavigationBarItem(
                     selected = false,
                     onClick = onCrearPersonaje,
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = "Crear personaje"
-                        )
-                    },
-                    label = {
-                        Text("Crear")
-                    }
+                    icon = { Icon(Icons.Default.Add, null) },
+                    label = { Text("Crear") }
                 )
 
                 // ⭐ Botón ficha personaje
@@ -76,40 +70,23 @@ fun PantallaInicio(
                     }
                 )
 
-                // ⭐ Botón mi campaña
                 NavigationBarItem(
                     selected = false,
                     onClick = onCampania,
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Default.MenuBook,
-                            contentDescription = "Mi campaña"
-                        )
-                    },
-                    label = {
-                        Text("Mi campaña")
-                    }
+                    icon = { Icon(Icons.Default.Settings, null) },
+                    label = { Text("Ajustes") }
                 )
 
-                // ⭐ Botón cerrar sesión
                 NavigationBarItem(
                     selected = false,
                     onClick = onCerrarSesion,
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Default.ExitToApp,
-                            contentDescription = "Cerrar sesión"
-                        )
-                    },
-                    label = {
-                        Text("Salir")
-                    }
+                    icon = { Icon(Icons.Default.ExitToApp, null) },
+                    label = { Text("Salir") }
                 )
             }
         }
     ) { padding ->
 
-        // ⭐ Contenido principal de la pantalla
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -118,7 +95,6 @@ fun PantallaInicio(
                 .padding(16.dp)
         ) {
 
-            // ⭐ Título de la pantalla
             Text(
                 text = "Mis personajes",
                 color = Color.White,
@@ -128,15 +104,18 @@ fun PantallaInicio(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // ⭐ Lista de personajes guardados
             LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(bottom = 80.dp)
             ) {
-
-                // ⭐ Recorre la lista de personajes y crea una tarjeta por cada uno
                 items(personajes) { personaje ->
-
-                    TarjetaPersonaje(personaje)
+                    TarjetaPersonaje(
+                        personaje = personaje,
+                        onEliminar = {
+                            viewModel.eliminarPersonaje(personaje)
+                        }
+                    )
                 }
             }
         }
@@ -144,17 +123,41 @@ fun PantallaInicio(
 }
 
 @Composable
-fun TarjetaPersonaje(personaje: Personaje) {
+fun TarjetaPersonaje(
+    personaje: Personaje,
+    onEliminar: () -> Unit
+) {
 
-    // ⭐ Tarjeta individual de personaje
+    var mostrarDialogo by remember { mutableStateOf(false) }
+
+    if (mostrarDialogo) {
+        AlertDialog(
+            onDismissRequest = { mostrarDialogo = false },
+            title = { Text("Eliminar personaje") },
+            text = { Text("¿Seguro que quieres borrar el personaje?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    mostrarDialogo = false
+                    onEliminar()
+                }) {
+                    Text("Sí")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    mostrarDialogo = false
+                }) {
+                    Text("No")
+                }
+            }
+        )
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
-
-        // ⭐ Color oscuro para la tarjeta
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFF1B2733)
         ),
-
         shape = RoundedCornerShape(12.dp)
     ) {
 
@@ -162,17 +165,13 @@ fun TarjetaPersonaje(personaje: Personaje) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(12.dp),
-
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            // ⭐ Imagen del personaje a la izquierda
-            // Usa una imagen temporal llamada personaje_placeholder.png
             Image(
                 painter = painterResource(id = R.drawable.personaje_placeholder),
-                contentDescription = "Imagen del personaje",
+                contentDescription = null,
                 contentScale = ContentScale.Crop,
-
                 modifier = Modifier
                     .size(72.dp)
                     .clip(RoundedCornerShape(8.dp))
@@ -180,10 +179,10 @@ fun TarjetaPersonaje(personaje: Personaje) {
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            // ⭐ Información básica del personaje
-            Column {
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
 
-                // ⭐ Nombre del personaje
                 Text(
                     text = personaje.nombre,
                     color = Color.White,
@@ -193,18 +192,26 @@ fun TarjetaPersonaje(personaje: Personaje) {
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-                // ⭐ Nivel y raza
                 Text(
                     text = "Nivel 1 • ${personaje.raza}",
-                    color = Color.LightGray,
-                    style = MaterialTheme.typography.bodyMedium
+                    color = Color.LightGray
                 )
 
-                // ⭐ Clase del personaje
                 Text(
                     text = personaje.clase,
-                    color = Color(0xFF7EA7FF),
-                    style = MaterialTheme.typography.bodyMedium
+                    color = Color(0xFF7EA7FF)
+                )
+            }
+
+            IconButton(
+                onClick = {
+                    mostrarDialogo = true
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Eliminar",
+                    tint = Color.Red
                 )
             }
         }
