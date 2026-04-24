@@ -21,8 +21,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.zIndex
-import com.example.rolcraft.dados.DiceAnimatorCompose
-import com.example.rolcraft.dados.DiceLibrary
+import com.example.rolcraft.Dados.DiceAnimatorCompose
+import com.example.rolcraft.Dados.DiceLibrary
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

@@ -1,4 +1,4 @@
-package com.example.rolcraft.dados
+package com.example.rolcraft.Dados
 
 import com.example.rolcraft.R
 

@@ -1,57 +1,34 @@
 package com.example.rolcraft.CrearPersonaje
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.rolcraft.Data.Local.PersonajeEntity
+import com.example.rolcraft.Data.Repository.PersonajeRepository
+import kotlinx.coroutines.launch
 
-class PersonajeViewModel : ViewModel() {
+class PersonajeViewModel(
+    private val repository: PersonajeRepository
+) : ViewModel() {
 
-    // ⭐ Personaje que se está creando actualmente
     var personaje by mutableStateOf(Personaje())
         private set
 
-    // ⭐ Lista donde se guardan todos los personajes creados
     val personajesGuardados = mutableStateListOf<Personaje>()
 
-    // ⭐ Función interna para actualizar el personaje actual
     private fun actualizar(update: Personaje.() -> Personaje) {
         personaje = personaje.update()
     }
 
-    // ⭐ Actualizar nombre
-    fun actualizarNombre(n: String) =
-        actualizar { copy(nombre = n) }
+    fun actualizarNombre(n: String) = actualizar { copy(nombre = n) }
+    fun actualizarGenero(g: String) = actualizar { copy(genero = g) }
+    fun actualizarRaza(r: String) = actualizar { copy(raza = r) }
+    fun actualizarClase(c: String) = actualizar { copy(clase = c, subclase = "") }
+    fun actualizarSubclase(s: String) = actualizar { copy(subclase = s) }
+    fun actualizarTrasfondo(t: String) = actualizar { copy(trasfondo = t) }
+    fun actualizarAlineamiento(a: String) = actualizar { copy(alineamiento = a) }
 
-    // ⭐ Actualizar género
-    fun actualizarGenero(g: String) =
-        actualizar { copy(genero = g) }
-
-    // ⭐ Actualizar raza
-    fun actualizarRaza(r: String) =
-        actualizar { copy(raza = r) }
-
-    // ⭐ Actualizar clase
-    // Cuando cambia la clase, la subclase se reinicia
-    fun actualizarClase(c: String) =
-        actualizar { copy(clase = c, subclase = "") }
-
-    // ⭐ Actualizar subclase
-    fun actualizarSubclase(s: String) =
-        actualizar { copy(subclase = s) }
-
-    // ⭐ Actualizar trasfondo
-    fun actualizarTrasfondo(t: String) =
-        actualizar { copy(trasfondo = t) }
-
-    // ⭐ Actualizar alineamiento
-    fun actualizarAlineamiento(a: String) =
-        actualizar { copy(alineamiento = a) }
-
-    // ⭐ Genera un personaje aleatorio
     fun generarAleatorio() {
-
         val genero = listaGeneros.random()
 
         val nombre = when (genero) {
@@ -75,17 +52,33 @@ class PersonajeViewModel : ViewModel() {
         )
     }
 
-    // ⭐ Guarda el personaje actual en la lista de personajes creados
+    // 🔥 GUARDAR EN ROOM
     fun guardarPersonaje() {
-
-        personajesGuardados.add(personaje.copy())
-
-        println("Guardado: $personaje")
+        viewModelScope.launch {
+            repository.insertarPersonaje(personaje.toEntity())
+        }
     }
 
-    // ⭐ Comprueba si falta algún campo obligatorio
-    fun validarCampos(): String? {
+    // 🔥 CARGAR DESDE ROOM
+    fun cargarPersonajes() {
+        viewModelScope.launch {
+            val lista = repository.obtenerPersonajes("testUser")
 
+            personajesGuardados.clear()
+
+            personajesGuardados.addAll(
+                lista.map {
+                    Personaje(
+                        nombre = it.nombre,
+                        raza = it.raza,
+                        clase = it.clase
+                    )
+                }
+            )
+        }
+    }
+
+    fun validarCampos(): String? {
         val campos = mapOf(
             "Nombre" to personaje.nombre,
             "Género" to personaje.genero,
@@ -99,8 +92,18 @@ class PersonajeViewModel : ViewModel() {
         return campos.entries.firstOrNull { it.value.isBlank() }?.key
     }
 
-    // ⭐ Reinicia el personaje actual para crear uno nuevo
     fun resetearPersonaje() {
         personaje = Personaje()
+    }
+
+    // 🔁 CONVERSIÓN A ENTITY
+    private fun Personaje.toEntity(): PersonajeEntity {
+        return PersonajeEntity(
+            nombre = this.nombre,
+            raza = this.raza,
+            clase = this.clase,
+            nivel = 1,
+            usuarioId = "testUser"
+        )
     }
 }

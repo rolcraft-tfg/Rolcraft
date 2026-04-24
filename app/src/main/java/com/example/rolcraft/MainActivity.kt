@@ -3,17 +3,22 @@ package com.example.rolcraft
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.room.Room
 import com.example.rolcraft.CrearPersonaje.PersonajeViewModel
-import com.example.rolcraft.crearPersonaje.PantallaCrearPersonaje
+import com.example.rolcraft.CrearPersonaje.PersonajeViewModelFactory
+import com.example.rolcraft.CrearPersonaje.PantallaCrearPersonaje
+import com.example.rolcraft.CrearPersonaje.PantallaDatosPersonaje
+import com.example.rolcraft.Data.Local.AppDatabase
+import com.example.rolcraft.Data.Repository.PersonajeRepository
 import com.example.rolcraft.Inicio.PantallaInicio
-import com.example.rolcraft.fichaPersonaje.PantallaDatosPersonaje
+import com.example.rolcraft.Inicio.TarjetaPersonaje
 import com.example.rolcraft.ui.login.PantallaLogin
 import com.example.rolcraft.ui.login.PantallaRecuperar
 import com.example.rolcraft.ui.login.PantallaRegistro
@@ -21,11 +26,26 @@ import com.example.rolcraft.ui.theme.RolCraftTheme
 
 class MainActivity : ComponentActivity() {
 
-    // ⭐ ViewModel compartido entre todas las pantallas
-    private val viewModel: PersonajeViewModel by viewModels()
+    private lateinit var viewModel: PersonajeViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // ⭐ Base de datos Room
+        val db = Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java,
+            "rolcraft_db"
+        ).build()
+
+        // ⭐ Repository
+        val repository = PersonajeRepository(db.personajeDao())
+
+        // ⭐ ViewModel con Factory
+        viewModel = ViewModelProvider(
+            this,
+            PersonajeViewModelFactory(repository)
+        )[PersonajeViewModel::class.java]
 
         setContent {
             RolCraftTheme {
@@ -42,31 +62,22 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppNavegacion(viewModel: PersonajeViewModel) {
 
-    // ⭐ Controlador de navegación
     val navController = rememberNavController()
 
     NavHost(
         navController = navController,
-
-        // ⭐ Pantalla inicial de la app
         startDestination = "login"
     ) {
 
         // ⭐ LOGIN
         composable("login") {
             PantallaLogin(
-
-                // ⭐ Si inicia sesión, va a la pantalla principal
                 onLoginClick = { _, _ ->
                     navController.navigate("inicio")
                 },
-
-                // ⭐ Ir a registro
                 onRegisterClick = {
                     navController.navigate("registro")
                 },
-
-                // ⭐ Ir a recuperar contraseña
                 onForgotPasswordClick = {
                     navController.navigate("recuperar")
                 }
@@ -82,7 +93,7 @@ fun AppNavegacion(viewModel: PersonajeViewModel) {
             )
         }
 
-        // ⭐ RECUPERAR CONTRASEÑA
+        // ⭐ RECUPERAR
         composable("recuperar") {
             PantallaRecuperar(
                 onVolver = {
@@ -91,29 +102,19 @@ fun AppNavegacion(viewModel: PersonajeViewModel) {
             )
         }
 
-        // ⭐ PANTALLA PRINCIPAL CON LOS PERSONAJES
+        // ⭐ INICIO (🔥 CAMBIO IMPORTANTE)
         composable("inicio") {
             PantallaInicio(
-
-                // ⭐ Lista de personajes guardados
-                personajes = viewModel.personajesGuardados,
-
-                // ⭐ Botón "Crear personaje"
+                viewModel = viewModel,
                 onCrearPersonaje = {
                     navController.navigate("crear")
                 },
-
-                // ⭐ Botón "Dados"
                 onDados = {
                     navController.navigate("dados")
                 },
-
-                // ⭐ Botón "Mi campaña"
                 onCampania = {
-                    // Aquí irá tu futura pantalla de campaña
+                    // futura pantalla
                 },
-
-                // ⭐ Botón "Cerrar sesión"
                 onCerrarSesion = {
                     navController.navigate("login") {
                         popUpTo("inicio") { inclusive = true }
@@ -122,35 +123,26 @@ fun AppNavegacion(viewModel: PersonajeViewModel) {
             )
         }
 
-        // ⭐ PANTALLA PARA CREAR PERSONAJE
+        // ⭐ CREAR PERSONAJE
         composable("crear") {
             PantallaCrearPersonaje(
                 viewModel = viewModel,
-
-                // ⭐ Ir a la ficha final
                 onSiguiente = {
                     navController.navigate("ficha")
                 },
-
-                // ⭐ Volver a la pantalla principal
                 onVolver = {
                     navController.popBackStack()
                 }
             )
         }
 
-        // ⭐ FICHA FINAL DEL PERSONAJE
+        // ⭐ FICHA FINAL
         composable("ficha") {
             PantallaDatosPersonaje(
                 viewModel = viewModel,
-
-                // ⭐ Volver a la pantalla de crear personaje
                 onAnterior = {
                     navController.popBackStack()
                 },
-
-
-                // ⭐ Guardar personaje y volver a inicio
                 onGuardar = {
                     viewModel.guardarPersonaje()
 
@@ -158,8 +150,6 @@ fun AppNavegacion(viewModel: PersonajeViewModel) {
                         popUpTo("inicio") { inclusive = true }
                     }
                 },
-
-                // ⭐ Crear otro personaje directamente
                 onNuevoPersonaje = {
                     viewModel.resetearPersonaje()
 
