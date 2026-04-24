@@ -14,4 +14,8 @@ class PersonajeRepository(
     suspend fun obtenerPersonajes(usuarioId: String): List<PersonajeEntity> {
         return dao.obtenerPersonajesDeUsuario(usuarioId)
     }
+
+    suspend fun eliminarPersonaje(nombre: String) {
+        dao.eliminarPersonaje(nombre)
+    }
 }

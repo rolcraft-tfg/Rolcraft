@@ -9,8 +9,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Casino
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.material.icons.filled.MenuBook
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -34,12 +35,10 @@ fun PantallaInicio(
     onCerrarSesion: () -> Unit
 ) {
 
-    // Cargar desde Room al entrar
     LaunchedEffect(Unit) {
         viewModel.cargarPersonajes()
     }
 
-    // Lista desde ViewModel
     val personajes = viewModel.personajesGuardados
 
     Scaffold(
@@ -66,8 +65,8 @@ fun PantallaInicio(
                 NavigationBarItem(
                     selected = false,
                     onClick = onCampania,
-                    icon = { Icon(Icons.Default.MenuBook, null) },
-                    label = { Text("Mi campaña") }
+                    icon = { Icon(Icons.Default.Settings, null) },
+                    label = { Text("Ajustes") }
                 )
 
                 NavigationBarItem(
@@ -98,10 +97,17 @@ fun PantallaInicio(
             Spacer(modifier = Modifier.height(16.dp))
 
             LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(bottom = 80.dp)
             ) {
                 items(personajes) { personaje ->
-                    TarjetaPersonaje(personaje)
+                    TarjetaPersonaje(
+                        personaje = personaje,
+                        onEliminar = {
+                            viewModel.eliminarPersonaje(personaje)
+                        }
+                    )
                 }
             }
         }
@@ -109,7 +115,35 @@ fun PantallaInicio(
 }
 
 @Composable
-fun TarjetaPersonaje(personaje: Personaje) {
+fun TarjetaPersonaje(
+    personaje: Personaje,
+    onEliminar: () -> Unit
+) {
+
+    var mostrarDialogo by remember { mutableStateOf(false) }
+
+    if (mostrarDialogo) {
+        AlertDialog(
+            onDismissRequest = { mostrarDialogo = false },
+            title = { Text("Eliminar personaje") },
+            text = { Text("¿Seguro que quieres borrar el personaje?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    mostrarDialogo = false
+                    onEliminar()
+                }) {
+                    Text("Sí")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    mostrarDialogo = false
+                }) {
+                    Text("No")
+                }
+            }
+        )
+    }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -137,7 +171,9 @@ fun TarjetaPersonaje(personaje: Personaje) {
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            Column {
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
 
                 Text(
                     text = personaje.nombre,
@@ -156,6 +192,18 @@ fun TarjetaPersonaje(personaje: Personaje) {
                 Text(
                     text = personaje.clase,
                     color = Color(0xFF7EA7FF)
+                )
+            }
+
+            IconButton(
+                onClick = {
+                    mostrarDialogo = true
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Eliminar",
+                    tint = Color.Red
                 )
             }
         }

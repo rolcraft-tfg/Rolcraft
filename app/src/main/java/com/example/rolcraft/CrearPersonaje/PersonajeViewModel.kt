@@ -56,6 +56,7 @@ class PersonajeViewModel(
     fun guardarPersonaje() {
         viewModelScope.launch {
             repository.insertarPersonaje(personaje.toEntity())
+            cargarPersonajes() // refresca lista automáticamente
         }
     }
 
@@ -75,6 +76,14 @@ class PersonajeViewModel(
                     )
                 }
             )
+        }
+    }
+
+    //  ELIMINAR PERSONAJE con emoticono de papelera
+    fun eliminarPersonaje(personaje: Personaje) {
+        viewModelScope.launch {
+            repository.eliminarPersonaje(personaje.nombre)
+            cargarPersonajes() //refresca lista
         }
     }
 

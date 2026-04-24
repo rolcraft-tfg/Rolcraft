@@ -18,7 +18,6 @@ import com.example.rolcraft.CrearPersonaje.PantallaDatosPersonaje
 import com.example.rolcraft.Data.Local.AppDatabase
 import com.example.rolcraft.Data.Repository.PersonajeRepository
 import com.example.rolcraft.Inicio.PantallaInicio
-import com.example.rolcraft.Inicio.TarjetaPersonaje
 import com.example.rolcraft.ui.login.PantallaLogin
 import com.example.rolcraft.ui.login.PantallaRecuperar
 import com.example.rolcraft.ui.login.PantallaRegistro

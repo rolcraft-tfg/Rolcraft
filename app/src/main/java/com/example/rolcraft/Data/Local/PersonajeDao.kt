@@ -14,4 +14,8 @@ interface PersonajeDao {
     // ⭐ Obtener los personajes del usuario actual
     @Query("SELECT * FROM personajes WHERE usuarioId = :usuarioId")
     suspend fun obtenerPersonajesDeUsuario(usuarioId: String): List<PersonajeEntity>
+
+    // ⭐ Eliminar personaje
+    @Query("DELETE FROM personajes WHERE nombre = :nombre")
+    suspend fun eliminarPersonaje(nombre: String)
 }
