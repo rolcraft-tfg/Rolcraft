@@ -3,6 +3,7 @@ package com.example.rolcraft.CrearPersonaje
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -20,20 +21,15 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun PantallaCrearPersonaje(
     viewModel: PersonajeViewModel,
-
-    // ⭐ Ir a la ficha del personaje
     onSiguiente: () -> Unit,
-
-    // ⭐ Volver a la pantalla principal
     onVolver: () -> Unit
 ) {
 
     val pj = viewModel.personaje
+    val modoEdicion = viewModel.modoEdicion
 
-    // ⭐ Variable para mostrar qué campo falta si el usuario no rellena algo
     var campoFaltante by remember { mutableStateOf<String?>(null) }
 
-    // ⭐ Diálogo de error si falta algún campo obligatorio
     if (campoFaltante != null) {
 
         val alpha by animateFloatAsState(
@@ -60,7 +56,7 @@ fun PantallaCrearPersonaje(
                     Icon(
                         imageVector = Icons.Default.Warning,
                         contentDescription = null,
-                        tint = Color(0xFF8B0000),
+                        tint = Color.Red,
                         modifier = Modifier.padding(end = 8.dp)
                     )
 
@@ -71,152 +67,121 @@ fun PantallaCrearPersonaje(
                 Text("Debes rellenar: $campoFaltante")
             },
             confirmButton = {
-                TextButton(
-                    onClick = { campoFaltante = null }
-                ) {
+                TextButton(onClick = { campoFaltante = null }) {
                     Text("Entendido")
                 }
             },
-            containerColor = Color(0xFFF5E6C8),
-            titleContentColor = Color(0xFF3E2723),
-            textContentColor = Color(0xFF3E2723)
+            containerColor = MaterialTheme.colorScheme.surface,
+            titleContentColor = MaterialTheme.colorScheme.onSurface,
+            textContentColor = MaterialTheme.colorScheme.onSurface
         )
     }
 
-    // ⭐ Toda la pantalla ahora tiene scroll vertical
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState())
             .padding(16.dp)
-            .clickable {
-                campoFaltante = null
-            }
+            .clickable { campoFaltante = null }
     ) {
 
-        // ⭐ Botón para volver a la pantalla principal
-        TextButton(
-            onClick = {
-                onVolver()
-            }
-        ) {
+        TextButton(onClick = { onVolver() }) {
             Text("← Volver")
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // ⭐ Título principal
         Text(
-            text = "Crea tu personaje",
-            style = MaterialTheme.typography.headlineMedium
+            text = if (modoEdicion) "Editar personaje" else "Crea tu personaje",
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.onBackground
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // ⭐ Botón para generar un personaje aleatorio
         Button(
-            onClick = {
-                viewModel.generarAleatorio()
-            }
+            onClick = { viewModel.generarAleatorio() }
         ) {
             Text("Aleatorio")
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // ⭐ Campo nombre
         TextField(
             value = pj.nombre,
-            onValueChange = {
-                viewModel.actualizarNombre(it)
-            },
-            label = {
-                Text("Nombre")
-            },
-            modifier = Modifier.fillMaxWidth()
+            onValueChange = { viewModel.actualizarNombre(it) },
+            label = { Text("Nombre") },
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface
+            )
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // ⭐ Selector de género
         Desplegable(
             titulo = "Género",
             opciones = listaGeneros,
             valor = pj.genero,
             descripcion = null,
-            onSelect = {
-                viewModel.actualizarGenero(it)
-            }
+            onSelect = { viewModel.actualizarGenero(it) }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // ⭐ Selector de raza
         Desplegable(
             titulo = "Raza",
             opciones = listaRazas,
             valor = pj.raza,
             descripcion = descripcionRaza[pj.raza],
-            onSelect = {
-                viewModel.actualizarRaza(it)
-            }
+            onSelect = { viewModel.actualizarRaza(it) }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // ⭐ Selector de clase
         Desplegable(
             titulo = "Clase",
             opciones = listaClases,
             valor = pj.clase,
             descripcion = descripcionClase[pj.clase],
-            onSelect = {
-                viewModel.actualizarClase(it)
-            }
+            onSelect = { viewModel.actualizarClase(it) }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // ⭐ Selector de subclase
         Desplegable(
             titulo = "Subclase",
             opciones = listaSubclases[pj.clase] ?: emptyList(),
             valor = pj.subclase,
             descripcion = descripcionSubclase[pj.subclase],
-            onSelect = {
-                viewModel.actualizarSubclase(it)
-            }
+            onSelect = { viewModel.actualizarSubclase(it) }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // ⭐ Selector de trasfondo
         Desplegable(
             titulo = "Trasfondo",
             opciones = listaTrasfondos,
             valor = pj.trasfondo,
             descripcion = descripcionTrasfondo[pj.trasfondo],
-            onSelect = {
-                viewModel.actualizarTrasfondo(it)
-            }
+            onSelect = { viewModel.actualizarTrasfondo(it) }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // ⭐ Selector de alineamiento
         Desplegable(
             titulo = "Alineamiento",
             opciones = listaAlineamientos,
             valor = pj.alineamiento,
             descripcion = descripcionAlineamiento[pj.alineamiento],
-            onSelect = {
-                viewModel.actualizarAlineamiento(it)
-            }
+            onSelect = { viewModel.actualizarAlineamiento(it) }
         )
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // ⭐ Botón final para ir a la ficha del personaje
+        // BOTÓN INTELIGENTE
         Button(
             onClick = {
 
@@ -232,7 +197,9 @@ fun PantallaCrearPersonaje(
                 .fillMaxWidth()
                 .padding(bottom = 24.dp)
         ) {
-            Text("Ver ficha")
+            Text(
+                if (modoEdicion) "Guardar cambios" else "Ver ficha"
+            )
         }
     }
 }

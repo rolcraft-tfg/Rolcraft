@@ -16,6 +16,12 @@ class PersonajeViewModel(
 
     val personajesGuardados = mutableStateListOf<Personaje>()
 
+    // 🔥 MODO EDICIÓN
+    var modoEdicion by mutableStateOf(false)
+        private set
+
+    private var personajeOriginal: String? = null
+
     private fun actualizar(update: Personaje.() -> Personaje) {
         personaje = personaje.update()
     }
@@ -52,11 +58,35 @@ class PersonajeViewModel(
         )
     }
 
-    // 🔥 GUARDAR EN ROOM
+    // 🔥 INICIAR EDICIÓN
+    fun empezarEdicion(pj: Personaje) {
+        personaje = pj
+        personajeOriginal = pj.nombre
+        modoEdicion = true
+    }
+
+    // 🔥 GUARDAR (CREAR o EDITAR)
     fun guardarPersonaje() {
         viewModelScope.launch {
+
+            if (modoEdicion && personajeOriginal != null) {
+                repository.eliminarPersonaje(personajeOriginal!!)
+            }
+
             repository.insertarPersonaje(personaje.toEntity())
-            cargarPersonajes() // refresca lista automáticamente
+
+            modoEdicion = false
+            personajeOriginal = null
+
+            cargarPersonajes()
+        }
+    }
+
+    // 🔥 DUPLICAR / INSERTAR DIRECTAMENTE
+    fun insertarPersonaje(personaje: Personaje) {
+        viewModelScope.launch {
+            repository.insertarPersonaje(personaje.toEntity())
+            cargarPersonajes()
         }
     }
 
@@ -79,11 +109,11 @@ class PersonajeViewModel(
         }
     }
 
-    //  ELIMINAR PERSONAJE con emoticono de papelera
+    // 🔥 ELIMINAR
     fun eliminarPersonaje(personaje: Personaje) {
         viewModelScope.launch {
             repository.eliminarPersonaje(personaje.nombre)
-            cargarPersonajes() //refresca lista
+            cargarPersonajes()
         }
     }
 
@@ -103,9 +133,11 @@ class PersonajeViewModel(
 
     fun resetearPersonaje() {
         personaje = Personaje()
+        modoEdicion = false
+        personajeOriginal = null
     }
 
-    // 🔁 CONVERSIÓN A ENTITY
+    // 🔥 CONVERSIÓN A ENTITY
     private fun Personaje.toEntity(): PersonajeEntity {
         return PersonajeEntity(
             nombre = this.nombre,
