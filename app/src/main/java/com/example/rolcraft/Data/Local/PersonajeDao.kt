@@ -7,15 +7,19 @@ import androidx.room.Query
 @Dao
 interface PersonajeDao {
 
-    // ⭐ Guardar personaje
+    // Guardar personaje
     @Insert
     suspend fun insertarPersonaje(personaje: PersonajeEntity)
 
-    // ⭐ Obtener los personajes del usuario actual
+    // Obtener los personajes del usuario actual
     @Query("SELECT * FROM personajes WHERE usuarioId = :usuarioId")
     suspend fun obtenerPersonajesDeUsuario(usuarioId: String): List<PersonajeEntity>
 
-    // ⭐ Eliminar personaje
-    @Query("DELETE FROM personajes WHERE nombre = :nombre")
-    suspend fun eliminarPersonaje(nombre: String)
+    // Obtener personaje por ID
+    @Query("SELECT * FROM personajes WHERE id = :id LIMIT 1")
+    suspend fun obtenerPersonajePorId(id: Int): PersonajeEntity?
+
+    // Eliminar personaje
+    @Query("DELETE FROM personajes WHERE id = :id")
+    suspend fun eliminarPersonaje(id: Int)
 }

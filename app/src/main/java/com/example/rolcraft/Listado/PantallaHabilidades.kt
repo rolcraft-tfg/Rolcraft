@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -89,6 +90,7 @@ fun PantallaHabilidades(
                 .background(Color(0xFF0F1720))
                 .padding(padding)
                 .padding(16.dp)
+                .pointerInput(Unit) {}
         ) {
 
             // BUSCADOR
