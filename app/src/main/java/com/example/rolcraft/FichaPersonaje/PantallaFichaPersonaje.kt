@@ -3,10 +3,13 @@ package com.example.rolcraft.FichaPersonaje
 import androidx.compose.animation.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,6 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.zIndex
 import com.example.rolcraft.CrearPersonaje.PersonajeViewModel
 import com.example.rolcraft.Dados.DiceAnimatorCompose
@@ -28,6 +32,9 @@ import com.example.rolcraft.Dados.DiceLibrary
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+// ---------------------------------------------------------
+// ⭐ PANTALLA PRINCIPAL CON PESTAÑAS (Abilities / Dados)
+// ---------------------------------------------------------
 @Composable
 fun PantallaFichaPersonaje(
     onNuevoPersonaje: () -> Unit,
@@ -35,7 +42,200 @@ fun PantallaFichaPersonaje(
     onAnterior: () -> Boolean,
     viewModel: PersonajeViewModel
 ) {
+    var expanded by remember { mutableStateOf(false) }
+    var selectedTab by remember { mutableStateOf("abilities") }
 
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF0F1720))
+            .padding(16.dp)
+    ) {
+
+        // ⭐ Encabezado estilo D&D Beyond
+        EncabezadoFicha(viewModel)
+
+        // ⭐ Barra desplegable
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(0xFF16202A))
+                .padding(12.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { expanded = true },
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = when (selectedTab) {
+                        "abilities" -> "Abilities, Saves, Senses"
+                        "dados" -> "Dados"
+                        else -> "Abilities"
+                    },
+                    color = Color.White,
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = null,
+                    tint = Color.White
+                )
+            }
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                DropdownMenuItem(
+                    text = { Text("Abilities, Saves, Senses") },
+                    onClick = {
+                        selectedTab = "abilities"
+                        expanded = false
+                    }
+                )
+
+                DropdownMenuItem(
+                    text = { Text("Dados") },
+                    onClick = {
+                        selectedTab = "dados"
+                        expanded = false
+                    }
+                )
+            }
+        }
+
+        // ⭐ Contenido dinámico
+        when (selectedTab) {
+            "abilities" -> SeccionHabilidades(viewModel)
+            "dados" -> PantallaDadosInterna(onNuevoPersonaje, onGuardar, onAnterior, viewModel)
+        }
+    }
+}
+
+// ---------------------------------------------------------
+// ⭐ ENCABEZADO
+// ---------------------------------------------------------
+@Composable
+fun EncabezadoFicha(viewModel: PersonajeViewModel) {
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color(0xFF1B2733))
+            .padding(16.dp)
+    ) {
+
+        Text(
+            text = viewModel.personaje.nombre,
+            color = Color.White,
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(Modifier.height(8.dp))
+
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+
+            EncabezadoStat("AC", "13")
+            EncabezadoStat("Initiative", "+2")
+            EncabezadoStat("HP", "12/12")
+        }
+    }
+}
+
+@Composable
+fun EncabezadoStat(titulo: String, valor: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(titulo, color = Color.LightGray, style = MaterialTheme.typography.bodySmall)
+        Text(valor, color = Color.White, style = MaterialTheme.typography.titleMedium)
+    }
+}
+
+// ---------------------------------------------------------
+// ⭐ SECCIÓN DE HABILIDADES
+// ---------------------------------------------------------
+@Composable
+fun SeccionHabilidades(viewModel: PersonajeViewModel) {
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+
+        Text(
+            text = "Abilities",
+            color = Color.White,
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(Modifier.height(16.dp))
+
+        HabilidadItem("Strength", 1)
+        HabilidadItem("Dexterity", 1)
+        HabilidadItem("Constitution", 1)
+        HabilidadItem("Intelligence", 1)
+        HabilidadItem("Wisdom", 1)
+        HabilidadItem("Charisma", 1)
+    }
+}
+
+@Composable
+fun HabilidadItem(nombre: String, valor: Int) {
+
+    val modificador = (valor - 10) / 2
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF1B2733)),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+
+        Row(
+            modifier = Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Column {
+                Text(nombre, color = Color.White, fontWeight = FontWeight.Bold)
+                Text(
+                    "Mod: ${if (modificador >= 0) "+$modificador" else modificador}",
+                    color = Color.LightGray
+                )
+            }
+
+            Spacer(Modifier.weight(1f))
+
+            Text(
+                text = valor.toString(),
+                color = Color(0xFF7EA7FF),
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
+
+// ---------------------------------------------------------
+// ⭐ TU PANTALLA ORIGINAL DE DADOS (SIN CAMBIAR NADA)
+// ---------------------------------------------------------
+@Composable
+fun PantallaDadosInterna(
+    onNuevoPersonaje: () -> Unit,
+    onGuardar: () -> Unit,
+    onAnterior: () -> Boolean,
+    viewModel: PersonajeViewModel
+) {
     val context = LocalContext.current
     val animator = remember { DiceAnimatorCompose(context) }
 
@@ -60,7 +260,7 @@ fun PantallaFichaPersonaje(
 
     var bloqueado by remember { mutableStateOf(false) }
 
-    // ANIMACIÓN
+    // ⭐ Animación original
     LaunchedEffect(Unit) {
         while (true) {
             if (volverAlCentro) {
@@ -84,7 +284,8 @@ fun PantallaFichaPersonaje(
                 screenHeight = it.size.height.toFloat() / 2f
             }
     ) {
-        // BARRA SUPERIOR CON BOTONES DE DADOS
+
+        // ⭐ Barra superior de dados (sin cambios)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -156,7 +357,7 @@ fun PantallaFichaPersonaje(
             }
         }
 
-        // DADO ANIMADO
+        // ⭐ Dado animado
         if (dadoVisible) {
             imagenActual?.let { img ->
                 Image(
@@ -176,8 +377,7 @@ fun PantallaFichaPersonaje(
             }
         }
 
-
-        // MENSAJE DE RESULTADO
+        // ⭐ Resultado
         AnimatedVisibility(
             visible = mostrarResultado,
             enter = fadeIn() + scaleIn(),
@@ -213,15 +413,14 @@ fun PantallaFichaPersonaje(
             }
         }
 
-
-        // CAPA QUE BLOQUEA LA PANTALLA
+        // ⭐ Capa que bloquea la pantalla
         if (bloqueado) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color(0x88000000))
-                    .zIndex(10f) // Marca la capa que se bloquea
-                    .pointerInput(Unit) {} // Bloquea los toques
+                    .zIndex(10f)
+                    .pointerInput(Unit) {}
             )
         }
     }
