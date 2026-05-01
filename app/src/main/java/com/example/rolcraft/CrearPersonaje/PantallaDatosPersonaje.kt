@@ -26,7 +26,6 @@ fun PantallaDatosPersonaje(
     viewModel: PersonajeViewModel,
     onAnterior: () -> Unit,
     onGuardar: () -> Unit,
-    onNuevoPersonaje: () -> Unit
 ) {
 
     val personaje = viewModel.personaje
@@ -34,7 +33,7 @@ fun PantallaDatosPersonaje(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background) // fondo oscuro
+            .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
@@ -95,12 +94,6 @@ fun PantallaDatosPersonaje(
                 Text("Guardar")
             }
 
-            Button(
-                onClick = onNuevoPersonaje,
-                modifier = Modifier.weight(1f)
-            ) {
-                Text("Nuevo")
-            }
         }
     }
 }

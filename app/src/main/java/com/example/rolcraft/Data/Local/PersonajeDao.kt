@@ -3,19 +3,23 @@ package com.example.rolcraft.Data.Local
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 
 @Dao
 interface PersonajeDao {
 
-    // ⭐ Guardar personaje
+    // Guardar personaje
     @Insert
     suspend fun insertarPersonaje(personaje: PersonajeEntity)
 
-    // ⭐ Obtener los personajes del usuario actual
+    // Obtener los personajes del usuario actual
     @Query("SELECT * FROM personajes WHERE usuarioId = :usuarioId")
     suspend fun obtenerPersonajesDeUsuario(usuarioId: String): List<PersonajeEntity>
 
-    // ⭐ Eliminar personaje
-    @Query("DELETE FROM personajes WHERE nombre = :nombre")
-    suspend fun eliminarPersonaje(nombre: String)
+    // Eliminar personaje
+    @Query("DELETE FROM personajes WHERE id = :id")
+    suspend fun eliminarPersonajePorId(id: Int)
+
+    @Update
+    suspend fun actualizarPersonaje(personaje: PersonajeEntity)
 }

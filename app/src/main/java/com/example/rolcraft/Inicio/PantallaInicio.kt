@@ -1,5 +1,6 @@
 package com.example.rolcraft.Inicio
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -22,6 +23,28 @@ import androidx.compose.ui.unit.dp
 import com.example.rolcraft.CrearPersonaje.Personaje
 import com.example.rolcraft.CrearPersonaje.PersonajeViewModel
 import com.example.rolcraft.R
+
+// 🔥 IMAGEN POR CLASE
+fun obtenerImagenClase(clase: String): Int {
+    return when (clase.lowercase().trim()) {
+        "mago" -> R.drawable.mago
+        "clérigo", "clerigo" -> R.drawable.clerigo
+        "guerrero" -> R.drawable.guerrero
+        "pícaro", "picaro" -> R.drawable.picaro
+        else -> R.drawable.personaje_placeholder
+    }
+}
+
+// 🔥 COLOR POR CLASE
+fun obtenerColorClase(clase: String): Color {
+    return when (clase.lowercase().trim()) {
+        "mago" -> Color(0xFF2196F3)      // azul
+        "guerrero" -> Color(0xFFE53935)  // rojo
+        "pícaro", "picaro" -> Color(0xFF43A047) // verde
+        "clérigo", "clerigo" -> Color(0xFFFDD835) // amarillo
+        else -> Color.Gray
+    }
+}
 
 @Composable
 fun PantallaInicio(
@@ -70,29 +93,23 @@ fun PantallaInicio(
                     items(personajes) { personaje ->
                         TarjetaPersonaje(
                             personaje = personaje,
-
                             onEliminar = {
                                 viewModel.eliminarPersonaje(personaje)
                             },
-
                             onDuplicar = { pj ->
-                                val copia = pj.copy(nombre = "${pj.nombre} Copy")
+                                val copia = pj.copy(nombre = "${pj.nombre} Copy", id = 0)
                                 viewModel.insertarPersonaje(copia)
                             },
-
-                            // 🔥 EDITAR CONECTADO
                             onEditar = { pj ->
                                 viewModel.empezarEdicion(pj)
                                 onCrearPersonaje()
                             },
-
                             onClick = onPantallaFichaPersonaje
                         )
                     }
                 }
             }
 
-            // 💚 BOTÓN ABAJO
             Button(
                 onClick = { onCrearPersonaje() },
                 modifier = Modifier
@@ -127,6 +144,8 @@ fun TarjetaPersonaje(
     var mostrarDialogo by remember { mutableStateOf(false) }
     var menuExpandido by remember { mutableStateOf(false) }
 
+    val colorClase = obtenerColorClase(personaje.clase)
+
     if (mostrarDialogo) {
         AlertDialog(
             onDismissRequest = { mostrarDialogo = false },
@@ -154,10 +173,11 @@ fun TarjetaPersonaje(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() },
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(2.dp, colorClase), // 🔥 BORDE DE COLOR
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
-        ),
-        shape = RoundedCornerShape(12.dp)
+        )
     ) {
 
         Row(
@@ -168,7 +188,9 @@ fun TarjetaPersonaje(
         ) {
 
             Image(
-                painter = painterResource(id = R.drawable.personaje_placeholder),
+                painter = painterResource(
+                    id = obtenerImagenClase(personaje.clase)
+                ),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -198,11 +220,10 @@ fun TarjetaPersonaje(
 
                 Text(
                     text = personaje.clase,
-                    color = MaterialTheme.colorScheme.primary
+                    color = colorClase // 🔥 COLOR DE TEXTO TAMBIÉN
                 )
             }
 
-            // 🔥 MENÚ 3 PUNTOS
             Box {
                 IconButton(
                     onClick = { menuExpandido = true }

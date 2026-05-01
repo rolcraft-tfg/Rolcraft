@@ -13,7 +13,6 @@ data class PersonajeEntity(
     val raza: String,
     val clase: String,
     val nivel: Int,
-
-    // ⭐ UID del usuario autenticado en Firebase
+    // UID del usuario autenticado en Firebase
     val usuarioId: String
 )

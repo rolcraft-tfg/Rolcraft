@@ -7,14 +7,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -22,14 +19,12 @@ import androidx.compose.ui.window.Dialog
 import com.example.rolcraft.R
 import java.text.Normalizer
 
-//Modelo
 data class Habilidad(
     val nombre: String,
     val descripcion: String,
     val imagen: Int
 )
 
-//Función para ignorar tildes
 fun normalizar(texto: String): String {
     return Normalizer.normalize(texto, Normalizer.Form.NFD)
         .replace(Regex("\\p{InCombiningDiacriticalMarks}+"), "")
@@ -39,7 +34,7 @@ fun normalizar(texto: String): String {
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun PantallaHabilidades(
-    onVolver: () -> Unit
+    onVolver: () -> Unit // lo dejamos por si lo usas, pero ya no se muestra
 ) {
 
     var busqueda by remember { mutableStateOf("") }
@@ -61,35 +56,29 @@ fun PantallaHabilidades(
         Habilidad("Veneno", "Daño progresivo.", R.drawable.veneno_resized)
     )
 
-    // FILTRO por inicio + sin tildes
     val filtrados = habilidades.filter {
         normalizar(it.nombre).startsWith(normalizar(busqueda))
     }
 
     Scaffold(
-        containerColor = Color(0xFF0F1720),
-
-        // TOP BAR
-        topBar = {
-            TopAppBar(
-                title = { Text("Habilidades") },
-                navigationIcon = {
-                    IconButton(onClick = onVolver) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
-                    }
-                }
-            )
-        }
-
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFF0F1720))
+                .background(MaterialTheme.colorScheme.background)
                 .padding(padding)
                 .padding(16.dp)
         ) {
+
+            Text(
+                text = "Habilidades",
+                style = MaterialTheme.typography.headlineLarge,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             // BUSCADOR
             OutlinedTextField(
@@ -116,7 +105,7 @@ fun PantallaHabilidades(
         }
     }
 
-    // POPUP ANIMADO
+    // POPUP
     habilidadSeleccionada?.let { habilidad ->
         Dialog(onDismissRequest = { habilidadSeleccionada = null }) {
 
@@ -128,7 +117,7 @@ fun PantallaHabilidades(
                 Card(
                     shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFF1B2733)
+                        containerColor = MaterialTheme.colorScheme.surface
                     )
                 ) {
                     Column(
@@ -148,17 +137,15 @@ fun PantallaHabilidades(
 
                         Text(
                             text = habilidad.nombre,
-                            color = Color.White,
                             style = MaterialTheme.typography.titleLarge,
-                            textAlign = TextAlign.Center
+                            color = MaterialTheme.colorScheme.onSurface
                         )
 
                         Spacer(modifier = Modifier.height(8.dp))
 
                         Text(
                             text = habilidad.descripcion,
-                            color = Color.LightGray,
-                            textAlign = TextAlign.Center
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -167,7 +154,6 @@ fun PantallaHabilidades(
     }
 }
 
-// ITEM
 @Composable
 fun ItemHabilidad(
     habilidad: Habilidad,
@@ -179,7 +165,7 @@ fun ItemHabilidad(
             .height(120.dp)
             .clickable { onClick() },
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF1B2733)
+            containerColor = MaterialTheme.colorScheme.surface
         )
     ) {
         Column(
@@ -202,7 +188,7 @@ fun ItemHabilidad(
 
             Text(
                 text = habilidad.nombre,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center
             )
         }
