@@ -3,21 +3,24 @@ package com.example.rolcraft
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.ListAlt
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.NavController
+import androidx.navigation.compose.*
 import androidx.room.Room
-import com.example.rolcraft.CrearPersonaje.PersonajeViewModel
-import com.example.rolcraft.CrearPersonaje.PersonajeViewModelFactory
-import com.example.rolcraft.CrearPersonaje.PantallaCrearPersonaje
+import com.example.rolcraft.CrearPersonaje.*
 import com.example.rolcraft.Data.Local.AppDatabase
 import com.example.rolcraft.Data.Repository.PersonajeRepository
-import com.example.rolcraft.Inicio.PantallaInicio
 import com.example.rolcraft.FichaPersonaje.PantallaFichaPersonaje
+import com.example.rolcraft.Inicio.PantallaInicio
+import com.example.rolcraft.Listado.PantallaHabilidades
 import com.example.rolcraft.Login.PantallaLogin
 import com.example.rolcraft.RecuperarContrasenya.PantallaRecuperar
 import com.example.rolcraft.Registro.PantallaRegistro
@@ -30,17 +33,17 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // ⭐ Base de datos Room
+        // Base de datos Room
         val db = Room.databaseBuilder(
             applicationContext,
             AppDatabase::class.java,
             "rolcraft_db"
         ).build()
 
-        // ⭐ Repository
+        // Repository
         val repository = PersonajeRepository(db.personajeDao())
 
-        // ⭐ ViewModel con Factory
+        // ViewModel
         viewModel = ViewModelProvider(
             this,
             PersonajeViewModelFactory(repository)
@@ -48,9 +51,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             RolCraftTheme {
-                Surface(
-                    color = MaterialTheme.colorScheme.background
-                ) {
+                Surface(color = MaterialTheme.colorScheme.background) {
                     AppNavegacion(viewModel)
                 }
             }
@@ -63,121 +64,174 @@ fun AppNavegacion(viewModel: PersonajeViewModel) {
 
     val navController = rememberNavController()
 
-    NavHost(
-        navController = navController,
-        startDestination = "login"
-    ) {
+    Scaffold(
+        bottomBar = {
+            val rutaActual =
+                navController.currentBackStackEntryAsState().value?.destination?.route
 
-        // ⭐ LOGIN
-        composable("login") {
-            PantallaLogin(
-                onLoginClick = { _, _ ->
-                    navController.navigate("inicio")
-                },
-                onRegisterClick = {
-                    navController.navigate("registro")
-                },
-                onForgotPasswordClick = {
-                    navController.navigate("recuperar")
-                }
-            )
+            if (rutaActual != "login" &&
+                rutaActual != "registro" &&
+                rutaActual != "recuperar"
+            ) {
+                BarraInferior(navController, rutaActual)
+            }
         }
+    ) { padding ->
 
-        // ⭐ REGISTRO
-        composable("registro") {
-            PantallaRegistro(
-                onVolver = {
-                    navController.popBackStack()
-                }
-            )
-        }
+        NavHost(
+            navController = navController,
+            startDestination = "login",
+            modifier = Modifier.padding(padding)
+        ) {
 
-        // ⭐ RECUPERAR CONTRASEÑA
-        composable("recuperar") {
-            PantallaRecuperar(
-                onVolver = {
-                    navController.popBackStack()
-                }
-            )
-        }
+            // LOGIN
+            composable("login") {
+                PantallaLogin(
+                    onLoginClick = { _, _ -> navController.navigate("inicio") },
+                    onRegisterClick = { navController.navigate("registro") },
+                    onForgotPasswordClick = { navController.navigate("recuperar") }
+                )
+            }
 
-        // ⭐ INICIO (🔥 CAMBIO IMPORTANTE)
-        composable("inicio") {
-            PantallaInicio(
-                viewModel = viewModel,
-                onCrearPersonaje = {
-                    navController.navigate("crear")
-                },
+            // REGISTRO
+            composable("registro") {
+                PantallaRegistro(
+                    onVolver = { navController.popBackStack() }
+                )
+            }
 
-                // ⭐ Botón "Dados"
-                onPantallaFichaPersonaje = {
-                    navController.navigate("ficha")
-                },
-                onCampania = {
-                    // futura pantalla
-                },
-                onCerrarSesion = {
-                    navController.navigate("login") {
-                        popUpTo("inicio") { inclusive = true }
+            // RECUPERAR
+            composable("recuperar") {
+                PantallaRecuperar(
+                    onVolver = { navController.popBackStack() }
+                )
+            }
+
+            // INICIO (PERSONAJES)
+            composable("inicio") {
+                PantallaInicio(
+                    viewModel = viewModel,
+                    onCrearPersonaje = {
+                        navController.navigate("crear")
+                    },
+                    onPantallaFichaPersonaje = {
+                        navController.navigate("ficha")
+                    },
+                    onCerrarSesion = {
+                        navController.navigate("login") {
+                            popUpTo("inicio") { inclusive = true }
+                        }
                     }
-                }
-            )
-        }
+                )
+            }
 
-        // ⭐ CREAR PERSONAJE
-        composable("crear") {
-            PantallaCrearPersonaje(
-                viewModel = viewModel,
-                onSiguiente = {
-                    navController.navigate("verFicha")
-                },
-                onVolver = {
-                    navController.popBackStack()
-                }
-            )
-        }
-        composable("verFicha") {
-            PantallaDatosPersonaje(
-                viewModel = viewModel,
-                onAnterior = {
-                    navController.popBackStack()
-                },
-                onGuardar = {
-                    viewModel.guardarPersonaje()
-                    navController.navigate("inicio") {
-                        popUpTo("inicio") { inclusive = true }
-                    }
-                },
-                onNuevoPersonaje = {
-                    viewModel.resetearPersonaje()
-                    navController.navigate("crear") {
-                        popUpTo("crear") { inclusive = true }
-                    }
-                }
-            )
-        }
-        // ⭐ FICHA FINAL
-        composable("ficha") {
-            PantallaFichaPersonaje(
-                viewModel = viewModel,
-                onAnterior = {
-                    navController.popBackStack()
-                },
-                onGuardar = {
-                    viewModel.guardarPersonaje()
+            // HABILIDADES
+            composable("habilidades") {
+                PantallaHabilidades(
+                    onVolver = { navController.popBackStack() }
+                )
+            }
 
-                    navController.navigate("inicio") {
-                        popUpTo("inicio") { inclusive = true }
+            // CREAR PERSONAJE
+            composable("crear") {
+                PantallaCrearPersonaje(
+                    viewModel = viewModel,
+                    onSiguiente = {
+                        navController.navigate("verFicha")
+                    },
+                    onVolver = {
+                        navController.popBackStack()
                     }
-                },
-                onNuevoPersonaje = {
-                    viewModel.resetearPersonaje()
+                )
+            }
 
-                    navController.navigate("crear") {
-                        popUpTo("crear") { inclusive = true }
+            // VER FICHA
+            composable("verFicha") {
+                PantallaDatosPersonaje(
+                    viewModel = viewModel,
+                    onAnterior = {
+                        navController.popBackStack()
+                    },
+                    onGuardar = {
+                        viewModel.guardarPersonaje()
+                        navController.navigate("inicio") {
+                            popUpTo("inicio") { inclusive = true }
+                        }
+                    },
+                    onNuevoPersonaje = {
+                        viewModel.resetearPersonaje()
+                        navController.navigate("crear")
                     }
-                }
-            )
+                )
+            }
+
+            // FICHA FINAL
+            composable("ficha") {
+                PantallaFichaPersonaje(
+                    viewModel = viewModel,
+                    onAnterior = {
+                        navController.popBackStack()
+                    },
+                    onGuardar = {
+                        viewModel.guardarPersonaje()
+                        navController.navigate("inicio") {
+                            popUpTo("inicio") { inclusive = true }
+                        }
+                    },
+                    onNuevoPersonaje = {
+                        viewModel.resetearPersonaje()
+                        navController.navigate("crear")
+                    }
+                )
+            }
         }
+    }
+}
+
+@Composable
+fun BarraInferior(navController: NavController, rutaActual: String?) {
+
+    NavigationBar {
+
+        NavigationBarItem(
+            selected = rutaActual == "inicio",
+            onClick = {
+                navController.navigate("inicio") {
+                    popUpTo("inicio")
+                    launchSingleTop = true
+                }
+            },
+            icon = { Icon(Icons.Default.ListAlt, null) },
+            label = { Text("Personajes") }
+        )
+
+        NavigationBarItem(
+            selected = rutaActual == "habilidades",
+            onClick = {
+                navController.navigate("habilidades") {
+                    launchSingleTop = true
+                }
+            },
+            icon = { Icon(Icons.Default.ListAlt, null) },
+            label = { Text("Habilidades") }
+        )
+
+        NavigationBarItem(
+            selected = false,
+            onClick = {},
+            icon = { Icon(Icons.Default.Settings, null) },
+            label = { Text("Ajustes") }
+        )
+
+        NavigationBarItem(
+            selected = false,
+            onClick = {
+                navController.navigate("login") {
+                    popUpTo("inicio") { inclusive = true }
+                }
+            },
+            icon = { Icon(Icons.Default.ExitToApp, null) },
+            label = { Text("Salir") }
+        )
     }
 }

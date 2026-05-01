@@ -1,7 +1,6 @@
 package com.example.rolcraft.Inicio
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,10 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Casino
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -32,7 +28,6 @@ fun PantallaInicio(
     viewModel: PersonajeViewModel,
     onCrearPersonaje: () -> Unit,
     onPantallaFichaPersonaje: () -> Unit,
-    onCampania: () -> Unit,
     onCerrarSesion: () -> Unit
 ) {
 
@@ -43,81 +38,77 @@ fun PantallaInicio(
     val personajes = viewModel.personajesGuardados
 
     Scaffold(
-        containerColor = Color(0xFF0F1720),
-        bottomBar = {
-            NavigationBar(
-                containerColor = Color(0xFF16202A)
-            ) {
-
-                NavigationBarItem(
-                    selected = false,
-                    onClick = onCrearPersonaje,
-                    icon = { Icon(Icons.Default.Add, null) },
-                    label = { Text("Crear") }
-                )
-
-                // ⭐ Botón ficha personaje
-                NavigationBarItem(
-                    selected = false,
-                    onClick = onPantallaFichaPersonaje,
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Default.Casino,
-                            contentDescription = "Dados"
-                        )
-                    },
-                    label = {
-                        Text("Dados")
-                    }
-                )
-
-                NavigationBarItem(
-                    selected = false,
-                    onClick = onCampania,
-                    icon = { Icon(Icons.Default.Settings, null) },
-                    label = { Text("Ajustes") }
-                )
-
-                NavigationBarItem(
-                    selected = false,
-                    onClick = onCerrarSesion,
-                    icon = { Icon(Icons.Default.ExitToApp, null) },
-                    label = { Text("Salir") }
-                )
-            }
-        }
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
 
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFF0F1720))
                 .padding(padding)
-                .padding(16.dp)
         ) {
 
-            Text(
-                text = "Mis personajes",
-                color = Color.White,
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(bottom = 80.dp)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
             ) {
-                items(personajes) { personaje ->
-                    TarjetaPersonaje(
-                        personaje = personaje,
-                        onEliminar = {
-                            viewModel.eliminarPersonaje(personaje)
-                        },
-                        onClick = onPantallaFichaPersonaje
-                    )
+
+                Text(
+                    text = "Mis personajes",
+                    color = MaterialTheme.colorScheme.onBackground,
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    contentPadding = PaddingValues(bottom = 80.dp)
+                ) {
+                    items(personajes) { personaje ->
+                        TarjetaPersonaje(
+                            personaje = personaje,
+
+                            onEliminar = {
+                                viewModel.eliminarPersonaje(personaje)
+                            },
+
+                            onDuplicar = { pj ->
+                                val copia = pj.copy(nombre = "${pj.nombre} Copy")
+                                viewModel.insertarPersonaje(copia)
+                            },
+
+                            // 🔥 EDITAR CONECTADO
+                            onEditar = { pj ->
+                                viewModel.empezarEdicion(pj)
+                                onCrearPersonaje()
+                            },
+
+                            onClick = onPantallaFichaPersonaje
+                        )
+                    }
+                }
+            }
+
+            // 💚 BOTÓN ABAJO
+            Button(
+                onClick = { onCrearPersonaje() },
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(16.dp)
+                    .fillMaxWidth()
+                    .height(48.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF2ECC71)
+                ),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Add, contentDescription = null, tint = Color.White)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Crear nuevo personaje", color = Color.White)
                 }
             }
         }
@@ -128,10 +119,13 @@ fun PantallaInicio(
 fun TarjetaPersonaje(
     personaje: Personaje,
     onEliminar: () -> Unit,
+    onDuplicar: (Personaje) -> Unit,
+    onEditar: (Personaje) -> Unit,
     onClick: () -> Unit
 ) {
 
     var mostrarDialogo by remember { mutableStateOf(false) }
+    var menuExpandido by remember { mutableStateOf(false) }
 
     if (mostrarDialogo) {
         AlertDialog(
@@ -157,10 +151,11 @@ fun TarjetaPersonaje(
     }
 
     Card(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .clickable { onClick() },
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF1B2733)
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         shape = RoundedCornerShape(12.dp)
     ) {
@@ -189,7 +184,7 @@ fun TarjetaPersonaje(
 
                 Text(
                     text = personaje.nombre,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -203,20 +198,52 @@ fun TarjetaPersonaje(
 
                 Text(
                     text = personaje.clase,
-                    color = Color(0xFF7EA7FF)
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
 
-            IconButton(
-                onClick = {
-                    mostrarDialogo = true
+            // 🔥 MENÚ 3 PUNTOS
+            Box {
+                IconButton(
+                    onClick = { menuExpandido = true }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "Opciones"
+                    )
                 }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Eliminar",
-                    tint = Color.Red
-                )
+
+                DropdownMenu(
+                    expanded = menuExpandido,
+                    onDismissRequest = { menuExpandido = false }
+                ) {
+
+                    DropdownMenuItem(
+                        text = { Text("Editar") },
+                        onClick = {
+                            menuExpandido = false
+                            onEditar(personaje)
+                        }
+                    )
+
+                    DropdownMenuItem(
+                        text = { Text("Duplicar") },
+                        onClick = {
+                            menuExpandido = false
+                            onDuplicar(personaje)
+                        }
+                    )
+
+                    DropdownMenuItem(
+                        text = {
+                            Text("Eliminar", color = Color.Red)
+                        },
+                        onClick = {
+                            menuExpandido = false
+                            mostrarDialogo = true
+                        }
+                    )
+                }
             }
         }
     }

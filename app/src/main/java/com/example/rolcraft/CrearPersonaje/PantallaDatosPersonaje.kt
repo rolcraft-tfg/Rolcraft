@@ -1,5 +1,6 @@
 package com.example.rolcraft.CrearPersonaje
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,13 +13,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.rolcraft.CrearPersonaje.PersonajeViewModel
 
 @Composable
 fun PantallaDatosPersonaje(
@@ -33,6 +34,7 @@ fun PantallaDatosPersonaje(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background) // fondo oscuro
             .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
@@ -47,13 +49,17 @@ fun PantallaDatosPersonaje(
 
         Text(
             text = "Ficha del personaje",
-            style = MaterialTheme.typography.headlineMedium
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.onBackground
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
         Card(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface // tarjeta oscura
+            )
         ) {
             Column(
                 modifier = Modifier.padding(16.dp),
@@ -62,7 +68,8 @@ fun PantallaDatosPersonaje(
 
                 Text(
                     text = personaje.nombre,
-                    style = MaterialTheme.typography.headlineSmall
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
                 FilaDato("Género", personaje.genero)
@@ -110,13 +117,15 @@ private fun FilaDato(
         Text(
             text = "$titulo:",
             modifier = Modifier.weight(1f),
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurface
         )
 
         Text(
             text = valor,
             modifier = Modifier.weight(1f),
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }
