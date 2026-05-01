@@ -29,7 +29,12 @@ class PersonajeViewModel(
         personaje = personaje.update()
     }
 
-    fun actualizarNombre(n: String) = actualizar { copy(nombre = n) }
+    // SOLO LÍMITE
+    fun actualizarNombre(n: String) =
+        actualizar {
+            copy(nombre = n.take(20))
+        }
+
     fun actualizarGenero(g: String) = actualizar { copy(genero = g) }
     fun actualizarRaza(r: String) = actualizar { copy(raza = r) }
     fun actualizarClase(c: String) = actualizar { copy(clase = c, subclase = "") }
@@ -40,12 +45,13 @@ class PersonajeViewModel(
     fun generarAleatorio() {
         val genero = listaGeneros.random()
 
+        // SOLO LIMITE, SIN TRIM AQUÍ
         val nombre = when (genero) {
             "Masculino" -> nombresMasculinos.random()
             "Femenino" -> nombresFemeninos.random()
             "No binario" -> nombresNoBinarios.random()
             else -> "SinNombre"
-        }
+        }.take(20)
 
         val clase = listaClases.random()
         val subclase = listaSubclases[clase]?.random().orEmpty()
@@ -70,22 +76,30 @@ class PersonajeViewModel(
     fun guardarPersonaje() {
         viewModelScope.launch {
 
-            if (modoEdicion && personajeOriginal != null) {
-                repository.eliminarPersonaje(personajeOriginal!!)
+            // LIMPIEZA SOLO AQUÍ
+            val nombreLimpio = personaje.nombre
+                .trim()
+                .replace(Regex("\\s+"), " ")
+
+            val personajeLimpio = personaje.copy(nombre = nombreLimpio)
+
+            if (modoEdicion) {
+                repository.actualizarPersonaje(personajeLimpio.toEntity())
+            } else {
+                repository.insertarPersonaje(personajeLimpio.toEntity())
             }
 
-            repository.insertarPersonaje(personaje.toEntity())
-
             modoEdicion = false
-            personajeOriginal = null
-
             cargarPersonajes()
         }
     }
 
     fun insertarPersonaje(personaje: Personaje) {
         viewModelScope.launch {
-            repository.insertarPersonaje(personaje.toEntity())
+
+            val copia = personaje.copy(id = 0)
+
+            repository.insertarPersonaje(copia.toEntity())
             cargarPersonajes()
         }
     }
@@ -133,7 +147,6 @@ class PersonajeViewModel(
     fun resetearPersonaje() {
         personaje = Personaje()
         modoEdicion = false
-        personajeOriginal = null
     }
 
     private fun Personaje.toEntity(): PersonajeEntity {

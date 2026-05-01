@@ -9,8 +9,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.ListAlt
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.People
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
@@ -18,6 +19,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.compose.*
 import androidx.room.Room
+import com.example.rolcraft.Ajustes.PantallaAjustes
 import com.example.rolcraft.CrearPersonaje.*
 import com.example.rolcraft.Data.Local.AppDatabase
 import com.example.rolcraft.Data.Repository.PersonajeRepository
@@ -46,7 +48,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Base de datos Room
         val db = Room.databaseBuilder(
             applicationContext,
             AppDatabase::class.java,
@@ -55,31 +56,52 @@ class MainActivity : ComponentActivity() {
             .fallbackToDestructiveMigration()
             .build()
 
-        // Repository
         val repository = PersonajeRepository(db.personajeDao())
 
-        // ViewModel
         viewModel = ViewModelProvider(
             this,
             PersonajeViewModelFactory(repository)
         )[PersonajeViewModel::class.java]
 
+        // PREFERENCIAS
+        val prefs = getSharedPreferences("settings", MODE_PRIVATE)
+
         setContent {
-            RolCraftTheme {
+
+            // ESTADO modo claro/modo oscuro que persiste al salir de la app
+            var modoOscuro by remember {
+                mutableStateOf(prefs.getBoolean("modo_oscuro", true))
+            }
+
+            RolCraftTheme(
+                darkTheme = modoOscuro
+            ) {
                 Surface(
-                    color = MaterialTheme.colorScheme.background,
-                    modifier = Modifier
-                        .pointerInput(Unit){}
+                  color = MaterialTheme.colorScheme.background,
+                  .pointerInput(Unit){}
                 ) {
-                    AppNavegacion(viewModel)
+
+                    AppNavegacion(
+                        viewModel = viewModel,
+                        modoOscuro = modoOscuro,
+
+                        // GUARDAR CAMBIO
+                        onCambiarTema = {
+                            modoOscuro = it
+                            prefs.edit().putBoolean("modo_oscuro", it).apply()
+                        }
+                    )
                 }
             }
         }
     }
 }
-
 @Composable
-fun AppNavegacion(viewModel: PersonajeViewModel) {
+fun AppNavegacion(
+    viewModel: PersonajeViewModel,
+    modoOscuro: Boolean,
+    onCambiarTema: (Boolean) -> Unit
+) {
 
     val navController = rememberNavController()
 
@@ -104,7 +126,6 @@ fun AppNavegacion(viewModel: PersonajeViewModel) {
             modifier = Modifier.padding(padding)
         ) {
 
-            // LOGIN
             composable("login") {
                 PantallaLogin(
                     onLoginClick = { _, _ -> navController.navigate("inicio") },
@@ -113,21 +134,18 @@ fun AppNavegacion(viewModel: PersonajeViewModel) {
                 )
             }
 
-            // REGISTRO
             composable("registro") {
                 PantallaRegistro(
                     onVolver = { navController.popBackStack() }
                 )
             }
 
-            // RECUPERAR
             composable("recuperar") {
                 PantallaRecuperar(
                     onVolver = { navController.popBackStack() }
                 )
             }
 
-            // INICIO (PERSONAJES)
             composable("inicio") {
                 PantallaInicio(
                     viewModel = viewModel,
@@ -145,42 +163,29 @@ fun AppNavegacion(viewModel: PersonajeViewModel) {
                 )
             }
 
-            // HABILIDADES
             composable("habilidades") {
                 PantallaHabilidades(
                     onVolver = { navController.popBackStack() }
                 )
             }
 
-            // CREAR PERSONAJE
             composable("crear") {
                 PantallaCrearPersonaje(
                     viewModel = viewModel,
-                    onSiguiente = {
-                        navController.navigate("verFicha")
-                    },
-                    onVolver = {
-                        navController.popBackStack()
-                    }
+                    onSiguiente = { navController.navigate("verFicha") },
+                    onVolver = { navController.popBackStack() }
                 )
             }
 
-            // VER FICHA
             composable("verFicha") {
                 PantallaDatosPersonaje(
                     viewModel = viewModel,
-                    onAnterior = {
-                        navController.popBackStack()
-                    },
+                    onAnterior = { navController.popBackStack() },
                     onGuardar = {
                         viewModel.guardarPersonaje()
                         navController.navigate("inicio") {
                             popUpTo("inicio") { inclusive = true }
                         }
-                    },
-                    onNuevoPersonaje = {
-                        viewModel.resetearPersonaje()
-                        navController.navigate("crear")
                     }
                 )
             }
@@ -192,9 +197,7 @@ fun AppNavegacion(viewModel: PersonajeViewModel) {
                 PantallaFichaPersonaje(
                     id = id,
                     viewModel = viewModel,
-                    onAnterior = {
-                        navController.popBackStack()
-                    },
+                    onAnterior = { navController.popBackStack() },
                     onGuardar = {
                         viewModel.guardarPersonaje()
                         navController.navigate("inicio") {
@@ -207,10 +210,17 @@ fun AppNavegacion(viewModel: PersonajeViewModel) {
                     }
                 )
             }
+
+            // AJUSTES
+            composable("ajustes") {
+                PantallaAjustes(
+                    modoOscuro = modoOscuro,
+                    onCambiarTema = onCambiarTema,
+                )
+            }
         }
     }
 }
-
 @Composable
 fun BarraInferior(navController: NavController, rutaActual: String?) {
 
@@ -224,7 +234,7 @@ fun BarraInferior(navController: NavController, rutaActual: String?) {
                     launchSingleTop = true
                 }
             },
-            icon = { Icon(Icons.Default.ListAlt, null) },
+            icon = { Icon(Icons.Default.People, null) },
             label = { Text("Personajes") }
         )
 
@@ -240,8 +250,12 @@ fun BarraInferior(navController: NavController, rutaActual: String?) {
         )
 
         NavigationBarItem(
-            selected = false,
-            onClick = {},
+            selected = rutaActual == "ajustes",
+            onClick = {
+                navController.navigate("ajustes") {
+                    launchSingleTop = true
+                }
+            },
             icon = { Icon(Icons.Default.Settings, null) },
             label = { Text("Ajustes") }
         )

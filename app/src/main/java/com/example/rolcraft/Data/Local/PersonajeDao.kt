@@ -3,6 +3,7 @@ package com.example.rolcraft.Data.Local
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 
 @Dao
 interface PersonajeDao {
@@ -15,6 +16,8 @@ interface PersonajeDao {
     @Query("SELECT * FROM personajes WHERE usuarioId = :usuarioId")
     suspend fun obtenerPersonajesDeUsuario(usuarioId: String): List<PersonajeEntity>
 
+    @Update
+    suspend fun actualizarPersonaje(personaje: PersonajeEntity)
     // Obtener personaje por ID
     @Query("SELECT * FROM personajes WHERE id = :id LIMIT 1")
     suspend fun obtenerPersonajePorId(id: Int): PersonajeEntity?
