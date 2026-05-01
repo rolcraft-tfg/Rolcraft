@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import com.example.rolcraft.R
 
@@ -93,6 +94,7 @@ fun PantallaCrearPersonaje(
             .verticalScroll(rememberScrollState())
             .padding(16.dp)
             .clickable { campoFaltante = null }
+            .pointerInput(Unit) {}
     ) {
 
         TextButton(onClick = { onVolver() }) {

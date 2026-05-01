@@ -1,6 +1,7 @@
 package com.example.rolcraft
 
 import android.os.Bundle
+import android.view.MotionEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
@@ -12,6 +13,8 @@ import androidx.compose.material.icons.filled.People
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.compose.*
@@ -32,6 +35,16 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var viewModel: PersonajeViewModel
 
+    //Esto consume todos los eventos hover enviados por el sistema para evitar un crash por un bug del OS con compose
+    override fun dispatchGenericMotionEvent(ev: MotionEvent?): Boolean {
+        if (ev?.action == MotionEvent.ACTION_HOVER_ENTER ||
+            ev?.action == MotionEvent.ACTION_HOVER_MOVE ||
+            ev?.action == MotionEvent.ACTION_HOVER_EXIT) {
+            return true
+        }
+        return super.dispatchGenericMotionEvent(ev)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -39,7 +52,9 @@ class MainActivity : ComponentActivity() {
             applicationContext,
             AppDatabase::class.java,
             "rolcraft_db"
-        ).build()
+        )
+            .fallbackToDestructiveMigration()
+            .build()
 
         val repository = PersonajeRepository(db.personajeDao())
 
@@ -61,7 +76,10 @@ class MainActivity : ComponentActivity() {
             RolCraftTheme(
                 darkTheme = modoOscuro
             ) {
-                Surface(color = MaterialTheme.colorScheme.background) {
+                Surface(
+                  color = MaterialTheme.colorScheme.background,
+                  .pointerInput(Unit){}
+                ) {
 
                     AppNavegacion(
                         viewModel = viewModel,
@@ -88,6 +106,7 @@ fun AppNavegacion(
     val navController = rememberNavController()
 
     Scaffold(
+        modifier = Modifier.pointerInput(Unit) {},
         bottomBar = {
             val rutaActual =
                 navController.currentBackStackEntryAsState().value?.destination?.route
@@ -130,8 +149,12 @@ fun AppNavegacion(
             composable("inicio") {
                 PantallaInicio(
                     viewModel = viewModel,
-                    onCrearPersonaje = { navController.navigate("crear") },
-                    onPantallaFichaPersonaje = { navController.navigate("ficha") },
+                    onCrearPersonaje = {
+                        navController.navigate("crear")
+                    },
+                    onPantallaFichaPersonaje = { id ->
+                        navController.navigate("ficha/$id")
+                    },
                     onCerrarSesion = {
                         navController.navigate("login") {
                             popUpTo("inicio") { inclusive = true }
@@ -167,8 +190,12 @@ fun AppNavegacion(
                 )
             }
 
-            composable("ficha") {
+            // FICHA FINAL
+            composable("ficha/{id}") { backStackEntry ->
+                val id = backStackEntry.arguments?.getString("id")!!.toInt()
+
                 PantallaFichaPersonaje(
+                    id = id,
                     viewModel = viewModel,
                     onAnterior = { navController.popBackStack() },
                     onGuardar = {

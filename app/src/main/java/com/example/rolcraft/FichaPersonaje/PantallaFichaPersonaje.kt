@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -25,18 +26,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.zIndex
+import com.example.rolcraft.CrearPersonaje.Personaje
 import com.example.rolcraft.CrearPersonaje.PersonajeViewModel
 import com.example.rolcraft.Dados.DiceAnimatorCompose
 import com.example.rolcraft.Dados.DiceLibrary
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-// ---------------------------------------------------------
-// ⭐ PANTALLA PRINCIPAL CON PESTAÑAS (Abilities / Dados)
-// ---------------------------------------------------------
+
 @Composable
 fun PantallaFichaPersonaje(
+    id: Int,
     onNuevoPersonaje: () -> Unit,
     onGuardar: () -> Unit,
     onAnterior: () -> Boolean,
@@ -45,82 +47,130 @@ fun PantallaFichaPersonaje(
     var expanded by remember { mutableStateOf(false) }
     var selectedTab by remember { mutableStateOf("abilities") }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF0F1720))
-            .padding(16.dp)
-    ) {
+    // Cargar personaje
+    LaunchedEffect(id) {
+        viewModel.cargarPersonaje(id)
+    }
 
-        // ⭐ Encabezado estilo D&D Beyond
-        EncabezadoFicha(viewModel)
+    val personaje = viewModel.personajeActual.collectAsState().value
 
-        // ⭐ Barra desplegable
+    if (personaje == null) {
+        Text("Cargando...", color = Color.White)
+        return
+    }
+
+    Scaffold(
+        containerColor = Color(0xFF0F1720)
+    ) { padding ->
+
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0xFF16202A))
-                .padding(12.dp)
+                .fillMaxSize()
+                .padding(
+                    start = padding.calculateStartPadding(LayoutDirection.Ltr),
+                    end = padding.calculateEndPadding(LayoutDirection.Ltr),
+                    bottom = padding.calculateBottomPadding())
         ) {
-            Row(
+
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { expanded = true },
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .fillMaxSize()
+                    .padding(16.dp)
             ) {
-                Text(
-                    text = when (selectedTab) {
-                        "abilities" -> "Abilities, Saves, Senses"
-                        "dados" -> "Dados"
-                        else -> "Abilities"
-                    },
-                    color = Color.White,
-                    style = MaterialTheme.typography.titleMedium
-                )
 
-                Icon(
-                    imageVector = Icons.Default.ArrowDropDown,
-                    contentDescription = null,
-                    tint = Color.White
-                )
-            }
+                EncabezadoFicha(personaje)
 
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                DropdownMenuItem(
-                    text = { Text("Abilities, Saves, Senses") },
-                    onClick = {
-                        selectedTab = "abilities"
-                        expanded = false
+                Spacer(modifier = Modifier.height(16.dp))
+
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    contentPadding = PaddingValues(bottom = 0.dp)
+                ) {
+
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(Color(0xFF16202A))
+                                .padding(12.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { expanded = true },
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = when (selectedTab) {
+                                        "abilities" -> "Abilities, Saves, Senses"
+                                        "dados" -> "Dados"
+                                        "info" -> "Info del Personaje"
+                                        else -> "..."
+                                    },
+                                    color = Color.White,
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+
+                                Icon(
+                                    imageVector = Icons.Default.ArrowDropDown,
+                                    contentDescription = null,
+                                    tint = Color.White
+                                )
+                            }
+
+                            DropdownMenu(
+                                expanded = expanded,
+                                onDismissRequest = { expanded = false }
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text("Abilities, Saves, Senses") },
+                                    onClick = {
+                                        selectedTab = "abilities"
+                                        expanded = false
+                                    }
+                                )
+
+                                DropdownMenuItem(
+                                    text = { Text("Dados") },
+                                    onClick = {
+                                        selectedTab = "dados"
+                                        expanded = false
+                                    }
+                                )
+
+                                DropdownMenuItem(
+                                    text = { Text("Info del Personaje") },
+                                    onClick = {
+                                        selectedTab = "info"
+                                        expanded = false
+                                    }
+                                )
+                            }
+                        }
                     }
-                )
 
-                DropdownMenuItem(
-                    text = { Text("Dados") },
-                    onClick = {
-                        selectedTab = "dados"
-                        expanded = false
+                    item {
+                        when (selectedTab) {
+                            "abilities" -> SeccionHabilidades(personaje)
+                            "dados" -> PantallaDadosInterna(
+                                onNuevoPersonaje,
+                                onGuardar,
+                                onAnterior,
+                                viewModel
+                            )
+                            "info" -> SeccionInfoPersonaje(personaje)
+                        }
                     }
-                )
+                }
             }
-        }
-
-        // ⭐ Contenido dinámico
-        when (selectedTab) {
-            "abilities" -> SeccionHabilidades(viewModel)
-            "dados" -> PantallaDadosInterna(onNuevoPersonaje, onGuardar, onAnterior, viewModel)
         }
     }
 }
 
-// ---------------------------------------------------------
-// ⭐ ENCABEZADO
-// ---------------------------------------------------------
 @Composable
-fun EncabezadoFicha(viewModel: PersonajeViewModel) {
+fun EncabezadoFicha(personaje: Personaje) {
 
     Column(
         modifier = Modifier
@@ -130,7 +180,7 @@ fun EncabezadoFicha(viewModel: PersonajeViewModel) {
     ) {
 
         Text(
-            text = viewModel.personaje.nombre,
+            text = personaje.nombre,
             color = Color.White,
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold
@@ -142,13 +192,13 @@ fun EncabezadoFicha(viewModel: PersonajeViewModel) {
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth()
         ) {
-
             EncabezadoStat("AC", "13")
             EncabezadoStat("Initiative", "+2")
             EncabezadoStat("HP", "12/12")
         }
     }
 }
+
 
 @Composable
 fun EncabezadoStat(titulo: String, valor: String) {
@@ -158,11 +208,8 @@ fun EncabezadoStat(titulo: String, valor: String) {
     }
 }
 
-// ---------------------------------------------------------
-// ⭐ SECCIÓN DE HABILIDADES
-// ---------------------------------------------------------
 @Composable
-fun SeccionHabilidades(viewModel: PersonajeViewModel) {
+fun SeccionHabilidades(personaje: Personaje) {
 
     Column(
         modifier = Modifier
@@ -226,9 +273,6 @@ fun HabilidadItem(nombre: String, valor: Int) {
     }
 }
 
-// ---------------------------------------------------------
-// ⭐ TU PANTALLA ORIGINAL DE DADOS (SIN CAMBIAR NADA)
-// ---------------------------------------------------------
 @Composable
 fun PantallaDadosInterna(
     onNuevoPersonaje: () -> Unit,
@@ -260,7 +304,6 @@ fun PantallaDadosInterna(
 
     var bloqueado by remember { mutableStateOf(false) }
 
-    // ⭐ Animación original
     LaunchedEffect(Unit) {
         while (true) {
             if (volverAlCentro) {
@@ -285,7 +328,6 @@ fun PantallaDadosInterna(
             }
     ) {
 
-        // ⭐ Barra superior de dados (sin cambios)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -357,7 +399,6 @@ fun PantallaDadosInterna(
             }
         }
 
-        // ⭐ Dado animado
         if (dadoVisible) {
             imagenActual?.let { img ->
                 Image(
@@ -377,7 +418,6 @@ fun PantallaDadosInterna(
             }
         }
 
-        // ⭐ Resultado
         AnimatedVisibility(
             visible = mostrarResultado,
             enter = fadeIn() + scaleIn(),
@@ -413,7 +453,6 @@ fun PantallaDadosInterna(
             }
         }
 
-        // ⭐ Capa que bloquea la pantalla
         if (bloqueado) {
             Box(
                 modifier = Modifier
@@ -421,6 +460,64 @@ fun PantallaDadosInterna(
                     .background(Color(0x88000000))
                     .zIndex(10f)
                     .pointerInput(Unit) {}
+            )
+        }
+    }
+}
+@Composable
+fun SeccionInfoPersonaje(personaje: Personaje) {
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+
+        Text(
+            text = "Información del Personaje",
+            color = Color.White,
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(Modifier.height(16.dp))
+
+        InfoItem("Nombre", personaje.nombre)
+        InfoItem("Género", personaje.genero)
+        InfoItem("Raza", personaje.raza)
+        InfoItem("Clase", personaje.clase)
+        InfoItem("Subclase", personaje.subclase)
+        InfoItem("Trasfondo", personaje.trasfondo)
+        InfoItem("Alineamiento", personaje.alineamiento)
+    }
+}
+@Composable
+fun InfoItem(titulo: String, valor: String) {
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF1B2733)),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+
+        Row(
+            modifier = Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Text(
+                text = titulo,
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.weight(1f)
+            )
+
+            Text(
+                text = valor.ifBlank { "—" },
+                color = Color(0xFF7EA7FF),
+                style = MaterialTheme.typography.titleMedium
             )
         }
     }

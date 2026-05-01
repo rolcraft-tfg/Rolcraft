@@ -16,10 +16,13 @@ interface PersonajeDao {
     @Query("SELECT * FROM personajes WHERE usuarioId = :usuarioId")
     suspend fun obtenerPersonajesDeUsuario(usuarioId: String): List<PersonajeEntity>
 
-    // Eliminar personaje
-    @Query("DELETE FROM personajes WHERE id = :id")
-    suspend fun eliminarPersonajePorId(id: Int)
-
     @Update
     suspend fun actualizarPersonaje(personaje: PersonajeEntity)
+    // Obtener personaje por ID
+    @Query("SELECT * FROM personajes WHERE id = :id LIMIT 1")
+    suspend fun obtenerPersonajePorId(id: Int): PersonajeEntity?
+
+    // Eliminar personaje
+    @Query("DELETE FROM personajes WHERE id = :id")
+    suspend fun eliminarPersonaje(id: Int)
 }

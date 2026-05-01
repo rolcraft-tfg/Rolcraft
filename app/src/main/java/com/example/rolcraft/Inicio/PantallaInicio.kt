@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -50,7 +51,7 @@ fun obtenerColorClase(clase: String): Color {
 fun PantallaInicio(
     viewModel: PersonajeViewModel,
     onCrearPersonaje: () -> Unit,
-    onPantallaFichaPersonaje: () -> Unit,
+    onPantallaFichaPersonaje: (Int) -> Unit,
     onCerrarSesion: () -> Unit
 ) {
 
@@ -61,7 +62,10 @@ fun PantallaInicio(
     val personajes = viewModel.personajesGuardados
 
     Scaffold(
+        modifier = Modifier
+            .pointerInput(Unit) {},
         containerColor = MaterialTheme.colorScheme.background
+
     ) { padding ->
 
         Box(
@@ -97,9 +101,10 @@ fun PantallaInicio(
                                 viewModel.eliminarPersonaje(personaje)
                             },
                             onDuplicar = { pj ->
-                                val copia = pj.copy(nombre = "${pj.nombre} Copy", id = 0)
+                                val copia = pj.copy(nombre = "${pj.nombre} Copy",id = 0)
                                 viewModel.insertarPersonaje(copia)
                             },
+
                             onEditar = { pj ->
                                 viewModel.empezarEdicion(pj)
                                 onCrearPersonaje()
@@ -138,7 +143,7 @@ fun TarjetaPersonaje(
     onEliminar: () -> Unit,
     onDuplicar: (Personaje) -> Unit,
     onEditar: (Personaje) -> Unit,
-    onClick: () -> Unit
+    onClick: (Int) -> Unit
 ) {
 
     var mostrarDialogo by remember { mutableStateOf(false) }
@@ -172,9 +177,9 @@ fun TarjetaPersonaje(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
         border = BorderStroke(2.dp, colorClase), // 🔥 BORDE DE COLOR
+            .clickable { onClick(personaje.id) },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         )
@@ -236,7 +241,8 @@ fun TarjetaPersonaje(
 
                 DropdownMenu(
                     expanded = menuExpandido,
-                    onDismissRequest = { menuExpandido = false }
+                    onDismissRequest = { menuExpandido = false },
+                    modifier = Modifier.pointerInput(Unit) {}
                 ) {
 
                     DropdownMenuItem(

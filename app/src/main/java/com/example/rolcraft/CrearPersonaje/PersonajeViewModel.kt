@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.rolcraft.Data.Local.PersonajeEntity
 import com.example.rolcraft.Data.Repository.PersonajeRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class PersonajeViewModel(
@@ -19,6 +21,10 @@ class PersonajeViewModel(
     var modoEdicion by mutableStateOf(false)
         private set
 
+    private var personajeOriginal: Int? = null
+
+    private val _personajeActual = MutableStateFlow<Personaje?>(null)
+    val personajeActual: StateFlow<Personaje?> = _personajeActual
     private fun actualizar(update: Personaje.() -> Personaje) {
         personaje = personaje.update()
     }
@@ -63,6 +69,7 @@ class PersonajeViewModel(
 
     fun empezarEdicion(pj: Personaje) {
         personaje = pj
+        personajeOriginal = pj.id
         modoEdicion = true
     }
 
@@ -118,7 +125,7 @@ class PersonajeViewModel(
 
     fun eliminarPersonaje(personaje: Personaje) {
         viewModelScope.launch {
-            repository.eliminarPersonajePorId(personaje.id)
+            repository.eliminarPersonaje(personaje.id)
             cargarPersonajes()
         }
     }
@@ -149,7 +156,29 @@ class PersonajeViewModel(
             raza = this.raza,
             clase = this.clase,
             nivel = 1,
+            genero = this.genero,
+            subclase = this.subclase,
+            trasfondo = this.trasfondo,
+            alineamiento = this.alineamiento,
             usuarioId = "testUser"
         )
+    }
+
+    fun cargarPersonaje(id: Int) {
+        viewModelScope.launch {
+            val entity = repository.obtenerPersonajePorId(id)
+            _personajeActual.value = entity?.let {
+                Personaje(
+                    id = it.id,
+                    nombre = it.nombre,
+                    raza = it.raza,
+                    clase = it.clase,
+                    genero = it.genero,
+                    subclase = it.subclase,
+                    trasfondo = it.trasfondo,
+                    alineamiento = it.alineamiento
+                )
+            }
+        }
     }
 }
