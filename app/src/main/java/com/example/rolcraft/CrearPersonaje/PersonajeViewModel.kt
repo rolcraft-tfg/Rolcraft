@@ -55,6 +55,7 @@ class PersonajeViewModel(
 
         val clase = listaClases.random()
         val subclase = listaSubclases[clase]?.random().orEmpty()
+        val valores = listOf(15, 14, 13, 12, 10, 8).shuffled()
 
         personaje = Personaje(
             nombre = nombre,
@@ -63,8 +64,15 @@ class PersonajeViewModel(
             clase = clase,
             subclase = subclase,
             trasfondo = listaTrasfondos.random(),
-            alineamiento = listaAlineamientos.random()
+            alineamiento = listaAlineamientos.random(),
+            fuerza = valores[0],
+            destreza = valores[1],
+            constitucion = valores[2],
+            inteligencia = valores[3],
+            sabiduria = valores[4],
+            carisma = valores[5]
         )
+        personaje = calcularEstadisticas(personaje)
     }
 
     fun empezarEdicion(pj: Personaje) {
@@ -76,23 +84,28 @@ class PersonajeViewModel(
     fun guardarPersonaje() {
         viewModelScope.launch {
 
-            // LIMPIEZA SOLO AQUÍ
-            val nombreLimpio = personaje.nombre
+            // 1. Calcular estadísticas (AC, iniciativa, HP)
+            val pjConStats = calcularEstadisticas(personaje)
+
+            // 2. Limpiar nombre
+            val nombreLimpio = pjConStats.nombre
                 .trim()
                 .replace(Regex("\\s+"), " ")
 
-            val personajeLimpio = personaje.copy(nombre = nombreLimpio)
+            val personajeFinal = pjConStats.copy(nombre = nombreLimpio)
 
+            // 3. Guardar en BD
             if (modoEdicion) {
-                repository.actualizarPersonaje(personajeLimpio.toEntity())
+                repository.actualizarPersonaje(personajeFinal.toEntity())
             } else {
-                repository.insertarPersonaje(personajeLimpio.toEntity())
+                repository.insertarPersonaje(personajeFinal.toEntity())
             }
 
             modoEdicion = false
             cargarPersonajes()
         }
     }
+
 
     fun insertarPersonaje(personaje: Personaje) {
         viewModelScope.launch {
@@ -160,6 +173,15 @@ class PersonajeViewModel(
             subclase = this.subclase,
             trasfondo = this.trasfondo,
             alineamiento = this.alineamiento,
+            fuerza = this.fuerza,
+            destreza = this.destreza,
+            constitucion = this.constitucion,
+            inteligencia = this.inteligencia,
+            sabiduria = this.sabiduria,
+            carisma = this.carisma,
+            ac = this.ac,
+            iniciativa = this.iniciativa,
+            hp = this.hp,
             usuarioId = "testUser"
         )
     }
@@ -171,14 +193,69 @@ class PersonajeViewModel(
                 Personaje(
                     id = it.id,
                     nombre = it.nombre,
+                    genero = it.genero,
                     raza = it.raza,
                     clase = it.clase,
-                    genero = it.genero,
                     subclase = it.subclase,
                     trasfondo = it.trasfondo,
-                    alineamiento = it.alineamiento
+                    alineamiento = it.alineamiento,
+                    nivel = it.nivel,
+                    fuerza = it.fuerza,
+                    destreza = it.destreza,
+                    constitucion = it.constitucion,
+                    inteligencia = it.inteligencia,
+                    sabiduria = it.sabiduria,
+                    carisma = it.carisma,
+                    ac = it.ac,
+                    iniciativa = it.iniciativa,
+                    hp = it.hp
                 )
             }
         }
     }
+
+    fun actualizarAtributos(
+        fuerza: Int,
+        destreza: Int,
+        constitucion: Int,
+        inteligencia: Int,
+        sabiduria: Int,
+        carisma: Int
+    ) = actualizar {
+        copy(
+            fuerza = fuerza,
+            destreza = destreza,
+            constitucion = constitucion,
+            inteligencia = inteligencia,
+            sabiduria = sabiduria,
+            carisma = carisma
+        )
+    }
+    fun calcularEstadisticas(personaje: Personaje): Personaje {
+        val modDex = (personaje.destreza - 10) / 2
+        val modCon = (personaje.constitucion - 10) / 2
+
+        val ac = 10 + modDex
+        val iniciativa = modDex
+
+        val hpBase = when (personaje.clase) {
+            "Bárbaro" -> 12
+            "Guerrero", "Paladin", "Explorador" -> 10
+            "Clérigo", "Pícaro", "Bardo", "Monje", "Druida", "Brujo" -> 8
+            "Mago", "Hechicero" -> 6
+            else -> 8
+        }
+
+        val hp = hpBase + modCon
+
+        return personaje.copy(
+            ac = ac,
+            iniciativa = iniciativa,
+            hp = hp
+        )
+    }
+    fun aplicarEstadisticas() {
+        personaje = calcularEstadisticas(personaje)
+    }
+
 }

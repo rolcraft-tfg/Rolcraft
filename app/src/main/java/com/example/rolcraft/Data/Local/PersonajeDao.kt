@@ -15,7 +15,7 @@ interface PersonajeDao {
     // Obtener los personajes del usuario actual
     @Query("SELECT * FROM personajes WHERE usuarioId = :usuarioId")
     suspend fun obtenerPersonajesDeUsuario(usuarioId: String): List<PersonajeEntity>
-
+    // Actualizar personaje al editarlo
     @Update
     suspend fun actualizarPersonaje(personaje: PersonajeEntity)
     // Obtener personaje por ID

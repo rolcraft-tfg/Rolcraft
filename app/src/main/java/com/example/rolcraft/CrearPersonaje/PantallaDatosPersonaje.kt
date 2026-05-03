@@ -30,6 +30,11 @@ fun PantallaDatosPersonaje(
 
     val personaje = viewModel.personaje
 
+    fun mod(valor: Int): String {
+        val m = (valor - 10) / 2
+        return if (m >= 0) "+$m" else "$m"
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -77,6 +82,38 @@ fun PantallaDatosPersonaje(
                 FilaDato("Subclase", personaje.subclase)
                 FilaDato("Trasfondo", personaje.trasfondo)
                 FilaDato("Alineamiento", personaje.alineamiento)
+                FilaDato(
+                    "Fuerza",
+                    "${personaje.fuerza} (${mod(personaje.fuerza)})"
+                )
+
+                FilaDato(
+                    "Destreza",
+                    "${personaje.destreza} (${mod(personaje.destreza)})"
+                )
+
+                FilaDato(
+                    "Constitución",
+                    "${personaje.constitucion} (${mod(personaje.constitucion)})"
+                )
+
+                FilaDato(
+                    "Inteligencia",
+                    "${personaje.inteligencia} (${mod(personaje.inteligencia)})"
+                )
+
+                FilaDato(
+                    "Sabiduría",
+                    "${personaje.sabiduria} (${mod(personaje.sabiduria)})"
+                )
+
+                FilaDato(
+                    "Carisma",
+                    "${personaje.carisma} (${mod(personaje.carisma)})"
+                )
+                FilaDato("AC", personaje.ac.toString())
+                FilaDato("Iniciativa", personaje.iniciativa.toString())
+                FilaDato("HP", personaje.hp.toString())
             }
         }
 

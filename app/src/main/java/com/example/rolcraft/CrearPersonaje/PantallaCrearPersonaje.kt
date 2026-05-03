@@ -53,12 +53,30 @@ fun PantallaCrearPersonaje(
     onSiguiente: () -> Unit,
     onVolver: () -> Unit
 ) {
+    val valoresIniciales = listOf(15, 14, 13, 12, 10, 8)
+    var valoresDisponibles by remember { mutableStateOf(valoresIniciales) }
 
+    var fuerza by remember { mutableStateOf<Int?>(null) }
+    var destreza by remember { mutableStateOf<Int?>(null) }
+    var constitucion by remember { mutableStateOf<Int?>(null) }
+    var inteligencia by remember { mutableStateOf<Int?>(null) }
+    var sabiduria by remember { mutableStateOf<Int?>(null) }
+    var carisma by remember { mutableStateOf<Int?>(null) }
     val pj = viewModel.personaje
     val modoEdicion = viewModel.modoEdicion
-
     var campoFaltante by remember { mutableStateOf<String?>(null) }
 
+    LaunchedEffect(pj) {
+        fuerza = pj.fuerza
+        destreza = pj.destreza
+        constitucion = pj.constitucion
+        inteligencia = pj.inteligencia
+        sabiduria = pj.sabiduria
+        carisma = pj.carisma
+
+        val usados = listOf(fuerza, destreza, constitucion, inteligencia, sabiduria, carisma)
+        valoresDisponibles = valoresIniciales.filter { it !in usados }
+    }
     // DIALOGO
     if (campoFaltante != null) {
 
@@ -85,6 +103,32 @@ fun PantallaCrearPersonaje(
                 }
             }
         )
+    }
+    //Elimina los valores ya seleccionados de los atributos
+    fun actualizarValor(
+        nuevo: Int,
+        actual: Int?,
+        setter: (Int?) -> Unit
+    ) {
+        if (actual != null) {
+            valoresDisponibles = valoresDisponibles + actual
+        }
+
+        setter(nuevo)
+
+        valoresDisponibles = valoresDisponibles - nuevo
+    }
+
+    fun atributoFaltante(): String? {
+        return when {
+            fuerza == null -> "Fuerza"
+            destreza == null -> "Destreza"
+            constitucion == null -> "Constitución"
+            inteligencia == null -> "Inteligencia"
+            sabiduria == null -> "Sabiduría"
+            carisma == null -> "Carisma"
+            else -> null
+        }
     }
 
     Column(
@@ -216,19 +260,113 @@ fun PantallaCrearPersonaje(
             viewModel.actualizarAlineamiento(it)
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(Modifier.height(16.dp))
+
+        Text(
+            "Atributos",
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+
+        Spacer(Modifier.height(12.dp))
+
+        SelectorHabilidad("Fuerza", fuerza, valoresDisponibles) { nuevo ->
+            actualizarValor(nuevo, fuerza) { fuerza = it }
+        }
+
+        SelectorHabilidad("Destreza", destreza, valoresDisponibles) { nuevo ->
+            actualizarValor(nuevo, destreza) { destreza = it }
+        }
+
+        SelectorHabilidad("Constitución", constitucion, valoresDisponibles) { nuevo ->
+            actualizarValor(nuevo, constitucion) { constitucion = it }
+        }
+
+        SelectorHabilidad("Inteligencia", inteligencia, valoresDisponibles) { nuevo ->
+            actualizarValor(nuevo, inteligencia) { inteligencia = it }
+        }
+
+        SelectorHabilidad("Sabiduría", sabiduria, valoresDisponibles) { nuevo ->
+            actualizarValor(nuevo, sabiduria) { sabiduria = it }
+        }
+
+        SelectorHabilidad("Carisma", carisma, valoresDisponibles) { nuevo ->
+            actualizarValor(nuevo, carisma) { carisma = it }
+        }
+
+        Spacer(Modifier.height(32.dp))
 
         Button(
             onClick = {
                 val falta = viewModel.validarCampos()
-                if (falta != null) campoFaltante = falta
-                else onSiguiente()
-            },
+                if (falta != null) {
+                    campoFaltante = falta
+                    return@Button
+                }
+
+                val atributo = atributoFaltante()
+                if (atributo != null) {
+                    campoFaltante = "Falta elegir $atributo"
+                    return@Button
+                }
+
+                viewModel.actualizarAtributos(
+                    fuerza!!,
+                    destreza!!,
+                    constitucion!!,
+                    inteligencia!!,
+                    sabiduria!!,
+                    carisma!!
+                )
+                viewModel.aplicarEstadisticas()
+
+                onSiguiente()
+            }
+        )
+        {
+            Text(if (modoEdicion) "Guardar cambios" else "Ver ficha")
+        }
+    }
+}
+@Composable
+fun SelectorHabilidad(
+    nombre: String,
+    valorActual: Int?,
+    valoresDisponibles: List<Int>,
+    onValorSeleccionado: (Int) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Column {
+        Text(nombre, color = MaterialTheme.colorScheme.onBackground)
+
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 24.dp)
+                .padding(vertical = 4.dp)
+                .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp))
+                .clickable { expanded = true }
+                .padding(12.dp)
         ) {
-            Text(if (modoEdicion) "Guardar cambios" else "Ver ficha")
+            Text(
+                text = valorActual?.toString() ?: "Seleccionar",
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                valoresDisponibles.forEach { valor ->
+                    DropdownMenuItem(
+                        text = { Text(valor.toString()) },
+                        onClick = {
+                            expanded = false
+                            onValorSeleccionado(valor)
+                        }
+                    )
+                }
+            }
         }
     }
 }

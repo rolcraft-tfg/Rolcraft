@@ -78,7 +78,7 @@ class MainActivity : ComponentActivity() {
             ) {
                 Surface(
                   color = MaterialTheme.colorScheme.background,
-                  .pointerInput(Unit){}
+                    modifier = Modifier.pointerInput(Unit) {}
                 ) {
 
                     AppNavegacion(

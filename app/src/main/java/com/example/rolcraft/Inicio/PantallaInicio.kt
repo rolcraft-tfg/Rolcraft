@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
+import androidx.compose.material3.CheckboxDefaults.colors
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -177,15 +178,16 @@ fun TarjetaPersonaje(
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onClick(personaje.id) },   // ⭐ AQUÍ VA EL CLICKABLE
         shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(2.dp, colorClase), // 🔥 BORDE DE COLOR
-            .clickable { onClick(personaje.id) },
+        border = BorderStroke(2.dp, colorClase),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         )
     ) {
 
-        Row(
+
+    Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(12.dp),
