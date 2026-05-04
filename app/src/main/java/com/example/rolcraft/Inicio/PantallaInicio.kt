@@ -178,7 +178,7 @@ fun TarjetaPersonaje(
         modifier = Modifier
             .fillMaxWidth()
         shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(2.dp, colorClase), // 🔥 BORDE DE COLOR
+        border = BorderStroke(2.dp, colorClase), // BORDE DE COLOR
             .clickable { onClick(personaje.id) },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
@@ -225,7 +225,7 @@ fun TarjetaPersonaje(
 
                 Text(
                     text = personaje.clase,
-                    color = colorClase // 🔥 COLOR DE TEXTO TAMBIÉN
+                    color = colorClase // COLOR DE TEXTO TAMBIÉN
                 )
             }
 
