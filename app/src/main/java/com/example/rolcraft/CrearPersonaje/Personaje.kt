@@ -1,9 +1,7 @@
 package com.example.rolcraft.CrearPersonaje
 
-import androidx.room.PrimaryKey
-
 data class Personaje(
-    @PrimaryKey(autoGenerate = true)
+
     val id : Int = 0,
     val nombre: String = "",
     val genero: String = "",
@@ -11,5 +9,15 @@ data class Personaje(
     val clase: String = "",
     val subclase: String = "",
     val trasfondo: String = "",
-    val alineamiento: String = ""
+    val alineamiento: String = "",
+    val nivel: Int = 1,
+    val fuerza: Int = 0,
+    val destreza: Int = 0,
+    val constitucion: Int = 0,
+    val inteligencia: Int = 0,
+    val sabiduria: Int = 0,
+    val carisma: Int = 0,
+    val ac: Int = 10,
+    val iniciativa: Int = 0,
+    val hp: Int = 1
 )

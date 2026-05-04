@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
+import androidx.compose.material3.CheckboxDefaults.colors
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,7 +26,6 @@ import com.example.rolcraft.CrearPersonaje.Personaje
 import com.example.rolcraft.CrearPersonaje.PersonajeViewModel
 import com.example.rolcraft.R
 
-// 🔥 IMAGEN POR CLASE
 fun obtenerImagenClase(clase: String): Int {
     return when (clase.lowercase().trim()) {
         "mago" -> R.drawable.mago
@@ -36,7 +36,7 @@ fun obtenerImagenClase(clase: String): Int {
     }
 }
 
-// 🔥 COLOR POR CLASE
+// COLOR POR CLASE
 fun obtenerColorClase(clase: String): Color {
     return when (clase.lowercase().trim()) {
         "mago" -> Color(0xFF2196F3)      // azul
@@ -84,7 +84,6 @@ fun PantallaInicio(
                     text = "Mis personajes",
                     color = MaterialTheme.colorScheme.onBackground,
                     style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -177,13 +176,14 @@ fun TarjetaPersonaje(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-        shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(2.dp, colorClase), // BORDE DE COLOR
             .clickable { onClick(personaje.id) },
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(2.dp, colorClase),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         )
     ) {
+
 
         Row(
             modifier = Modifier
@@ -225,7 +225,7 @@ fun TarjetaPersonaje(
 
                 Text(
                     text = personaje.clase,
-                    color = colorClase // COLOR DE TEXTO TAMBIÉN
+                    color = colorClase
                 )
             }
 

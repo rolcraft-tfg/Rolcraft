@@ -17,7 +17,15 @@ data class PersonajeEntity(
     val subclase: String,
     val trasfondo: String,
     val alineamiento: String,
-
-    // ⭐ UID del usuario autenticado en Firebase
+    val fuerza: Int,
+    val destreza: Int,
+    val constitucion: Int,
+    val inteligencia: Int,
+    val sabiduria: Int,
+    val carisma: Int,
+    val ac: Int,
+    val iniciativa: Int,
+    val hp: Int,
+    // UID del usuario autenticado en Firebase
     val usuarioId: String
 )

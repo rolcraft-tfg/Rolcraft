@@ -192,9 +192,10 @@ fun EncabezadoFicha(personaje: Personaje) {
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth()
         ) {
-            EncabezadoStat("AC", "13")
-            EncabezadoStat("Initiative", "+2")
-            EncabezadoStat("HP", "12/12")
+            EncabezadoStat("AC", personaje.ac.toString())
+            EncabezadoStat("Initiative", if (personaje.iniciativa >= 0) "+${personaje.iniciativa}" else personaje.iniciativa.toString())
+            EncabezadoStat("HP", "${personaje.hp}/${personaje.hp}")
+
         }
     }
 }
@@ -226,12 +227,12 @@ fun SeccionHabilidades(personaje: Personaje) {
 
         Spacer(Modifier.height(16.dp))
 
-        HabilidadItem("Strength", 1)
-        HabilidadItem("Dexterity", 1)
-        HabilidadItem("Constitution", 1)
-        HabilidadItem("Intelligence", 1)
-        HabilidadItem("Wisdom", 1)
-        HabilidadItem("Charisma", 1)
+        HabilidadItem("Strength", personaje.fuerza)
+        HabilidadItem("Dexterity", personaje.destreza)
+        HabilidadItem("Constitution", personaje.constitucion)
+        HabilidadItem("Intelligence", personaje.inteligencia)
+        HabilidadItem("Wisdom", personaje.sabiduria)
+        HabilidadItem("Charisma", personaje.carisma)
     }
 }
 
@@ -520,5 +521,30 @@ fun InfoItem(titulo: String, valor: String) {
                 style = MaterialTheme.typography.titleMedium
             )
         }
+    }
+}
+@Composable
+fun FilaAtributoFicha(nombre: String, valor: Int) {
+
+    val mod = (valor - 10) / 2
+    val modTexto = if (mod >= 0) "+$mod" else "$mod"
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = nombre,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+
+        Text(
+            text = "$valor  ($modTexto)",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurface
+        )
     }
 }
