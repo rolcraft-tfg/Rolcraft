@@ -13,7 +13,6 @@ import androidx.compose.material.icons.filled.People
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
@@ -35,11 +34,11 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var viewModel: PersonajeViewModel
 
-    //Esto consume todos los eventos hover enviados por el sistema para evitar un crash por un bug del OS con compose
     override fun dispatchGenericMotionEvent(ev: MotionEvent?): Boolean {
         if (ev?.action == MotionEvent.ACTION_HOVER_ENTER ||
             ev?.action == MotionEvent.ACTION_HOVER_MOVE ||
-            ev?.action == MotionEvent.ACTION_HOVER_EXIT) {
+            ev?.action == MotionEvent.ACTION_HOVER_EXIT
+        ) {
             return true
         }
         return super.dispatchGenericMotionEvent(ev)
@@ -63,19 +62,15 @@ class MainActivity : ComponentActivity() {
             PersonajeViewModelFactory(repository)
         )[PersonajeViewModel::class.java]
 
-        // PREFERENCIAS
         val prefs = getSharedPreferences("settings", MODE_PRIVATE)
 
         setContent {
 
-            // ESTADO modo claro/modo oscuro que persiste al salir de la app
             var modoOscuro by remember {
                 mutableStateOf(prefs.getBoolean("modo_oscuro", true))
             }
 
-            RolCraftTheme(
-                darkTheme = modoOscuro
-            ) {
+            RolCraftTheme(darkTheme = modoOscuro) {
                 Surface(
                   color = MaterialTheme.colorScheme.background,
                     modifier = Modifier.pointerInput(Unit) {}
@@ -84,8 +79,6 @@ class MainActivity : ComponentActivity() {
                     AppNavegacion(
                         viewModel = viewModel,
                         modoOscuro = modoOscuro,
-
-                        // GUARDAR CAMBIO
                         onCambiarTema = {
                             modoOscuro = it
                             prefs.edit().putBoolean("modo_oscuro", it).apply()
@@ -96,6 +89,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 @Composable
 fun AppNavegacion(
     viewModel: PersonajeViewModel,
@@ -150,6 +144,8 @@ fun AppNavegacion(
                 PantallaInicio(
                     viewModel = viewModel,
                     onCrearPersonaje = {
+                        // 🔥 EXTRA SEGURIDAD (opcional pero recomendado)
+                        viewModel.resetearPersonaje()
                         navController.navigate("crear")
                     },
                     onPantallaFichaPersonaje = { id ->
@@ -169,7 +165,15 @@ fun AppNavegacion(
                 )
             }
 
+            // Crear y editar personaje
             composable("crear") {
+
+                LaunchedEffect(Unit) {
+                    if (!viewModel.modoEdicion) {
+                        viewModel.resetearPersonaje()
+                    }
+                }
+
                 PantallaCrearPersonaje(
                     viewModel = viewModel,
                     onSiguiente = { navController.navigate("verFicha") },
@@ -190,7 +194,6 @@ fun AppNavegacion(
                 )
             }
 
-            // FICHA FINAL
             composable("ficha/{id}") { backStackEntry ->
                 val id = backStackEntry.arguments?.getString("id")!!.toInt()
 
@@ -211,7 +214,6 @@ fun AppNavegacion(
                 )
             }
 
-            // AJUSTES
             composable("ajustes") {
                 PantallaAjustes(
                     modoOscuro = modoOscuro,
@@ -221,6 +223,7 @@ fun AppNavegacion(
         }
     }
 }
+
 @Composable
 fun BarraInferior(navController: NavController, rutaActual: String?) {
 

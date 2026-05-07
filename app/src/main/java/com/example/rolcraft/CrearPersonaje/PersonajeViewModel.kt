@@ -25,15 +25,15 @@ class PersonajeViewModel(
 
     private val _personajeActual = MutableStateFlow<Personaje?>(null)
     val personajeActual: StateFlow<Personaje?> = _personajeActual
+
     private fun actualizar(update: Personaje.() -> Personaje) {
         personaje = personaje.update()
     }
 
-    // SOLO LÍMITE
+    // ----------- ACTUALIZACIONES -----------
+
     fun actualizarNombre(n: String) =
-        actualizar {
-            copy(nombre = n.take(20))
-        }
+        actualizar { copy(nombre = n.take(20)) }
 
     fun actualizarGenero(g: String) = actualizar { copy(genero = g) }
     fun actualizarRaza(r: String) = actualizar { copy(raza = r) }
@@ -42,10 +42,11 @@ class PersonajeViewModel(
     fun actualizarTrasfondo(t: String) = actualizar { copy(trasfondo = t) }
     fun actualizarAlineamiento(a: String) = actualizar { copy(alineamiento = a) }
 
+    // ----------- GENERAR -----------
+
     fun generarAleatorio() {
         val genero = listaGeneros.random()
 
-        // SOLO LIMITE, SIN TRIM AQUÍ
         val nombre = when (genero) {
             "Masculino" -> nombresMasculinos.random()
             "Femenino" -> nombresFemeninos.random()
@@ -74,6 +75,8 @@ class PersonajeViewModel(
         )
         personaje = calcularEstadisticas(personaje)
     }
+
+    // ----------- EDICIÓN -----------
 
     fun empezarEdicion(pj: Personaje) {
         personaje = pj
@@ -109,13 +112,13 @@ class PersonajeViewModel(
 
     fun insertarPersonaje(personaje: Personaje) {
         viewModelScope.launch {
-
             val copia = personaje.copy(id = 0)
-
             repository.insertarPersonaje(copia.toEntity())
             cargarPersonajes()
         }
     }
+
+    // ----------- 🔥 FIX AQUÍ -----------
 
     fun cargarPersonajes() {
         viewModelScope.launch {
@@ -128,13 +131,29 @@ class PersonajeViewModel(
                     Personaje(
                         id = it.id,
                         nombre = it.nombre,
+                        genero = it.genero,
                         raza = it.raza,
-                        clase = it.clase
+                        clase = it.clase,
+                        subclase = it.subclase,
+                        trasfondo = it.trasfondo,
+                        alineamiento = it.alineamiento,
+                        nivel = it.nivel,
+                        fuerza = it.fuerza,
+                        destreza = it.destreza,
+                        constitucion = it.constitucion,
+                        inteligencia = it.inteligencia,
+                        sabiduria = it.sabiduria,
+                        carisma = it.carisma,
+                        ac = it.ac,
+                        iniciativa = it.iniciativa,
+                        hp = it.hp
                     )
                 }
             )
         }
     }
+
+    // ----------- OTROS -----------
 
     fun eliminarPersonaje(personaje: Personaje) {
         viewModelScope.launch {
@@ -162,13 +181,15 @@ class PersonajeViewModel(
         modoEdicion = false
     }
 
+    // ----------- CONVERSIÓN -----------
+
     private fun Personaje.toEntity(): PersonajeEntity {
         return PersonajeEntity(
             id = this.id,
             nombre = this.nombre,
             raza = this.raza,
             clase = this.clase,
-            nivel = 1,
+            nivel = this.nivel,
             genero = this.genero,
             subclase = this.subclase,
             trasfondo = this.trasfondo,

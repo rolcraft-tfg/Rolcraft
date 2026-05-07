@@ -204,15 +204,17 @@ fun PantallaCrearPersonaje(
         TextField(
             value = nombreState.value,
             onValueChange = { nuevo ->
-                nombreState.value = nuevo
-                viewModel.actualizarNombre(nuevo.text)
+                val texto = nuevo.text.take(20)
+
+                nombreState.value = nuevo.copy(text = texto)
+                viewModel.actualizarNombre(texto)
             },
             label = { Text("Nombre") },
             modifier = Modifier.fillMaxWidth(),
             supportingText = {
                 Text("${nombreState.value.text.length}/20")
             },
-            isError = nombreState.value.text.length >= 20,
+            isError = nombreState.value.text.length == 20,
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.surface,
                 unfocusedContainerColor = MaterialTheme.colorScheme.surface

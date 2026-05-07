@@ -26,7 +26,6 @@ import com.example.rolcraft.CrearPersonaje.Personaje
 import com.example.rolcraft.CrearPersonaje.PersonajeViewModel
 import com.example.rolcraft.R
 
-// 🔥 IMAGEN POR CLASE
 fun obtenerImagenClase(clase: String): Int {
     return when (clase.lowercase().trim()) {
         "mago" -> R.drawable.mago
@@ -37,7 +36,7 @@ fun obtenerImagenClase(clase: String): Int {
     }
 }
 
-// 🔥 COLOR POR CLASE
+// COLOR POR CLASE
 fun obtenerColorClase(clase: String): Color {
     return when (clase.lowercase().trim()) {
         "mago" -> Color(0xFF2196F3)      // azul
@@ -85,7 +84,6 @@ fun PantallaInicio(
                     text = "Mis personajes",
                     color = MaterialTheme.colorScheme.onBackground,
                     style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -227,7 +225,7 @@ fun TarjetaPersonaje(
 
                 Text(
                     text = personaje.clase,
-                    color = colorClase // 🔥 COLOR DE TEXTO TAMBIÉN
+                    color = colorClase
                 )
             }
 
