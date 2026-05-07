@@ -26,6 +26,6 @@ data class PersonajeEntity(
     val ac: Int,
     val iniciativa: Int,
     val hp: Int,
-    // UID del usuario autenticado en Firebase
+    // ⭐ UID del usuario autenticado en Firebase
     val usuarioId: String
 )

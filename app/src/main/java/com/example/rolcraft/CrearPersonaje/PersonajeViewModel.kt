@@ -73,7 +73,6 @@ class PersonajeViewModel(
             sabiduria = valores[4],
             carisma = valores[5]
         )
-
         personaje = calcularEstadisticas(personaje)
     }
 
@@ -88,14 +87,17 @@ class PersonajeViewModel(
     fun guardarPersonaje() {
         viewModelScope.launch {
 
+            // 1. Calcular estadísticas (AC, iniciativa, HP)
             val pjConStats = calcularEstadisticas(personaje)
 
+            // 2. Limpiar nombre
             val nombreLimpio = pjConStats.nombre
                 .trim()
                 .replace(Regex("\\s+"), " ")
 
             val personajeFinal = pjConStats.copy(nombre = nombreLimpio)
 
+            // 3. Guardar en BD
             if (modoEdicion) {
                 repository.actualizarPersonaje(personajeFinal.toEntity())
             } else {
@@ -106,6 +108,7 @@ class PersonajeViewModel(
             cargarPersonajes()
         }
     }
+
 
     fun insertarPersonaje(personaje: Personaje) {
         viewModelScope.launch {
@@ -249,7 +252,6 @@ class PersonajeViewModel(
             carisma = carisma
         )
     }
-
     fun calcularEstadisticas(personaje: Personaje): Personaje {
         val modDex = (personaje.destreza - 10) / 2
         val modCon = (personaje.constitucion - 10) / 2
@@ -273,8 +275,8 @@ class PersonajeViewModel(
             hp = hp
         )
     }
-
     fun aplicarEstadisticas() {
         personaje = calcularEstadisticas(personaje)
     }
+
 }

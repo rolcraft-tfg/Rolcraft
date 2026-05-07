@@ -18,11 +18,11 @@ class PersonajeRepository(
     suspend fun actualizarPersonaje(personaje: PersonajeEntity) {
         dao.actualizarPersonaje(personaje)
     }
-    suspend fun eliminarPersonaje(id: Int) {
-        dao.eliminarPersonaje(id)
-    }
+        suspend fun eliminarPersonaje(id: Int) {
+            dao.eliminarPersonaje(id)
+        }
 
-    suspend fun obtenerPersonajePorId(id: Int): PersonajeEntity? {
-        return dao.obtenerPersonajePorId(id)
+        suspend fun obtenerPersonajePorId(id: Int): PersonajeEntity? {
+            return dao.obtenerPersonajePorId(id)
+        }
     }
-}

@@ -176,7 +176,7 @@ fun TarjetaPersonaje(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick(personaje.id) },
+            .clickable { onClick(personaje.id) },   // ⭐ AQUÍ VA EL CLICKABLE
         shape = RoundedCornerShape(12.dp),
         border = BorderStroke(2.dp, colorClase),
         colors = CardDefaults.cardColors(
@@ -185,7 +185,7 @@ fun TarjetaPersonaje(
     ) {
 
 
-        Row(
+    Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(12.dp),

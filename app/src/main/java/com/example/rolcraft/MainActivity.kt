@@ -72,7 +72,7 @@ class MainActivity : ComponentActivity() {
 
             RolCraftTheme(darkTheme = modoOscuro) {
                 Surface(
-                    color = MaterialTheme.colorScheme.background,
+                  color = MaterialTheme.colorScheme.background,
                     modifier = Modifier.pointerInput(Unit) {}
                 ) {
 
