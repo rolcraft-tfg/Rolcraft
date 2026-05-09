@@ -12,7 +12,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -35,9 +34,7 @@ fun normalizar(texto: String): String {
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
-fun PantallaHabilidades(
-    onVolver: () -> Unit // lo dejamos por si lo usas, pero ya no se muestra
-) {
+fun PantallaHabilidades() {
 
     var busqueda by remember { mutableStateOf("") }
     var habilidadSeleccionada by remember { mutableStateOf<Habilidad?>(null) }

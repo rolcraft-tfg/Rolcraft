@@ -35,26 +35,23 @@ import com.example.rolcraft.Dados.DiceLibrary
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-
 @Composable
 fun PantallaFichaPersonaje(
     id: Int,
-    onNuevoPersonaje: () -> Unit,
-    onGuardar: () -> Unit,
-    onAnterior: () -> Boolean,
     viewModel: PersonajeViewModel
 ) {
     var expanded by remember { mutableStateOf(false) }
     var selectedTab by remember { mutableStateOf("abilities") }
 
-    // Cargar personaje
+    // Cargar personaje desde BD
     LaunchedEffect(id) {
         viewModel.cargarPersonaje(id)
     }
 
-    val personaje = viewModel.personajeActual.collectAsState().value
+    val personaje = viewModel.personaje
 
-    if (personaje == null) {
+    // Si aún no se ha cargado (ID = 0 y modoEdicion = true)
+    if (viewModel.modoEdicion && personaje.id == 0) {
         Text("Cargando...", color = Color.White)
         return
     }
@@ -69,7 +66,8 @@ fun PantallaFichaPersonaje(
                 .padding(
                     start = padding.calculateStartPadding(LayoutDirection.Ltr),
                     end = padding.calculateEndPadding(LayoutDirection.Ltr),
-                    bottom = padding.calculateBottomPadding())
+                    bottom = padding.calculateBottomPadding()
+                )
         ) {
 
             Column(
@@ -154,12 +152,7 @@ fun PantallaFichaPersonaje(
                     item {
                         when (selectedTab) {
                             "abilities" -> SeccionHabilidades(personaje)
-                            "dados" -> PantallaDadosInterna(
-                                onNuevoPersonaje,
-                                onGuardar,
-                                onAnterior,
-                                viewModel
-                            )
+                            "dados" -> PantallaDadosInterna()
                             "info" -> SeccionInfoPersonaje(personaje)
                         }
                     }
@@ -237,9 +230,9 @@ fun SeccionHabilidades(personaje: Personaje) {
 }
 
 @Composable
-fun HabilidadItem(nombre: String, valor: Int) {
+fun HabilidadItem(nombre: String, valor: Int?) {
 
-    val modificador = (valor - 10) / 2
+    val modificador = valor?.let { (it - 10) / 2 }
 
     Card(
         modifier = Modifier
@@ -256,8 +249,9 @@ fun HabilidadItem(nombre: String, valor: Int) {
 
             Column {
                 Text(nombre, color = Color.White, fontWeight = FontWeight.Bold)
+
                 Text(
-                    "Mod: ${if (modificador >= 0) "+$modificador" else modificador}",
+                    text = modificador?.let { if (it >= 0) "+$it" else "$it" } ?: "–",
                     color = Color.LightGray
                 )
             }
@@ -265,7 +259,7 @@ fun HabilidadItem(nombre: String, valor: Int) {
             Spacer(Modifier.weight(1f))
 
             Text(
-                text = valor.toString(),
+                text = valor?.toString() ?: "–",
                 color = Color(0xFF7EA7FF),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
@@ -276,10 +270,6 @@ fun HabilidadItem(nombre: String, valor: Int) {
 
 @Composable
 fun PantallaDadosInterna(
-    onNuevoPersonaje: () -> Unit,
-    onGuardar: () -> Unit,
-    onAnterior: () -> Boolean,
-    viewModel: PersonajeViewModel
 ) {
     val context = LocalContext.current
     val animator = remember { DiceAnimatorCompose(context) }
@@ -521,30 +511,5 @@ fun InfoItem(titulo: String, valor: String) {
                 style = MaterialTheme.typography.titleMedium
             )
         }
-    }
-}
-@Composable
-fun FilaAtributoFicha(nombre: String, valor: Int) {
-
-    val mod = (valor - 10) / 2
-    val modTexto = if (mod >= 0) "+$mod" else "$mod"
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            text = nombre,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-
-        Text(
-            text = "$valor  ($modTexto)",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface
-        )
     }
 }

@@ -11,7 +11,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
-import androidx.compose.material3.CheckboxDefaults.colors
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,8 +50,7 @@ fun obtenerColorClase(clase: String): Color {
 fun PantallaInicio(
     viewModel: PersonajeViewModel,
     onCrearPersonaje: () -> Unit,
-    onPantallaFichaPersonaje: (Int) -> Unit,
-    onCerrarSesion: () -> Unit
+    onPantallaFichaPersonaje: (Int) -> Unit
 ) {
 
     LaunchedEffect(Unit) {
@@ -62,10 +60,8 @@ fun PantallaInicio(
     val personajes = viewModel.personajesGuardados
 
     Scaffold(
-        modifier = Modifier
-            .pointerInput(Unit) {},
+        modifier = Modifier.pointerInput(Unit) {},
         containerColor = MaterialTheme.colorScheme.background
-
     ) { padding ->
 
         Box(
@@ -100,12 +96,11 @@ fun PantallaInicio(
                                 viewModel.eliminarPersonaje(personaje)
                             },
                             onDuplicar = { pj ->
-                                val copia = pj.copy(nombre = "${pj.nombre} Copy",id = 0)
-                                viewModel.insertarPersonaje(copia)
+                                val copia = pj.copy(nombre = "${pj.nombre} Copy", id = 0)
+                                viewModel.guardarPersonajeDuplicado(copia)
                             },
-
-                            onEditar = { pj ->
-                                viewModel.empezarEdicion(pj)
+                                    onEditar = { pj ->
+                                viewModel.cargarPersonaje(pj.id)
                                 onCrearPersonaje()
                             },
                             onClick = onPantallaFichaPersonaje
@@ -115,7 +110,10 @@ fun PantallaInicio(
             }
 
             Button(
-                onClick = { onCrearPersonaje() },
+                onClick = {
+                    viewModel.resetearPersonaje()
+                    onCrearPersonaje()
+                },
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(16.dp)
@@ -135,6 +133,7 @@ fun PantallaInicio(
         }
     }
 }
+
 
 @Composable
 fun TarjetaPersonaje(

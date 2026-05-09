@@ -16,7 +16,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -24,13 +23,13 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun PantallaDatosPersonaje(
     viewModel: PersonajeViewModel,
-    onAnterior: () -> Unit,
     onGuardar: () -> Unit,
 ) {
 
     val personaje = viewModel.personaje
 
-    fun mod(valor: Int): String {
+    fun mod(valor: Int?): String {
+        if (valor == null) return "–"
         val m = (valor - 10) / 2
         return if (m >= 0) "+$m" else "$m"
     }
@@ -42,12 +41,6 @@ fun PantallaDatosPersonaje(
             .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
-
-        TextButton(
-            onClick = onAnterior
-        ) {
-            Text("← Volver")
-        }
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -84,32 +77,32 @@ fun PantallaDatosPersonaje(
                 FilaDato("Alineamiento", personaje.alineamiento)
                 FilaDato(
                     "Fuerza",
-                    "${personaje.fuerza} (${mod(personaje.fuerza)})"
+                    "${personaje.fuerza ?: "–"} (${mod(personaje.fuerza)})"
                 )
 
                 FilaDato(
                     "Destreza",
-                    "${personaje.destreza} (${mod(personaje.destreza)})"
+                    "${personaje.destreza ?: "–"} (${mod(personaje.destreza)})"
                 )
 
                 FilaDato(
                     "Constitución",
-                    "${personaje.constitucion} (${mod(personaje.constitucion)})"
+                    "${personaje.constitucion ?: "–"} (${mod(personaje.constitucion)})"
                 )
 
                 FilaDato(
                     "Inteligencia",
-                    "${personaje.inteligencia} (${mod(personaje.inteligencia)})"
+                    "${personaje.inteligencia ?: "–"} (${mod(personaje.inteligencia)})"
                 )
 
                 FilaDato(
                     "Sabiduría",
-                    "${personaje.sabiduria} (${mod(personaje.sabiduria)})"
+                    "${personaje.sabiduria ?: "–"} (${mod(personaje.sabiduria)})"
                 )
 
                 FilaDato(
                     "Carisma",
-                    "${personaje.carisma} (${mod(personaje.carisma)})"
+                    "${personaje.carisma ?: "–"} (${mod(personaje.carisma)})"
                 )
                 FilaDato("AC", personaje.ac.toString())
                 FilaDato("Iniciativa", personaje.iniciativa.toString())

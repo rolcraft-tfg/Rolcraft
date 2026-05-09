@@ -1,8 +1,5 @@
 package com.example.rolcraft.CrearPersonaje
 
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -11,17 +8,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import com.example.rolcraft.R
 
@@ -53,7 +46,10 @@ fun PantallaCrearPersonaje(
     onSiguiente: () -> Unit,
     onVolver: () -> Unit
 ) {
-    val valoresIniciales = listOf(15, 14, 13, 12, 10, 8)
+    val pj = viewModel.personaje
+    val modoEdicion = viewModel.modoEdicion
+
+    val valoresIniciales = listOf<Int?>(null, 15, 14, 13, 12, 10, 8)
     var valoresDisponibles by remember { mutableStateOf(valoresIniciales) }
 
     var fuerza by remember { mutableStateOf<Int?>(null) }
@@ -62,8 +58,7 @@ fun PantallaCrearPersonaje(
     var inteligencia by remember { mutableStateOf<Int?>(null) }
     var sabiduria by remember { mutableStateOf<Int?>(null) }
     var carisma by remember { mutableStateOf<Int?>(null) }
-    val pj = viewModel.personaje
-    val modoEdicion = viewModel.modoEdicion
+
     var campoFaltante by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(pj) {
@@ -77,25 +72,11 @@ fun PantallaCrearPersonaje(
         val usados = listOf(fuerza, destreza, constitucion, inteligencia, sabiduria, carisma)
         valoresDisponibles = valoresIniciales.filter { it !in usados }
     }
-    // DIALOGO
+
     if (campoFaltante != null) {
-
-        val alpha by animateFloatAsState(1f, tween(250), label = "")
-        val offsetY by animateDpAsState(0.dp, tween(250), label = "")
-
         AlertDialog(
             onDismissRequest = { campoFaltante = null },
-            modifier = Modifier.graphicsLayer {
-                this.alpha = alpha
-                translationY = offsetY.toPx()
-            },
-            title = {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Warning, null, tint = Color.Red)
-                    Spacer(Modifier.width(8.dp))
-                    Text("Falta un campo")
-                }
-            },
+            title = { Text("Falta un campo") },
             text = { Text("Debes rellenar: $campoFaltante") },
             confirmButton = {
                 TextButton(onClick = { campoFaltante = null }) {
@@ -104,9 +85,9 @@ fun PantallaCrearPersonaje(
             }
         )
     }
-    //Elimina los valores ya seleccionados de los atributos
+
     fun actualizarValor(
-        nuevo: Int,
+        nuevo: Int?,
         actual: Int?,
         setter: (Int?) -> Unit
     ) {
@@ -116,8 +97,11 @@ fun PantallaCrearPersonaje(
 
         setter(nuevo)
 
-        valoresDisponibles = valoresDisponibles - nuevo
+        if (nuevo != null) {
+            valoresDisponibles = valoresDisponibles - nuevo
+        }
     }
+
 
     fun atributoFaltante(): String? {
         return when {
@@ -134,20 +118,16 @@ fun PantallaCrearPersonaje(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState())
             .padding(16.dp)
-            .clickable { campoFaltante = null }
-            .pointerInput(Unit) {}
     ) {
 
-        TextButton(onClick = { onVolver() }) {
+        TextButton(onClick = onVolver) {
             Text("← Volver")
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(Modifier.height(8.dp))
 
-        // HEADER NUEVO
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -160,40 +140,29 @@ fun PantallaCrearPersonaje(
                     style = MaterialTheme.typography.headlineMedium
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(Modifier.height(8.dp))
 
                 Button(onClick = { viewModel.generarAleatorio() }) {
                     Text("Aleatorio")
                 }
             }
 
-            // IMAGEN DINÁMICA
             Card(
                 modifier = Modifier.size(100.dp),
                 border = BorderStroke(2.dp, obtenerColorClase(pj.clase)),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
+                shape = RoundedCornerShape(16.dp)
             ) {
                 Image(
-                    painter = painterResource(
-                        id = obtenerImagenClase(pj.clase)
-                    ),
+                    painter = painterResource(id = obtenerImagenClase(pj.clase)),
                     contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(8.dp)
+                    modifier = Modifier.fillMaxSize().padding(8.dp)
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(Modifier.height(24.dp))
 
-        // TEXTFIELD
-        val nombreState = remember {
-            mutableStateOf(TextFieldValue(pj.nombre))
-        }
+        val nombreState = remember { mutableStateOf(TextFieldValue(pj.nombre)) }
 
         LaunchedEffect(pj.nombre) {
             if (nombreState.value.text != pj.nombre) {
@@ -205,41 +174,32 @@ fun PantallaCrearPersonaje(
             value = nombreState.value,
             onValueChange = { nuevo ->
                 val texto = nuevo.text.take(20)
-
                 nombreState.value = nuevo.copy(text = texto)
                 viewModel.actualizarNombre(texto)
             },
             label = { Text("Nombre") },
-            modifier = Modifier.fillMaxWidth(),
-            supportingText = {
-                Text("${nombreState.value.text.length}/20")
-            },
-            isError = nombreState.value.text.length == 20,
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surface
-            )
+            modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(Modifier.height(16.dp))
 
         Desplegable("Género", listaGeneros, pj.genero, null) {
             viewModel.actualizarGenero(it)
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(Modifier.height(16.dp))
 
         Desplegable("Raza", listaRazas, pj.raza, descripcionRaza[pj.raza]) {
             viewModel.actualizarRaza(it)
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(Modifier.height(16.dp))
 
         Desplegable("Clase", listaClases, pj.clase, descripcionClase[pj.clase]) {
             viewModel.actualizarClase(it)
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(Modifier.height(16.dp))
 
         Desplegable(
             "Subclase",
@@ -250,13 +210,13 @@ fun PantallaCrearPersonaje(
             viewModel.actualizarSubclase(it)
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(Modifier.height(16.dp))
 
         Desplegable("Trasfondo", listaTrasfondos, pj.trasfondo, descripcionTrasfondo[pj.trasfondo]) {
             viewModel.actualizarTrasfondo(it)
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(Modifier.height(16.dp))
 
         Desplegable("Alineamiento", listaAlineamientos, pj.alineamiento, descripcionAlineamiento[pj.alineamiento]) {
             viewModel.actualizarAlineamiento(it)
@@ -264,36 +224,86 @@ fun PantallaCrearPersonaje(
 
         Spacer(Modifier.height(16.dp))
 
-        Text(
-            "Atributos",
-            style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.onBackground
-        )
+        Text("Atributos", style = MaterialTheme.typography.headlineSmall)
 
         Spacer(Modifier.height(12.dp))
 
         SelectorHabilidad("Fuerza", fuerza, valoresDisponibles) { nuevo ->
             actualizarValor(nuevo, fuerza) { fuerza = it }
+            viewModel.actualizarAtributos(
+                fuerza = nuevo,
+                destreza = destreza,
+                constitucion = constitucion,
+                inteligencia = inteligencia,
+                sabiduria = sabiduria,
+                carisma = carisma
+            )
+            viewModel.aplicarEstadisticas()
         }
 
         SelectorHabilidad("Destreza", destreza, valoresDisponibles) { nuevo ->
             actualizarValor(nuevo, destreza) { destreza = it }
+            viewModel.actualizarAtributos(
+                fuerza = fuerza,
+                destreza = nuevo,
+                constitucion = constitucion,
+                inteligencia = inteligencia,
+                sabiduria = sabiduria,
+                carisma = carisma
+            )
+            viewModel.aplicarEstadisticas()
         }
 
         SelectorHabilidad("Constitución", constitucion, valoresDisponibles) { nuevo ->
             actualizarValor(nuevo, constitucion) { constitucion = it }
+            viewModel.actualizarAtributos(
+                fuerza = fuerza,
+                destreza = destreza,
+                constitucion = nuevo,
+                inteligencia = inteligencia,
+                sabiduria = sabiduria,
+                carisma = carisma
+            )
+            viewModel.aplicarEstadisticas()
         }
 
         SelectorHabilidad("Inteligencia", inteligencia, valoresDisponibles) { nuevo ->
             actualizarValor(nuevo, inteligencia) { inteligencia = it }
+            viewModel.actualizarAtributos(
+                fuerza = fuerza,
+                destreza = destreza,
+                constitucion = constitucion,
+                inteligencia = nuevo,
+                sabiduria = sabiduria,
+                carisma = carisma
+            )
+            viewModel.aplicarEstadisticas()
         }
 
         SelectorHabilidad("Sabiduría", sabiduria, valoresDisponibles) { nuevo ->
             actualizarValor(nuevo, sabiduria) { sabiduria = it }
+            viewModel.actualizarAtributos(
+                fuerza = fuerza,
+                destreza = destreza,
+                constitucion = constitucion,
+                inteligencia = inteligencia,
+                sabiduria = nuevo,
+                carisma = carisma
+            )
+            viewModel.aplicarEstadisticas()
         }
 
         SelectorHabilidad("Carisma", carisma, valoresDisponibles) { nuevo ->
             actualizarValor(nuevo, carisma) { carisma = it }
+            viewModel.actualizarAtributos(
+                fuerza = fuerza,
+                destreza = destreza,
+                constitucion = constitucion,
+                inteligencia = inteligencia,
+                sabiduria = sabiduria,
+                carisma = nuevo
+            )
+            viewModel.aplicarEstadisticas()
         }
 
         Spacer(Modifier.height(32.dp))
@@ -323,19 +333,20 @@ fun PantallaCrearPersonaje(
                 viewModel.aplicarEstadisticas()
 
                 onSiguiente()
-            }
-        )
-        {
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Text(if (modoEdicion) "Guardar cambios" else "Ver ficha")
         }
     }
 }
+
 @Composable
 fun SelectorHabilidad(
     nombre: String,
     valorActual: Int?,
-    valoresDisponibles: List<Int>,
-    onValorSeleccionado: (Int) -> Unit
+    valoresDisponibles: List<Int?>,
+    onValorSeleccionado: (Int?) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -351,7 +362,7 @@ fun SelectorHabilidad(
                 .padding(12.dp)
         ) {
             Text(
-                text = valorActual?.toString() ?: "Seleccionar",
+                text = valorActual?.toString() ?: "–",
                 color = MaterialTheme.colorScheme.onSurface
             )
 
@@ -361,7 +372,7 @@ fun SelectorHabilidad(
             ) {
                 valoresDisponibles.forEach { valor ->
                     DropdownMenuItem(
-                        text = { Text(valor.toString()) },
+                        text = { Text(valor?.toString() ?: "–") },
                         onClick = {
                             expanded = false
                             onValorSeleccionado(valor)

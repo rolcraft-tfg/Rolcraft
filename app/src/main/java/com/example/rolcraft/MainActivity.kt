@@ -6,8 +6,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.material.icons.filled.ListAlt
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material3.*
@@ -29,6 +29,7 @@ import com.example.rolcraft.Login.PantallaLogin
 import com.example.rolcraft.RecuperarContrasenya.PantallaRecuperar
 import com.example.rolcraft.Registro.PantallaRegistro
 import com.example.rolcraft.ui.theme.RolCraftTheme
+import androidx.core.content.edit
 
 class MainActivity : ComponentActivity() {
 
@@ -72,7 +73,7 @@ class MainActivity : ComponentActivity() {
 
             RolCraftTheme(darkTheme = modoOscuro) {
                 Surface(
-                  color = MaterialTheme.colorScheme.background,
+                    color = MaterialTheme.colorScheme.background,
                     modifier = Modifier.pointerInput(Unit) {}
                 ) {
 
@@ -81,7 +82,7 @@ class MainActivity : ComponentActivity() {
                         modoOscuro = modoOscuro,
                         onCambiarTema = {
                             modoOscuro = it
-                            prefs.edit().putBoolean("modo_oscuro", it).apply()
+                            prefs.edit { putBoolean("modo_oscuro", it) }
                         }
                     )
                 }
@@ -144,28 +145,19 @@ fun AppNavegacion(
                 PantallaInicio(
                     viewModel = viewModel,
                     onCrearPersonaje = {
-                        // 🔥 EXTRA SEGURIDAD (opcional pero recomendado)
                         viewModel.resetearPersonaje()
                         navController.navigate("crear")
                     },
                     onPantallaFichaPersonaje = { id ->
                         navController.navigate("ficha/$id")
-                    },
-                    onCerrarSesion = {
-                        navController.navigate("login") {
-                            popUpTo("inicio") { inclusive = true }
-                        }
                     }
                 )
             }
 
             composable("habilidades") {
-                PantallaHabilidades(
-                    onVolver = { navController.popBackStack() }
-                )
+                PantallaHabilidades()
             }
 
-            // Crear y editar personaje
             composable("crear") {
 
                 LaunchedEffect(Unit) {
@@ -184,7 +176,6 @@ fun AppNavegacion(
             composable("verFicha") {
                 PantallaDatosPersonaje(
                     viewModel = viewModel,
-                    onAnterior = { navController.popBackStack() },
                     onGuardar = {
                         viewModel.guardarPersonaje()
                         navController.navigate("inicio") {
@@ -199,18 +190,7 @@ fun AppNavegacion(
 
                 PantallaFichaPersonaje(
                     id = id,
-                    viewModel = viewModel,
-                    onAnterior = { navController.popBackStack() },
-                    onGuardar = {
-                        viewModel.guardarPersonaje()
-                        navController.navigate("inicio") {
-                            popUpTo("inicio") { inclusive = true }
-                        }
-                    },
-                    onNuevoPersonaje = {
-                        viewModel.resetearPersonaje()
-                        navController.navigate("crear")
-                    }
+                    viewModel = viewModel
                 )
             }
 
@@ -248,7 +228,7 @@ fun BarraInferior(navController: NavController, rutaActual: String?) {
                     launchSingleTop = true
                 }
             },
-            icon = { Icon(Icons.Default.ListAlt, null) },
+            icon = { Icon(Icons.AutoMirrored.Filled.ListAlt, null) },
             label = { Text("Habilidades") }
         )
 
@@ -270,7 +250,7 @@ fun BarraInferior(navController: NavController, rutaActual: String?) {
                     popUpTo("inicio") { inclusive = true }
                 }
             },
-            icon = { Icon(Icons.Default.ExitToApp, null) },
+            icon = { Icon(Icons.AutoMirrored.Filled.ExitToApp, null) },
             label = { Text("Salir") }
         )
     }
