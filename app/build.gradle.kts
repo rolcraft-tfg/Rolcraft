@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
+
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -47,6 +49,10 @@ dependencies {
 
     // ⭐ Compose BOM (controla TODAS las versiones)
     implementation(platform(libs.androidx.compose.bom))
+
+    // ⭐ Firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
+    implementation("com.google.firebase:firebase-auth-ktx")
 
     // ⭐ Compose UI (sin versiones fijas)
     implementation("androidx.compose.ui:ui")
