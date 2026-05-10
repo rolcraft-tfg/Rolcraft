@@ -8,14 +8,20 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 
-// ⭐ ICONOS
+// ICONOS
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 
-// ⭐ VALIDACIÓN PASSWORD
+// FIREBASE
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.UserProfileChangeRequest
+
+// VALIDACIÓN PASSWORD
 fun esPasswordValida(password: String): Boolean {
-    val regex = Regex("^(?=.*[A-Z])(?=.*\\d)(?=.*[@#\$%^&+=!]).{8,}$")
+
+    val regex = Regex("^.{8,}$")
+
     return regex.matches(password)
 }
 
@@ -24,24 +30,64 @@ fun PantallaRegistro(
     onVolver: () -> Unit
 ) {
 
-    var usuario by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
+    var usuario by remember {
+        mutableStateOf("")
+    }
 
-    // ⭐ CONTROL
-    var passwordError by remember { mutableStateOf(false) }
-    var confirmPasswordError by remember { mutableStateOf(false) }
-    var passwordVisible by remember { mutableStateOf(false) }
+    var email by remember {
+        mutableStateOf("")
+    }
+
+    var password by remember {
+        mutableStateOf("")
+    }
+
+    var confirmPassword by remember {
+        mutableStateOf("")
+    }
+
+    // CONTROL
+
+    var passwordError by remember {
+        mutableStateOf(false)
+    }
+
+    var confirmPasswordError by remember {
+        mutableStateOf(false)
+    }
+
+    var passwordVisible by remember {
+        mutableStateOf(false)
+    }
+
+    // MENSAJES
+
+    var mensaje by remember {
+        mutableStateOf("")
+    }
+
+    // LOADING
+
+    var cargando by remember {
+        mutableStateOf(false)
+    }
+
+    // FIREBASE
+
+    val auth = FirebaseAuth.getInstance()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(24.dp),
+
         verticalArrangement = Arrangement.Center
     ) {
 
-        // ⭐ TÍTULO
+        // =========================
+        // TÍTULO
+        // =========================
+
         Text(
             text = "Registro",
             style = MaterialTheme.typography.headlineMedium
@@ -49,131 +95,312 @@ fun PantallaRegistro(
 
         Spacer(Modifier.height(32.dp))
 
-        // ⭐ USUARIO
+        // =========================
+        // USUARIO
+        // =========================
+
         OutlinedTextField(
             value = usuario,
-            onValueChange = { usuario = it },
-            label = { Text("Nombre de usuario") },
+
+            onValueChange = {
+                usuario = it
+            },
+
+            label = {
+                Text("Nombre de usuario")
+            },
+
             modifier = Modifier.fillMaxWidth(),
+
             singleLine = true
         )
 
         Spacer(Modifier.height(16.dp))
 
-        // ⭐ EMAIL
+        // =========================
+        // EMAIL
+        // =========================
+
         OutlinedTextField(
             value = email,
-            onValueChange = { email = it },
-            label = { Text("Email") },
+
+            onValueChange = {
+                email = it
+            },
+
+            label = {
+                Text("Email")
+            },
+
             modifier = Modifier.fillMaxWidth(),
+
             singleLine = true
         )
 
         Spacer(Modifier.height(16.dp))
 
-        // ⭐ CONTRASEÑA
+        // =========================
+        // CONTRASEÑA
+        // =========================
+
         OutlinedTextField(
             value = password,
+
             onValueChange = {
+
                 password = it
-                passwordError = !esPasswordValida(it)
-                confirmPasswordError = confirmPassword.isNotEmpty() && confirmPassword != it
+
+                passwordError =
+                    !esPasswordValida(it)
+
+                confirmPasswordError =
+                    confirmPassword.isNotEmpty() &&
+                            confirmPassword != it
             },
-            label = { Text("Contraseña") },
+
+            label = {
+                Text("Contraseña")
+            },
+
             modifier = Modifier.fillMaxWidth(),
+
             singleLine = true,
+
             isError = passwordError,
 
-            visualTransformation = if (passwordVisible)
-                VisualTransformation.None
-            else
-                PasswordVisualTransformation(),
+            visualTransformation =
+                if (passwordVisible)
+                    VisualTransformation.None
+                else
+                    PasswordVisualTransformation(),
 
             trailingIcon = {
-                IconButton(onClick = {
-                    passwordVisible = !passwordVisible
-                }) {
+
+                IconButton(
+                    onClick = {
+                        passwordVisible = !passwordVisible
+                    }
+                ) {
+
                     Icon(
-                        imageVector = if (passwordVisible)
-                            Icons.Default.Visibility
-                        else
-                            Icons.Default.VisibilityOff,
+                        imageVector =
+                            if (passwordVisible)
+                                Icons.Default.Visibility
+                            else
+                                Icons.Default.VisibilityOff,
+
                         contentDescription = null
                     )
                 }
             }
         )
 
-        if (passwordError) {
+        if (passwordError && password.isNotBlank()) {
+
             Text(
-                text = "Debe tener 8 caracteres, una mayúscula, un número y un símbolo",
+                text = "La contraseña debe tener mínimo 8 caracteres",
+
                 color = MaterialTheme.colorScheme.error,
+
                 style = MaterialTheme.typography.bodySmall
             )
         }
 
         Spacer(Modifier.height(12.dp))
 
-        // ⭐ CONFIRMAR CONTRASEÑA
+        // =========================
+        // CONFIRMAR CONTRASEÑA
+        // =========================
+
         OutlinedTextField(
             value = confirmPassword,
+
             onValueChange = {
+
                 confirmPassword = it
-                confirmPasswordError = it != password
+
+                confirmPasswordError =
+                    it != password
             },
-            label = { Text("Repetir contraseña") },
+
+            label = {
+                Text("Repetir contraseña")
+            },
+
             modifier = Modifier.fillMaxWidth(),
+
             singleLine = true,
+
             isError = confirmPasswordError,
 
-            visualTransformation = if (passwordVisible)
-                VisualTransformation.None
-            else
-                PasswordVisualTransformation(),
+            visualTransformation =
+                if (passwordVisible)
+                    VisualTransformation.None
+                else
+                    PasswordVisualTransformation(),
 
             trailingIcon = {
-                IconButton(onClick = {
-                    passwordVisible = !passwordVisible
-                }) {
+
+                IconButton(
+                    onClick = {
+                        passwordVisible = !passwordVisible
+                    }
+                ) {
+
                     Icon(
-                        imageVector = if (passwordVisible)
-                            Icons.Default.Visibility
-                        else
-                            Icons.Default.VisibilityOff,
+                        imageVector =
+                            if (passwordVisible)
+                                Icons.Default.Visibility
+                            else
+                                Icons.Default.VisibilityOff,
+
                         contentDescription = null
                     )
                 }
             }
         )
 
-        if (confirmPasswordError) {
+        if (
+            confirmPasswordError &&
+            confirmPassword.isNotBlank()
+        ) {
+
             Text(
                 text = "Las contraseñas no coinciden",
+
                 color = MaterialTheme.colorScheme.error,
+
                 style = MaterialTheme.typography.bodySmall
             )
         }
 
         Spacer(Modifier.height(24.dp))
 
-        // ⭐ BOTÓN REGISTRO
+        // =========================
+        // BOTÓN REGISTRO
+        // =========================
+
         Button(
-            onClick = { /* luego Room */ },
-            enabled = esPasswordValida(password) && password == confirmPassword,
+            onClick = {
+
+                mensaje = ""
+
+                // VALIDAR VACÍOS
+
+                if (
+                    usuario.isBlank() ||
+                    email.isBlank() ||
+                    password.isBlank() ||
+                    confirmPassword.isBlank()
+                ) {
+
+                    mensaje =
+                        "Faltan campos por rellenar"
+
+                    return@Button
+                }
+
+                // VALIDAR PASSWORD
+
+                if (!esPasswordValida(password)) {
+
+                    mensaje =
+                        "La contraseña debe tener mínimo 8 caracteres"
+
+                    return@Button
+                }
+
+                // VALIDAR COINCIDENCIA
+
+                if (password != confirmPassword) {
+
+                    mensaje =
+                        "Las contraseñas no coinciden"
+
+                    return@Button
+                }
+
+                cargando = true
+
+                auth.createUserWithEmailAndPassword(
+                    email.trim(),
+                    password.trim()
+                ).addOnCompleteListener { task ->
+
+                    cargando = false
+
+                    if (task.isSuccessful) {
+
+                        val profileUpdates =
+                            UserProfileChangeRequest.Builder()
+                                .setDisplayName(usuario.trim())
+                                .build()
+
+                        auth.currentUser
+                            ?.updateProfile(profileUpdates)
+                            ?.addOnCompleteListener {
+
+                                mensaje =
+                                    "Usuario registrado correctamente"
+                            }
+
+                    } else {
+
+                        mensaje =
+                            "No se pudo registrar el usuario"
+                    }
+                }
+            },
+
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp)
         ) {
-            Text("Registrarse")
+
+            if (cargando) {
+
+                CircularProgressIndicator()
+
+            } else {
+
+                Text("Registrarse")
+            }
+        }
+
+        // =========================
+        // MENSAJE
+        // =========================
+
+        if (mensaje.isNotEmpty()) {
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = mensaje,
+
+                color = if (
+                    mensaje.contains("correctamente")
+                )
+                    MaterialTheme.colorScheme.primary
+                else
+                    MaterialTheme.colorScheme.error
+            )
         }
 
         Spacer(Modifier.height(12.dp))
 
-        // ⭐ VOLVER
+        // =========================
+        // VOLVER
+        // =========================
+
         TextButton(
-            onClick = onVolver,
+            onClick = {
+                onVolver()
+            },
+
             modifier = Modifier.fillMaxWidth()
         ) {
+
             Text("Volver al login")
         }
     }

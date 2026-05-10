@@ -1,0 +1,45 @@
+[33m5a2510b[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mSissy[m[33m, [m[1;31morigin/Sissy[m[33m)[m HEAD@{0}: merge origin/Sissy: Fast-forward
+[33m5f3bbb3[m HEAD@{1}: commit: cositas corregidassss
+[33m329790a[m HEAD@{2}: reset: moving to HEAD
+[33m329790a[m HEAD@{3}: reset: moving to HEAD
+[33m329790a[m HEAD@{4}: checkout: moving from Sissy to Sissy
+[33m329790a[m HEAD@{5}: commit: shapes and colours :)
+[33m116aed1[m HEAD@{6}: checkout: moving from Sissy to Sissy
+[33m116aed1[m HEAD@{7}: merge origin/Sissy: Fast-forward
+[33me70a282[m HEAD@{8}: commit: shapes and colours :)
+[33mcdc38f9[m HEAD@{9}: merge origin/main: Fast-forward
+[33mffd7161[m HEAD@{10}: checkout: moving from Sissy to Sissy
+[33mffd7161[m HEAD@{11}: commit: a bunch of shit idk
+[33md8ee2db[m HEAD@{12}: merge origin/main: Merge made by the 'ort' strategy.
+[33m67ce731[m HEAD@{13}: reset: moving to HEAD
+[33m67ce731[m HEAD@{14}: checkout: moving from Sissy to Sissy
+[33m67ce731[m HEAD@{15}: reset: moving to HEAD
+[33m67ce731[m HEAD@{16}: checkout: moving from Sissy to Sissy
+[33m67ce731[m HEAD@{17}: commit: Tachaaaan mira como va a romperse todo luego wii! Aquí cambie la barrita de abajo por ajustes
+[33m0545486[m HEAD@{18}: checkout: moving from Sissy to Sissy
+[33m0545486[m HEAD@{19}: merge origin/Sissy: Fast-forward
+[33m68af97a[m HEAD@{20}: commit (merge): Merge remote-tracking branch 'origin/Sissy' into Sissy
+[33m669e7b6[m HEAD@{21}: commit: Tachaaaan mira como va a romperse todo luego wii! Aquí cambie la barrita de abajo por ajustes
+[33m9191eba[m HEAD@{22}: checkout: moving from Sissy to Sissy
+[33m9191eba[m HEAD@{23}: reset: moving to HEAD
+[33m9191eba[m HEAD@{24}: commit: WIP antes de merge
+[33mb56a8af[m HEAD@{25}: checkout: moving from Sissy to Sissy
+[33mb56a8af[m HEAD@{26}: commit: WIP antes de actualizar Sissy
+[33m3b473d4[m HEAD@{27}: commit: Barra de navegacion
+[33mbe09760[m HEAD@{28}: commit (merge): Resolver merge y unificar crearPersonaje
+[33m19622fc[m HEAD@{29}: reset: moving to HEAD
+[33m19622fc[m HEAD@{30}: rebase (abort): returning to refs/heads/Sissy
+[33m9f0b0e1[m HEAD@{31}: rebase (start): checkout origin/Sissy
+[33m19622fc[m HEAD@{32}: rebase (abort): returning to refs/heads/Sissy
+[33m9f0b0e1[m HEAD@{33}: rebase (start): checkout origin/Sissy
+[33m19622fc[m HEAD@{34}: rebase (abort): returning to refs/heads/Sissy
+[33m9f0b0e1[m HEAD@{35}: rebase (start): checkout origin/Sissy
+[33m19622fc[m HEAD@{36}: reset: moving to HEAD
+[33m19622fc[m HEAD@{37}: reset: moving to HEAD
+[33m19622fc[m HEAD@{38}: commit: Barra de navegacion y ya esta
+[33m3a2ff1f[m HEAD@{39}: checkout: moving from main to Sissy
+[33m07b028c[m[33m ([m[1;32mmain[m[33m)[m HEAD@{40}: checkout: moving from Sissy to main
+[33m3a2ff1f[m HEAD@{41}: commit: [ADD]Pantalla de Login
+[33m07b028c[m[33m ([m[1;32mmain[m[33m)[m HEAD@{42}: checkout: moving from main to Sissy
+[33m07b028c[m[33m ([m[1;32mmain[m[33m)[m HEAD@{43}: commit: [ADD] Creacion de persoje
+[33mdfea4f5[m HEAD@{44}: clone: from https://github.com/rolcraft-tfg/Rolcraft.git
