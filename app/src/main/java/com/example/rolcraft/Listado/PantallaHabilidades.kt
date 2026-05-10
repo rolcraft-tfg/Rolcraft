@@ -40,19 +40,19 @@ fun PantallaHabilidades() {
     var habilidadSeleccionada by remember { mutableStateOf<Habilidad?>(null) }
 
     val habilidades = listOf(
-        Habilidad("Ácido", "Daño corrosivo.", R.drawable.acido_resized),
-        Habilidad("Agua", "Ataque de agua.", R.drawable.agua_resized),
-        Habilidad("Contundente", "Golpe físico pesado.", R.drawable.contundente_resized),
-        Habilidad("Cortante", "Daño de corte.", R.drawable.cortante_resized),
-        Habilidad("Fuerza", "Energía mágica pura.", R.drawable.fuerza_resized),
-        Habilidad("Hielo", "Daño de frío.", R.drawable.hielo_resized),
-        Habilidad("Necrótico", "Energía oscura.", R.drawable.necrotico_resized),
-        Habilidad("Perforante", "Ataque punzante.", R.drawable.perforante_resized),
-        Habilidad("Psíquico", "Ataque mental.", R.drawable.psiquico_resized),
-        Habilidad("Radiante", "Luz divina.", R.drawable.radiante_resized),
-        Habilidad("Relámpago", "Descarga eléctrica.", R.drawable.relampago_resized),
-        Habilidad("Trueno", "Onda sonora.", R.drawable.trueno_resized),
-        Habilidad("Veneno", "Daño progresivo.", R.drawable.veneno_resized)
+        Habilidad("Ácido", "Daño corrosivo.", R.drawable.acido),
+        Habilidad("Agua", "Ataque de agua.", R.drawable.agua),
+        Habilidad("Contundente", "Golpe físico pesado.", R.drawable.contundente),
+        Habilidad("Cortante", "Daño de corte.", R.drawable.cortante),
+        Habilidad("Fuerza", "Energía mágica pura.", R.drawable.fuerza),
+        Habilidad("Hielo", "Daño de frío.", R.drawable.hielo),
+        Habilidad("Necrótico", "Energía oscura.", R.drawable.necrotico),
+        Habilidad("Perforante", "Ataque punzante.", R.drawable.perforante),
+        Habilidad("Psíquico", "Ataque mental.", R.drawable.psiquico),
+        Habilidad("Radiante", "Luz divina.", R.drawable.radiante),
+        Habilidad("Relámpago", "Descarga eléctrica.", R.drawable.relampago),
+        Habilidad("Trueno", "Onda sonora.", R.drawable.trueno),
+        Habilidad("Veneno", "Daño progresivo.", R.drawable.veneno)
     )
 
     val filtrados = habilidades.filter {

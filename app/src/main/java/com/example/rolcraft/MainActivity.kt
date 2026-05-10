@@ -10,7 +10,6 @@ import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.People
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -97,7 +96,9 @@ class MainActivity : ComponentActivity() {
 
             var temaDados by remember {
                 mutableStateOf(
-                    DiceTheme.AURORA
+                    DiceTheme.valueOf(
+                        prefs.getString("tema_dados", DiceTheme.AURORA.name)!!
+                    )
                 )
             }
 
@@ -120,20 +121,22 @@ class MainActivity : ComponentActivity() {
 
                             modoOscuro = it
 
-                            prefs.edit()
-                                .putBoolean(
+                            prefs.edit {
+                                putBoolean(
                                     "modo_oscuro",
                                     it
                                 )
-                                .apply()
+                            }
                         },
 
                         temaDados = temaDados,
 
                         onCambiarTemaDados = {
                             temaDados = it
+                            prefs.edit {
+                                putString("tema_dados", it.name)
+                            }
                         },
-
                         auth = auth
                     )
                 }
@@ -356,7 +359,8 @@ fun AppNavegacion(
                 PantallaFichaPersonaje(
 
                     id = id,
-                    viewModel = viewModel
+                    viewModel = viewModel,
+                    temaDados = temaDados
                 )
             }
 

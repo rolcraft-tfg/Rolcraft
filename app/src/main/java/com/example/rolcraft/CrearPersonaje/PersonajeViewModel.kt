@@ -3,6 +3,7 @@ package com.example.rolcraft.CrearPersonaje
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.rolcraft.Dados.DiceTheme
 import com.example.rolcraft.Data.Local.PersonajeEntity
 import com.example.rolcraft.Data.Repository.PersonajeRepository
 import kotlinx.coroutines.launch
@@ -24,6 +25,8 @@ class PersonajeViewModel(
     private fun actualizar(update: Personaje.() -> Personaje) {
         personaje = personaje.update()
     }
+    var temaDados by mutableStateOf(DiceTheme.AURORA)
+        private set
 
     // ----------- ACTUALIZACIONES -----------
 
@@ -269,5 +272,9 @@ class PersonajeViewModel(
             repository.insertarPersonaje(copia.toEntity())
             cargarPersonajes()
         }
+    }
+
+    fun cambiarTemaDados(nuevoTema: DiceTheme) {
+        temaDados = nuevoTema
     }
 }
