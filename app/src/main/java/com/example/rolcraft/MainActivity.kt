@@ -6,8 +6,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.material.icons.filled.ListAlt
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.automirrored.filled.ListAlt
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
@@ -31,6 +32,7 @@ import com.example.rolcraft.RecuperarContrasenya.PantallaRecuperar
 import com.example.rolcraft.Registro.PantallaRegistro
 import com.example.rolcraft.ui.theme.RolCraftTheme
 import com.google.firebase.auth.FirebaseAuth
+import androidx.core.content.edit
 
 class MainActivity : ComponentActivity() {
 
@@ -104,12 +106,8 @@ class MainActivity : ComponentActivity() {
             ) {
 
                 Surface(
-                    color = MaterialTheme
-                        .colorScheme
-                        .background,
-
-                    modifier = Modifier
-                        .pointerInput(Unit) {}
+                    color = MaterialTheme.colorScheme.background,
+                    modifier = Modifier.pointerInput(Unit) {}
                 ) {
 
                     AppNavegacion(
@@ -279,7 +277,6 @@ fun AppNavegacion(
                     viewModel = viewModel,
 
                     onCrearPersonaje = {
-
                         viewModel.resetearPersonaje()
 
                         navController.navigate("crear")
@@ -288,18 +285,6 @@ fun AppNavegacion(
                     onPantallaFichaPersonaje = { id ->
 
                         navController.navigate("ficha/$id")
-                    },
-
-                    onCerrarSesion = {
-
-                        auth.signOut()
-
-                        navController.navigate("login") {
-
-                            popUpTo("inicio") {
-                                inclusive = true
-                            }
-                        }
                     }
                 )
             }
@@ -307,17 +292,8 @@ fun AppNavegacion(
             // HABILIDADES
 
             composable("habilidades") {
-
-                PantallaHabilidades(
-
-                    onVolver = {
-
-                        navController.popBackStack()
-                    }
-                )
+                PantallaHabilidades()
             }
-
-            // CREAR
 
             composable("crear") {
 
@@ -352,12 +328,6 @@ fun AppNavegacion(
                 PantallaDatosPersonaje(
 
                     viewModel = viewModel,
-
-                    onAnterior = {
-
-                        navController.popBackStack()
-                    },
-
                     onGuardar = {
 
                         viewModel.guardarPersonaje()
@@ -386,32 +356,7 @@ fun AppNavegacion(
                 PantallaFichaPersonaje(
 
                     id = id,
-
-                    viewModel = viewModel,
-
-                    onAnterior = {
-
-                        navController.popBackStack()
-                    },
-
-                    onGuardar = {
-
-                        viewModel.guardarPersonaje()
-
-                        navController.navigate("inicio") {
-
-                            popUpTo("inicio") {
-                                inclusive = true
-                            }
-                        }
-                    },
-
-                    onNuevoPersonaje = {
-
-                        viewModel.resetearPersonaje()
-
-                        navController.navigate("crear")
-                    }
+                    viewModel = viewModel
                 )
             }
 
@@ -491,14 +436,8 @@ fun BarraInferior(
                     launchSingleTop = true
                 }
             },
-
-            icon = {
-                Icon(Icons.Default.ListAlt, null)
-            },
-
-            label = {
-                Text("Habilidades")
-            }
+            icon = { Icon(Icons.AutoMirrored.Filled.ListAlt, null) },
+            label = { Text("Habilidades") }
         )
 
         NavigationBarItem(
@@ -537,14 +476,8 @@ fun BarraInferior(
                     }
                 }
             },
-
-            icon = {
-                Icon(Icons.Default.ExitToApp, null)
-            },
-
-            label = {
-                Text("Salir")
-            }
+            icon = { Icon(Icons.AutoMirrored.Filled.ExitToApp, null) },
+            label = { Text("Salir") }
         )
     }
 }

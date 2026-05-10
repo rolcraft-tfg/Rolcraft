@@ -5,8 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.rolcraft.Data.Local.PersonajeEntity
 import com.example.rolcraft.Data.Repository.PersonajeRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class PersonajeViewModel(
@@ -23,18 +21,13 @@ class PersonajeViewModel(
 
     private var personajeOriginal: Int? = null
 
-    private val _personajeActual = MutableStateFlow<Personaje?>(null)
-    val personajeActual: StateFlow<Personaje?> = _personajeActual
-
     private fun actualizar(update: Personaje.() -> Personaje) {
         personaje = personaje.update()
     }
 
     // ----------- ACTUALIZACIONES -----------
 
-    fun actualizarNombre(n: String) =
-        actualizar { copy(nombre = n.take(20)) }
-
+    fun actualizarNombre(n: String) = actualizar { copy(nombre = n.take(20)) }
     fun actualizarGenero(g: String) = actualizar { copy(genero = g) }
     fun actualizarRaza(r: String) = actualizar { copy(raza = r) }
     fun actualizarClase(c: String) = actualizar { copy(clase = c, subclase = "") }
@@ -73,52 +66,37 @@ class PersonajeViewModel(
             sabiduria = valores[4],
             carisma = valores[5]
         )
+
         personaje = calcularEstadisticas(personaje)
     }
 
-    // ----------- EDICIÓN -----------
-
-    fun empezarEdicion(pj: Personaje) {
-        personaje = pj
-        personajeOriginal = pj.id
-        modoEdicion = true
-    }
+    // ----------- GUARDAR -----------
 
     fun guardarPersonaje() {
         viewModelScope.launch {
 
-            // 1. Calcular estadísticas (AC, iniciativa, HP)
             val pjConStats = calcularEstadisticas(personaje)
 
-            // 2. Limpiar nombre
             val nombreLimpio = pjConStats.nombre
                 .trim()
                 .replace(Regex("\\s+"), " ")
 
-            val personajeFinal = pjConStats.copy(nombre = nombreLimpio)
+            var personajeFinal = pjConStats.copy(nombre = nombreLimpio)
 
-            // 3. Guardar en BD
-            if (modoEdicion) {
+            if (modoEdicion && personajeOriginal != null) {
+                personajeFinal = personajeFinal.copy(id = personajeOriginal!!)
                 repository.actualizarPersonaje(personajeFinal.toEntity())
             } else {
+                personajeFinal = personajeFinal.copy(id = 0)
                 repository.insertarPersonaje(personajeFinal.toEntity())
             }
 
-            modoEdicion = false
+            resetearPersonaje()
             cargarPersonajes()
         }
     }
 
-
-    fun insertarPersonaje(personaje: Personaje) {
-        viewModelScope.launch {
-            val copia = personaje.copy(id = 0)
-            repository.insertarPersonaje(copia.toEntity())
-            cargarPersonajes()
-        }
-    }
-
-    // ----------- 🔥 FIX AQUÍ -----------
+    // ----------- CARGAR LISTA -----------
 
     fun cargarPersonajes() {
         viewModelScope.launch {
@@ -153,6 +131,38 @@ class PersonajeViewModel(
         }
     }
 
+    // ----------- CARGAR PARA EDITAR -----------
+
+    fun cargarPersonaje(id: Int) {
+        viewModelScope.launch {
+            val entity = repository.obtenerPersonajePorId(id)
+            if (entity != null) {
+                personaje = Personaje(
+                    id = entity.id,
+                    nombre = entity.nombre,
+                    genero = entity.genero,
+                    raza = entity.raza,
+                    clase = entity.clase,
+                    subclase = entity.subclase,
+                    trasfondo = entity.trasfondo,
+                    alineamiento = entity.alineamiento,
+                    nivel = entity.nivel,
+                    fuerza = entity.fuerza,
+                    destreza = entity.destreza,
+                    constitucion = entity.constitucion,
+                    inteligencia = entity.inteligencia,
+                    sabiduria = entity.sabiduria,
+                    carisma = entity.carisma,
+                    ac = entity.ac,
+                    iniciativa = entity.iniciativa,
+                    hp = entity.hp
+                )
+                personajeOriginal = entity.id
+                modoEdicion = true
+            }
+        }
+    }
+
     // ----------- OTROS -----------
 
     fun eliminarPersonaje(personaje: Personaje) {
@@ -179,9 +189,8 @@ class PersonajeViewModel(
     fun resetearPersonaje() {
         personaje = Personaje()
         modoEdicion = false
+        personajeOriginal = null
     }
-
-    // ----------- CONVERSIÓN -----------
 
     private fun Personaje.toEntity(): PersonajeEntity {
         return PersonajeEntity(
@@ -194,12 +203,12 @@ class PersonajeViewModel(
             subclase = this.subclase,
             trasfondo = this.trasfondo,
             alineamiento = this.alineamiento,
-            fuerza = this.fuerza,
-            destreza = this.destreza,
-            constitucion = this.constitucion,
-            inteligencia = this.inteligencia,
-            sabiduria = this.sabiduria,
-            carisma = this.carisma,
+            fuerza = this.fuerza ?: 0,
+            destreza = this.destreza ?: 0,
+            constitucion = this.constitucion ?: 0,
+            inteligencia = this.inteligencia ?: 0,
+            sabiduria = this.sabiduria ?: 0,
+            carisma = this.carisma ?: 0,
             ac = this.ac,
             iniciativa = this.iniciativa,
             hp = this.hp,
@@ -207,41 +216,13 @@ class PersonajeViewModel(
         )
     }
 
-    fun cargarPersonaje(id: Int) {
-        viewModelScope.launch {
-            val entity = repository.obtenerPersonajePorId(id)
-            _personajeActual.value = entity?.let {
-                Personaje(
-                    id = it.id,
-                    nombre = it.nombre,
-                    genero = it.genero,
-                    raza = it.raza,
-                    clase = it.clase,
-                    subclase = it.subclase,
-                    trasfondo = it.trasfondo,
-                    alineamiento = it.alineamiento,
-                    nivel = it.nivel,
-                    fuerza = it.fuerza,
-                    destreza = it.destreza,
-                    constitucion = it.constitucion,
-                    inteligencia = it.inteligencia,
-                    sabiduria = it.sabiduria,
-                    carisma = it.carisma,
-                    ac = it.ac,
-                    iniciativa = it.iniciativa,
-                    hp = it.hp
-                )
-            }
-        }
-    }
-
     fun actualizarAtributos(
-        fuerza: Int,
-        destreza: Int,
-        constitucion: Int,
-        inteligencia: Int,
-        sabiduria: Int,
-        carisma: Int
+        fuerza: Int?,
+        destreza: Int?,
+        constitucion: Int?,
+        inteligencia: Int?,
+        sabiduria: Int?,
+        carisma: Int?
     ) = actualizar {
         copy(
             fuerza = fuerza,
@@ -252,12 +233,14 @@ class PersonajeViewModel(
             carisma = carisma
         )
     }
-    fun calcularEstadisticas(personaje: Personaje): Personaje {
-        val modDex = (personaje.destreza - 10) / 2
-        val modCon = (personaje.constitucion - 10) / 2
 
+    fun calcularEstadisticas(personaje: Personaje): Personaje {
+        val dex = personaje.destreza ?: 10
+        val con = personaje.constitucion ?: 10
+        val modDex = (dex - 10) / 2
+        val modCon = (con - 10) / 2
         val ac = 10 + modDex
-        val iniciativa = modDex
+        val iniciativa = maxOf(modDex, 0)
 
         val hpBase = when (personaje.clase) {
             "Bárbaro" -> 12
@@ -275,8 +258,16 @@ class PersonajeViewModel(
             hp = hp
         )
     }
+
     fun aplicarEstadisticas() {
         personaje = calcularEstadisticas(personaje)
     }
 
+    fun guardarPersonajeDuplicado(personaje: Personaje) {
+        viewModelScope.launch {
+            val copia = personaje.copy(id = 0)
+            repository.insertarPersonaje(copia.toEntity())
+            cargarPersonajes()
+        }
+    }
 }
