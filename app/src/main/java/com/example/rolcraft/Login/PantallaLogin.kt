@@ -237,40 +237,40 @@ fun PantallaLogin(
 
                     if (task.isSuccessful) {
 
-                        // =========================
-                        // GUARDAR DATOS
-                        // =========================
+                        val user = auth.currentUser
 
-                        if (recordarSesion) {
+                        if (user != null && user.isEmailVerified) {
 
-                            prefs.edit()
-                                .putString(
-                                    "email",
-                                    usuario.trim()
-                                )
-                                .putString(
-                                    "password",
-                                    password.trim()
-                                )
-                                .putBoolean(
-                                    "recordar",
-                                    true
-                                )
-                                .apply()
+                            // =========================
+                            // GUARDAR DATOS
+                            // =========================
+
+                            if (recordarSesion) {
+
+                                prefs.edit()
+                                    .putString("email", usuario.trim())
+                                    .putString("password", password.trim())
+                                    .putBoolean("recordar", true)
+                                    .apply()
+
+                            } else {
+
+                                prefs.edit()
+                                    .clear()
+                                    .apply()
+                            }
+
+                            onLoginCorrecto()
 
                         } else {
 
-                            prefs.edit()
-                                .clear()
-                                .apply()
+                            mensajeError = "Debes verificar tu correo antes de iniciar sesión"
+                            auth.signOut()
                         }
-
-                        onLoginCorrecto()
 
                     } else {
 
-                        mensajeError =
-                            "Usuario o contraseña incorrectos"
+                        mensajeError = "Usuario o contraseña incorrectos"
                     }
                 }
             },

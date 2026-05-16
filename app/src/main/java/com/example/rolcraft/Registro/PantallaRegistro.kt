@@ -7,13 +7,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-
-// ICONOS
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-
-// FIREBASE
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 
@@ -29,50 +25,17 @@ fun esPasswordValida(password: String): Boolean {
 fun PantallaRegistro(
     onVolver: () -> Unit
 ) {
+    var usuario by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
 
-    var usuario by remember {
-        mutableStateOf("")
-    }
+    var passwordError by remember { mutableStateOf(false) }
+    var confirmPasswordError by remember { mutableStateOf(false) }
+    var passwordVisible by remember { mutableStateOf(false) }
 
-    var email by remember {
-        mutableStateOf("")
-    }
-
-    var password by remember {
-        mutableStateOf("")
-    }
-
-    var confirmPassword by remember {
-        mutableStateOf("")
-    }
-
-    // CONTROL
-
-    var passwordError by remember {
-        mutableStateOf(false)
-    }
-
-    var confirmPasswordError by remember {
-        mutableStateOf(false)
-    }
-
-    var passwordVisible by remember {
-        mutableStateOf(false)
-    }
-
-    // MENSAJES
-
-    var mensaje by remember {
-        mutableStateOf("")
-    }
-
-    // LOADING
-
-    var cargando by remember {
-        mutableStateOf(false)
-    }
-
-    // FIREBASE
+    var mensaje by remember { mutableStateOf("") }
+    var cargando by remember { mutableStateOf(false) }
 
     val auth = FirebaseAuth.getInstance()
 
@@ -80,115 +43,51 @@ fun PantallaRegistro(
         modifier = Modifier
             .fillMaxSize()
             .padding(24.dp),
-
         verticalArrangement = Arrangement.Center
     ) {
 
-        // =========================
-        // TÍTULO
-        // =========================
-
-        Text(
-            text = "Registro",
-            style = MaterialTheme.typography.headlineMedium
-        )
-
+        Text("Registro", style = MaterialTheme.typography.headlineMedium)
         Spacer(Modifier.height(32.dp))
 
-        // =========================
         // USUARIO
-        // =========================
-
         OutlinedTextField(
             value = usuario,
-
-            onValueChange = {
-                usuario = it
-            },
-
-            label = {
-                Text("Nombre de usuario")
-            },
-
+            onValueChange = { usuario = it },
+            label = { Text("Nombre de usuario") },
             modifier = Modifier.fillMaxWidth(),
-
             singleLine = true
         )
 
         Spacer(Modifier.height(16.dp))
 
-        // =========================
         // EMAIL
-        // =========================
-
         OutlinedTextField(
             value = email,
-
-            onValueChange = {
-                email = it
-            },
-
-            label = {
-                Text("Email")
-            },
-
+            onValueChange = { email = it },
+            label = { Text("Email") },
             modifier = Modifier.fillMaxWidth(),
-
             singleLine = true
         )
 
         Spacer(Modifier.height(16.dp))
 
-        // =========================
-        // CONTRASEÑA
-        // =========================
-
+        // PASSWORD
         OutlinedTextField(
             value = password,
-
             onValueChange = {
-
                 password = it
-
-                passwordError =
-                    !esPasswordValida(it)
-
-                confirmPasswordError =
-                    confirmPassword.isNotEmpty() &&
-                            confirmPassword != it
+                passwordError = !esPasswordValida(it)
+                confirmPasswordError = confirmPassword.isNotEmpty() && confirmPassword != it
             },
-
-            label = {
-                Text("Contraseña")
-            },
-
+            label = { Text("Contraseña") },
             modifier = Modifier.fillMaxWidth(),
-
             singleLine = true,
-
             isError = passwordError,
-
-            visualTransformation =
-                if (passwordVisible)
-                    VisualTransformation.None
-                else
-                    PasswordVisualTransformation(),
-
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = {
-
-                IconButton(
-                    onClick = {
-                        passwordVisible = !passwordVisible
-                    }
-                ) {
-
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
                     Icon(
-                        imageVector =
-                            if (passwordVisible)
-                                Icons.Default.Visibility
-                            else
-                                Icons.Default.VisibilityOff,
-
+                        imageVector = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                         contentDescription = null
                     )
                 }
@@ -196,211 +95,123 @@ fun PantallaRegistro(
         )
 
         if (passwordError && password.isNotBlank()) {
-
             Text(
                 text = "La contraseña debe tener mínimo 8 caracteres",
-
                 color = MaterialTheme.colorScheme.error,
-
                 style = MaterialTheme.typography.bodySmall
             )
         }
 
         Spacer(Modifier.height(12.dp))
 
-        // =========================
-        // CONFIRMAR CONTRASEÑA
-        // =========================
-
+        // CONFIRM PASSWORD
         OutlinedTextField(
             value = confirmPassword,
-
             onValueChange = {
-
                 confirmPassword = it
-
-                confirmPasswordError =
-                    it != password
+                confirmPasswordError = it != password
             },
-
-            label = {
-                Text("Repetir contraseña")
-            },
-
+            label = { Text("Repetir contraseña") },
             modifier = Modifier.fillMaxWidth(),
-
             singleLine = true,
-
             isError = confirmPasswordError,
-
-            visualTransformation =
-                if (passwordVisible)
-                    VisualTransformation.None
-                else
-                    PasswordVisualTransformation(),
-
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = {
-
-                IconButton(
-                    onClick = {
-                        passwordVisible = !passwordVisible
-                    }
-                ) {
-
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
                     Icon(
-                        imageVector =
-                            if (passwordVisible)
-                                Icons.Default.Visibility
-                            else
-                                Icons.Default.VisibilityOff,
-
+                        imageVector = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                         contentDescription = null
                     )
                 }
             }
         )
 
-        if (
-            confirmPasswordError &&
-            confirmPassword.isNotBlank()
-        ) {
-
+        if (confirmPasswordError && confirmPassword.isNotBlank()) {
             Text(
                 text = "Las contraseñas no coinciden",
-
                 color = MaterialTheme.colorScheme.error,
-
                 style = MaterialTheme.typography.bodySmall
             )
         }
 
         Spacer(Modifier.height(24.dp))
 
-        // =========================
         // BOTÓN REGISTRO
-        // =========================
-
         Button(
             onClick = {
-
                 mensaje = ""
 
-                // VALIDAR VACÍOS
-
-                if (
-                    usuario.isBlank() ||
-                    email.isBlank() ||
-                    password.isBlank() ||
-                    confirmPassword.isBlank()
-                ) {
-
-                    mensaje =
-                        "Faltan campos por rellenar"
-
+                if (usuario.isBlank() || email.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
+                    mensaje = "Faltan campos por rellenar"
                     return@Button
                 }
-
-                // VALIDAR PASSWORD
 
                 if (!esPasswordValida(password)) {
-
-                    mensaje =
-                        "La contraseña debe tener mínimo 8 caracteres"
-
+                    mensaje = "La contraseña debe tener mínimo 8 caracteres"
                     return@Button
                 }
 
-                // VALIDAR COINCIDENCIA
-
                 if (password != confirmPassword) {
-
-                    mensaje =
-                        "Las contraseñas no coinciden"
-
+                    mensaje = "Las contraseñas no coinciden"
                     return@Button
                 }
 
                 cargando = true
 
-                auth.createUserWithEmailAndPassword(
-                    email.trim(),
-                    password.trim()
-                ).addOnCompleteListener { task ->
+                auth.createUserWithEmailAndPassword(email.trim(), password.trim())
+                    .addOnCompleteListener { task ->
 
-                    cargando = false
+                        cargando = false
 
-                    if (task.isSuccessful) {
+                        if (task.isSuccessful) {
 
-                        val profileUpdates =
-                            UserProfileChangeRequest.Builder()
+                            val user = auth.currentUser
+
+                            // Actualizar nombre
+                            val profileUpdates = UserProfileChangeRequest.Builder()
                                 .setDisplayName(usuario.trim())
                                 .build()
 
-                        auth.currentUser
-                            ?.updateProfile(profileUpdates)
-                            ?.addOnCompleteListener {
+                            user?.updateProfile(profileUpdates)
 
-                                mensaje =
-                                    "Usuario registrado correctamente"
-                            }
+                            // Enviar email de verificación
+                            user?.sendEmailVerification()
 
-                    } else {
+                            mensaje = "Revisa tu correo para verificar la cuenta"
 
-                        mensaje =
-                            "No se pudo registrar el usuario"
+                            // Cerrar sesión
+                            auth.signOut()
+
+                        } else {
+                            mensaje = "No se pudo registrar el usuario"
+                        }
                     }
-                }
             },
-
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp)
         ) {
-
             if (cargando) {
-
                 CircularProgressIndicator()
-
             } else {
-
                 Text("Registrarse")
             }
         }
 
-        // =========================
-        // MENSAJE
-        // =========================
-
         if (mensaje.isNotEmpty()) {
-
-            Spacer(modifier = Modifier.height(12.dp))
-
+            Spacer(Modifier.height(12.dp))
             Text(
                 text = mensaje,
-
-                color = if (
-                    mensaje.contains("correctamente")
-                )
-                    MaterialTheme.colorScheme.primary
-                else
-                    MaterialTheme.colorScheme.error
+                color = if (mensaje.contains("correo")) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
             )
         }
 
         Spacer(Modifier.height(12.dp))
 
-        // =========================
-        // VOLVER
-        // =========================
-
         TextButton(
-            onClick = {
-                onVolver()
-            },
-
+            onClick = { onVolver() },
             modifier = Modifier.fillMaxWidth()
         ) {
-
             Text("Volver al login")
         }
     }
