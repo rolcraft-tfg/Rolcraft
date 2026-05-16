@@ -107,8 +107,10 @@ class DiceAnimatorCompose(private val context: Context) {
 
             if (bounceCount > maxBounces) break
 
+            // ⭐⭐⭐ CAMBIO IMPORTANTE ⭐⭐⭐
+            // Enviar el NÚMERO DE CARA, NO el drawable ID
             val randomFace = (1..dice.faces).random()
-            onUpdateFace(dice.images[randomFace - 1])
+            onUpdateFace(randomFace)
 
             onUpdatePosition(pos)
             onUpdateRotation(rot)
@@ -117,8 +119,10 @@ class DiceAnimatorCompose(private val context: Context) {
             yield()
         }
 
+        // ⭐⭐⭐ CAMBIO IMPORTANTE ⭐⭐⭐
+        // Igual aquí: enviar el número de cara
         val result = Random.nextInt(1, dice.faces + 1)
-        onUpdateFace(dice.images[result - 1])
+        onUpdateFace(result)
 
         vibrar(60)
 

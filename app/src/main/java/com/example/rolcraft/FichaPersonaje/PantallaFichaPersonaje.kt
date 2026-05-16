@@ -32,13 +32,16 @@ import com.example.rolcraft.CrearPersonaje.Personaje
 import com.example.rolcraft.CrearPersonaje.PersonajeViewModel
 import com.example.rolcraft.Dados.DiceAnimatorCompose
 import com.example.rolcraft.Dados.DiceLibrary
+import com.example.rolcraft.Dados.DiceTheme
+import com.example.rolcraft.Dados.obtenerImagenDado
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
 fun PantallaFichaPersonaje(
     id: Int,
-    viewModel: PersonajeViewModel
+    viewModel: PersonajeViewModel,
+    temaDados: DiceTheme
 ) {
     var expanded by remember { mutableStateOf(false) }
     var selectedTab by remember { mutableStateOf("abilities") }
@@ -50,14 +53,13 @@ fun PantallaFichaPersonaje(
 
     val personaje = viewModel.personaje
 
-    // Si aún no se ha cargado (ID = 0 y modoEdicion = true)
     if (viewModel.modoEdicion && personaje.id == 0) {
-        Text("Cargando...", color = Color.White)
+        Text("Cargando...", color = MaterialTheme.colorScheme.onBackground)
         return
     }
 
     Scaffold(
-        containerColor = Color(0xFF0F1720)
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
 
         Box(
@@ -90,7 +92,7 @@ fun PantallaFichaPersonaje(
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .background(Color(0xFF16202A))
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
                                 .padding(12.dp)
                         ) {
                             Row(
@@ -107,14 +109,14 @@ fun PantallaFichaPersonaje(
                                         "info" -> "Info del Personaje"
                                         else -> "..."
                                     },
-                                    color = Color.White,
+                                    color = MaterialTheme.colorScheme.onSurface,
                                     style = MaterialTheme.typography.titleMedium
                                 )
 
                                 Icon(
                                     imageVector = Icons.Default.ArrowDropDown,
                                     contentDescription = null,
-                                    tint = Color.White
+                                    tint = MaterialTheme.colorScheme.onSurface
                                 )
                             }
 
@@ -152,7 +154,7 @@ fun PantallaFichaPersonaje(
                     item {
                         when (selectedTab) {
                             "abilities" -> SeccionHabilidades(personaje)
-                            "dados" -> PantallaDadosInterna()
+                            "dados" -> PantallaDadosInterna(viewModel.temaDados)
                             "info" -> SeccionInfoPersonaje(personaje)
                         }
                     }
@@ -168,13 +170,13 @@ fun EncabezadoFicha(personaje: Personaje) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFF1B2733))
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(16.dp)
     ) {
 
         Text(
             text = personaje.nombre,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onSurface,
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold
         )
@@ -186,19 +188,28 @@ fun EncabezadoFicha(personaje: Personaje) {
             modifier = Modifier.fillMaxWidth()
         ) {
             EncabezadoStat("AC", personaje.ac.toString())
-            EncabezadoStat("Initiative", if (personaje.iniciativa >= 0) "+${personaje.iniciativa}" else personaje.iniciativa.toString())
+            EncabezadoStat(
+                "Initiative",
+                if (personaje.iniciativa >= 0) "+${personaje.iniciativa}" else personaje.iniciativa.toString()
+            )
             EncabezadoStat("HP", "${personaje.hp}/${personaje.hp}")
-
         }
     }
 }
 
-
 @Composable
 fun EncabezadoStat(titulo: String, valor: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(titulo, color = Color.LightGray, style = MaterialTheme.typography.bodySmall)
-        Text(valor, color = Color.White, style = MaterialTheme.typography.titleMedium)
+        Text(
+            titulo,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.bodySmall
+        )
+        Text(
+            valor,
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.titleMedium
+        )
     }
 }
 
@@ -213,7 +224,7 @@ fun SeccionHabilidades(personaje: Personaje) {
 
         Text(
             text = "Abilities",
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onBackground,
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
         )
@@ -238,7 +249,9 @@ fun HabilidadItem(nombre: String, valor: Int?) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 6.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF1B2733)),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
         shape = RoundedCornerShape(12.dp)
     ) {
 
@@ -248,11 +261,15 @@ fun HabilidadItem(nombre: String, valor: Int?) {
         ) {
 
             Column {
-                Text(nombre, color = Color.White, fontWeight = FontWeight.Bold)
+                Text(
+                    nombre,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.Bold
+                )
 
                 Text(
                     text = modificador?.let { if (it >= 0) "+$it" else "$it" } ?: "–",
-                    color = Color.LightGray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
@@ -260,7 +277,7 @@ fun HabilidadItem(nombre: String, valor: Int?) {
 
             Text(
                 text = valor?.toString() ?: "–",
-                color = Color(0xFF7EA7FF),
+                color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
             )
@@ -269,11 +286,10 @@ fun HabilidadItem(nombre: String, valor: Int?) {
 }
 
 @Composable
-fun PantallaDadosInterna(
-) {
+fun PantallaDadosInterna(temaDados: DiceTheme) {
+
     val context = LocalContext.current
     val animator = remember { DiceAnimatorCompose(context) }
-
     val scope = rememberCoroutineScope()
 
     var imagenActual by remember { mutableStateOf<Int?>(null) }
@@ -322,7 +338,7 @@ fun PantallaDadosInterna(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFF1E1E1E))
+                .background(MaterialTheme.colorScheme.surfaceVariant)
                 .padding(8.dp)
                 .align(Alignment.TopCenter),
             horizontalArrangement = Arrangement.SpaceEvenly,
@@ -340,8 +356,10 @@ fun PantallaDadosInterna(
 
                 val interaction = remember { MutableInteractionSource() }
                 val isPressed by interaction.collectIsPressedAsState()
+
                 val backgroundColor =
-                    if (isPressed) Color(0xFF444444) else Color(0xFF2A2A2A)
+                    if (isPressed) MaterialTheme.colorScheme.surface
+                    else MaterialTheme.colorScheme.surfaceVariant
 
                 Box(
                     modifier = Modifier
@@ -361,15 +379,19 @@ fun PantallaDadosInterna(
                                     dice = dice,
                                     screenWidth = screenWidth,
                                     screenHeight = screenHeight,
-                                    onUpdateFace = { imagenActual = it },
+                                    onUpdateFace = { face ->
+                                        imagenActual = obtenerImagenDado(context, dice, face, temaDados)
+                                    },
                                     onUpdatePosition = { position = it },
                                     onUpdateRotation = { rotation = it },
+
                                     onFinish = { res ->
                                         resultado = res
                                         launch {
                                             delay(800)
                                             volverAlCentro = true
                                             mostrarResultado = true
+                                            bloqueado = false
                                         }
                                     }
                                 )
@@ -379,7 +401,7 @@ fun PantallaDadosInterna(
                         interactionSource = interaction,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Transparent,
-                            contentColor = Color.White
+                            contentColor = MaterialTheme.colorScheme.onSurface
                         ),
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(0.dp)
@@ -392,20 +414,22 @@ fun PantallaDadosInterna(
 
         if (dadoVisible) {
             imagenActual?.let { img ->
-                Image(
-                    painter = painterResource(id = img),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(150.dp)
-                        .graphicsLayer {
-                            translationX = smoothX
-                            translationY = smoothY
-                            rotationZ = smoothRot
-                        }
-                        .align(Alignment.Center)
-                        .zIndex(30f),
-                    contentScale = ContentScale.Fit
-                )
+                if (img != 0) {
+                    Image(
+                        painter = painterResource(id = img),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(150.dp)
+                            .graphicsLayer {
+                                translationX = smoothX
+                                translationY = smoothY
+                                rotationZ = smoothRot
+                            }
+                            .align(Alignment.Center)
+                            .zIndex(30f),
+                        contentScale = ContentScale.Fit
+                    )
+                }
             }
         }
 
@@ -421,13 +445,13 @@ fun PantallaDadosInterna(
             Column(
                 modifier = Modifier
                     .padding(20.dp)
-                    .background(Color(0xAA000000), RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.9f), RoundedCornerShape(12.dp))
                     .padding(20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
                     text = "El resultado es: $resultado",
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.headlineSmall
                 )
 
@@ -437,7 +461,6 @@ fun PantallaDadosInterna(
                     mostrarResultado = false
                     dadoVisible = false
                     volverAlCentro = false
-                    bloqueado = false
                 }) {
                     Text("Aceptar")
                 }
@@ -448,13 +471,14 @@ fun PantallaDadosInterna(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color(0x88000000))
+                    .background(MaterialTheme.colorScheme.background.copy(alpha = 0.6f))
                     .zIndex(10f)
                     .pointerInput(Unit) {}
             )
         }
     }
 }
+
 @Composable
 fun SeccionInfoPersonaje(personaje: Personaje) {
 
@@ -466,7 +490,7 @@ fun SeccionInfoPersonaje(personaje: Personaje) {
 
         Text(
             text = "Información del Personaje",
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onBackground,
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
         )
@@ -482,6 +506,7 @@ fun SeccionInfoPersonaje(personaje: Personaje) {
         InfoItem("Alineamiento", personaje.alineamiento)
     }
 }
+
 @Composable
 fun InfoItem(titulo: String, valor: String) {
 
@@ -489,7 +514,9 @@ fun InfoItem(titulo: String, valor: String) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 6.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF1B2733)),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
         shape = RoundedCornerShape(12.dp)
     ) {
 
@@ -500,14 +527,14 @@ fun InfoItem(titulo: String, valor: String) {
 
             Text(
                 text = titulo,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.weight(1f)
             )
 
             Text(
                 text = valor.ifBlank { "—" },
-                color = Color(0xFF7EA7FF),
+                color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.titleMedium
             )
         }

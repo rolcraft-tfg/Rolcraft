@@ -8,10 +8,10 @@ object DiceLibrary {
         name = "D4",
         faces = 4,
         images = listOf(
-            R.drawable.d4_1,
-            R.drawable.d4_2,
-            R.drawable.d4_3,
-            R.drawable.d4_4
+            R.drawable.d4_1_aurora,
+            R.drawable.d4_2_aurora,
+            R.drawable.d4_3_aurora,
+            R.drawable.d4_4_aurora
         )
     )
 
@@ -19,12 +19,12 @@ object DiceLibrary {
         name = "D6",
         faces = 6,
         images = listOf(
-            R.drawable.d6_1,
-            R.drawable.d6_2,
-            R.drawable.d6_3,
-            R.drawable.d6_4,
-            R.drawable.d6_5,
-            R.drawable.d6_6
+            R.drawable.d6_1_aurora,
+            R.drawable.d6_2_aurora,
+            R.drawable.d6_3_aurora,
+            R.drawable.d6_4_aurora,
+            R.drawable.d6_5_aurora,
+            R.drawable.d6_6_aurora
         )
     )
 
@@ -32,14 +32,14 @@ object DiceLibrary {
         name = "D8",
         faces = 8,
         images = listOf(
-            R.drawable.d8_1,
-            R.drawable.d8_2,
-            R.drawable.d8_3,
-            R.drawable.d8_4,
-            R.drawable.d8_5,
-            R.drawable.d8_6,
-            R.drawable.d8_7,
-            R.drawable.d8_8
+            R.drawable.d8_1_aurora,
+            R.drawable.d8_2_aurora,
+            R.drawable.d8_3_aurora,
+            R.drawable.d8_4_aurora,
+            R.drawable.d8_5_aurora,
+            R.drawable.d8_6_aurora,
+            R.drawable.d8_7_aurora,
+            R.drawable.d8_8_aurora
         )
     )
 
@@ -47,16 +47,16 @@ object DiceLibrary {
         name = "D10",
         faces = 10,
         images = listOf(
-            R.drawable.d10_1,
-            R.drawable.d10_2,
-            R.drawable.d10_3,
-            R.drawable.d10_4,
-            R.drawable.d10_5,
-            R.drawable.d10_6,
-            R.drawable.d10_7,
-            R.drawable.d10_8,
-            R.drawable.d10_9,
-            R.drawable.d10_0
+            R.drawable.d10_1_aurora,
+            R.drawable.d10_2_aurora,
+            R.drawable.d10_3_aurora,
+            R.drawable.d10_4_aurora,
+            R.drawable.d10_5_aurora,
+            R.drawable.d10_6_aurora,
+            R.drawable.d10_7_aurora,
+            R.drawable.d10_8_aurora,
+            R.drawable.d10_9_aurora,
+            R.drawable.d10_10_aurora
         )
     )
 
@@ -64,18 +64,18 @@ object DiceLibrary {
         name = "D12",
         faces = 12,
         images = listOf(
-            R.drawable.d12_1,
-            R.drawable.d12_2,
-            R.drawable.d12_3,
-            R.drawable.d12_4,
-            R.drawable.d12_5,
-            R.drawable.d12_6,
-            R.drawable.d12_7,
-            R.drawable.d12_8,
-            R.drawable.d12_9,
-            R.drawable.d12_10,
-            R.drawable.d12_11,
-            R.drawable.d12_12
+            R.drawable.d12_1_aurora,
+            R.drawable.d12_2_aurora,
+            R.drawable.d12_3_aurora,
+            R.drawable.d12_4_aurora,
+            R.drawable.d12_5_aurora,
+            R.drawable.d12_6_aurora,
+            R.drawable.d12_7_aurora,
+            R.drawable.d12_8_aurora,
+            R.drawable.d12_9_aurora,
+            R.drawable.d12_10_aurora,
+            R.drawable.d12_11_aurora,
+            R.drawable.d12_12_aurora
         )
     )
 
@@ -83,26 +83,26 @@ object DiceLibrary {
         name = "D20",
         faces = 20,
         images = listOf(
-            R.drawable.d20_1,
-            R.drawable.d20_2,
-            R.drawable.d20_3,
-            R.drawable.d20_4,
-            R.drawable.d20_5,
-            R.drawable.d20_6,
-            R.drawable.d20_7,
-            R.drawable.d20_8,
-            R.drawable.d20_9,
-            R.drawable.d20_10,
-            R.drawable.d20_11,
-            R.drawable.d20_12,
-            R.drawable.d20_13,
-            R.drawable.d20_14,
-            R.drawable.d20_15,
-            R.drawable.d20_16,
-            R.drawable.d20_17,
-            R.drawable.d20_18,
-            R.drawable.d20_19,
-            R.drawable.d20_20
+            R.drawable.d20_1_aurora,
+            R.drawable.d20_2_aurora,
+            R.drawable.d20_3_aurora,
+            R.drawable.d20_4_aurora,
+            R.drawable.d20_5_aurora,
+            R.drawable.d20_6_aurora,
+            R.drawable.d20_7_aurora,
+            R.drawable.d20_8_aurora,
+            R.drawable.d20_9_aurora,
+            R.drawable.d20_10_aurora,
+            R.drawable.d20_11_aurora,
+            R.drawable.d20_12_aurora,
+            R.drawable.d20_13_aurora,
+            R.drawable.d20_14_aurora,
+            R.drawable.d20_15_aurora,
+            R.drawable.d20_16_aurora,
+            R.drawable.d20_17_aurora,
+            R.drawable.d20_18_aurora,
+            R.drawable.d20_19_aurora,
+            R.drawable.d20_20_aurora
         )
     )
 }
