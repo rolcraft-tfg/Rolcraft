@@ -18,7 +18,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.example.rolcraft.R
 
-// IMAGEN
+// Funcion para las imagenes de las clases
 fun obtenerImagenClase(clase: String): Int {
     return when (clase.lowercase().trim()) {
         "mago" -> R.drawable.mago
@@ -29,7 +29,7 @@ fun obtenerImagenClase(clase: String): Int {
     }
 }
 
-// COLOR
+// Función para los colores de las clases
 fun obtenerColorClase(clase: String): Color {
     return when (clase.lowercase().trim()) {
         "mago" -> Color(0xFF2196F3)
@@ -86,6 +86,8 @@ fun PantallaCrearPersonaje(
         )
     }
 
+    //Función para sacar de la lista los valores ya seleccionados de atributos
+
     fun actualizarValor(
         nuevo: Int?,
         actual: Int?,
@@ -102,6 +104,7 @@ fun PantallaCrearPersonaje(
         }
     }
 
+    //Función para obtener el nombre de un atributo no seleccionado
 
     fun atributoFaltante(): String? {
         return when {
@@ -224,6 +227,8 @@ fun PantallaCrearPersonaje(
 
         Spacer(Modifier.height(16.dp))
 
+        // Selectores de atributos
+
         Text("Atributos", style = MaterialTheme.typography.headlineSmall)
 
         Spacer(Modifier.height(12.dp))
@@ -307,6 +312,8 @@ fun PantallaCrearPersonaje(
         }
 
         Spacer(Modifier.height(32.dp))
+
+        // Aviso de campo no introducido
 
         Button(
             onClick = {

@@ -33,7 +33,6 @@ import com.example.rolcraft.CrearPersonaje.PersonajeViewModel
 import com.example.rolcraft.Dados.DiceAnimatorCompose
 import com.example.rolcraft.Dados.DiceLibrary
 import com.example.rolcraft.Dados.DiceTheme
-import com.example.rolcraft.Dados.obtenerImagenDado
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -41,10 +40,9 @@ import kotlinx.coroutines.launch
 fun PantallaFichaPersonaje(
     id: Int,
     viewModel: PersonajeViewModel,
-    temaDados: DiceTheme
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedTab by remember { mutableStateOf("abilities") }
+    var selectedTab by remember { mutableStateOf("características") }
 
     // Cargar personaje desde BD
     LaunchedEffect(id) {
@@ -104,7 +102,7 @@ fun PantallaFichaPersonaje(
                             ) {
                                 Text(
                                     text = when (selectedTab) {
-                                        "abilities" -> "Abilities, Saves, Senses"
+                                        "características" -> "Características y Tiradas de Salvación"
                                         "dados" -> "Dados"
                                         "info" -> "Info del Personaje"
                                         else -> "..."
@@ -125,9 +123,9 @@ fun PantallaFichaPersonaje(
                                 onDismissRequest = { expanded = false }
                             ) {
                                 DropdownMenuItem(
-                                    text = { Text("Abilities, Saves, Senses") },
+                                    text = { Text("Características y Tiradas de Salvación") },
                                     onClick = {
-                                        selectedTab = "abilities"
+                                        selectedTab = "características"
                                         expanded = false
                                     }
                                 )
@@ -153,8 +151,8 @@ fun PantallaFichaPersonaje(
 
                     item {
                         when (selectedTab) {
-                            "abilities" -> SeccionHabilidades(personaje)
-                            "dados" -> PantallaDadosInterna(viewModel.temaDados)
+                            "características" -> SeccionHabilidades(personaje)
+                            "dados" -> PantallaDadosInterna()
                             "info" -> SeccionInfoPersonaje(personaje)
                         }
                     }
@@ -189,7 +187,7 @@ fun EncabezadoFicha(personaje: Personaje) {
         ) {
             EncabezadoStat("AC", personaje.ac.toString())
             EncabezadoStat(
-                "Initiative",
+                "Iniciativa",
                 if (personaje.iniciativa >= 0) "+${personaje.iniciativa}" else personaje.iniciativa.toString()
             )
             EncabezadoStat("HP", "${personaje.hp}/${personaje.hp}")
@@ -286,7 +284,7 @@ fun HabilidadItem(nombre: String, valor: Int?) {
 }
 
 @Composable
-fun PantallaDadosInterna(temaDados: DiceTheme) {
+fun PantallaDadosInterna() {
 
     val context = LocalContext.current
     val animator = remember { DiceAnimatorCompose(context) }
@@ -380,7 +378,7 @@ fun PantallaDadosInterna(temaDados: DiceTheme) {
                                     screenWidth = screenWidth,
                                     screenHeight = screenHeight,
                                     onUpdateFace = { face ->
-                                        imagenActual = obtenerImagenDado(context, dice, face, temaDados)
+                                        imagenActual = dice.images[face - 1]
                                     },
                                     onUpdatePosition = { position = it },
                                     onUpdateRotation = { rotation = it },

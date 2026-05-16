@@ -21,10 +21,6 @@ import com.google.firebase.auth.UserProfileChangeRequest
 fun PantallaAjustes(
     modoOscuro: Boolean,
     onCambiarTema: (Boolean) -> Unit,
-
-    temaDados: DiceTheme,
-    onCambiarTemaDados: (DiceTheme) -> Unit,
-
     onCerrarSesion: () -> Unit
 ) {
 
@@ -231,90 +227,6 @@ fun PantallaAjustes(
 
             Spacer(modifier = Modifier.height(16.dp))
         }
-
-        // TEMA DADOS
-
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface
-            )
-        ) {
-
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-
-                Text(
-                    text = "Tema de dados",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-
-                    RadioButton(
-                        selected = temaDados == DiceTheme.AURORA,
-
-                        onClick = {
-                            onCambiarTemaDados(DiceTheme.AURORA)
-                        }
-                    )
-
-                    Column {
-
-                        Text(
-                            text = "Aurora",
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-
-                        Text(
-                            text = "Tema oscuro mágico",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-
-                    RadioButton(
-                        selected = temaDados == DiceTheme.CRYSTAL,
-
-                        onClick = {
-                            onCambiarTemaDados(DiceTheme.CRYSTAL)
-                        }
-                    )
-
-                    Column {
-
-                        Text(
-                            text = "Crystal",
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-
-                        Text(
-                            text = "Tema claro brillante",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         // MODO OSCURO
 

@@ -20,7 +20,6 @@ import androidx.navigation.compose.*
 import androidx.room.Room
 import com.example.rolcraft.Ajustes.PantallaAjustes
 import com.example.rolcraft.CrearPersonaje.*
-import com.example.rolcraft.Dados.DiceTheme
 import com.example.rolcraft.Data.Local.AppDatabase
 import com.example.rolcraft.Data.Repository.PersonajeRepository
 import com.example.rolcraft.FichaPersonaje.PantallaFichaPersonaje
@@ -85,19 +84,10 @@ class MainActivity : ComponentActivity() {
         setContent {
 
             var modoOscuro by remember {
-
                 mutableStateOf(
                     prefs.getBoolean(
                         "modo_oscuro",
                         true
-                    )
-                )
-            }
-
-            var temaDados by remember {
-                mutableStateOf(
-                    DiceTheme.valueOf(
-                        prefs.getString("tema_dados", DiceTheme.AURORA.name)!!
                     )
                 )
             }
@@ -129,14 +119,6 @@ class MainActivity : ComponentActivity() {
                             }
                         },
 
-                        temaDados = temaDados,
-
-                        onCambiarTemaDados = {
-                            temaDados = it
-                            prefs.edit {
-                                putString("tema_dados", it.name)
-                            }
-                        },
                         auth = auth
                     )
                 }
@@ -153,10 +135,6 @@ fun AppNavegacion(
     modoOscuro: Boolean,
 
     onCambiarTema: (Boolean) -> Unit,
-
-    temaDados: DiceTheme,
-
-    onCambiarTemaDados: (DiceTheme) -> Unit,
 
     auth: FirebaseAuth
 ) {
@@ -347,9 +325,7 @@ fun AppNavegacion(
 
             // FICHA
 
-            composable("ficha/{id}") {
-
-                    backStackEntry ->
+            composable("ficha/{id}") { backStackEntry ->
 
                 val id =
                     backStackEntry.arguments
@@ -357,10 +333,8 @@ fun AppNavegacion(
                         .toInt()
 
                 PantallaFichaPersonaje(
-
                     id = id,
-                    viewModel = viewModel,
-                    temaDados = temaDados
+                    viewModel = viewModel
                 )
             }
 
@@ -373,11 +347,6 @@ fun AppNavegacion(
                     modoOscuro = modoOscuro,
 
                     onCambiarTema = onCambiarTema,
-
-                    temaDados = temaDados,
-
-                    onCambiarTemaDados =
-                        onCambiarTemaDados,
 
                     onCerrarSesion = {
 
