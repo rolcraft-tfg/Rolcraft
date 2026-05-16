@@ -8,9 +8,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.rolcraft.Dados.DiceTheme
 import com.example.rolcraft.Registro.esPasswordValida
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 
@@ -25,9 +28,7 @@ fun PantallaAjustes(
     onCerrarSesion: () -> Unit
 ) {
 
-    // =========================
     // FIREBASE
-    // =========================
 
     val usuarioActual =
         FirebaseAuth.getInstance().currentUser
@@ -35,9 +36,7 @@ fun PantallaAjustes(
     val esInvitado =
         usuarioActual == null
 
-    // =========================
     // DIALOG CAMBIAR NOMBRE
-    // =========================
 
     var mostrarDialogNombre by remember {
         mutableStateOf(false)
@@ -47,21 +46,25 @@ fun PantallaAjustes(
         mutableStateOf("")
     }
 
-    // =========================
     // DIALOG CAMBIAR PASSWORD
-    // =========================
 
     var mostrarDialogPassword by remember {
         mutableStateOf(false)
+    }
+
+    var passwordActual by remember {
+        mutableStateOf("")
     }
 
     var nuevaPassword by remember {
         mutableStateOf("")
     }
 
-    // =========================
+    var passwordVisible by remember {
+        mutableStateOf(false)
+    }
+
     // DIALOG ELIMINAR
-    // =========================
 
     var mostrarDialogEliminar by remember {
         mutableStateOf(false)
@@ -72,12 +75,11 @@ fun PantallaAjustes(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState())
+            .navigationBarsPadding()
             .padding(16.dp)
     ) {
 
-        // =========================
         // TÍTULO
-        // =========================
 
         Text(
             text = "Ajustes",
@@ -87,9 +89,7 @@ fun PantallaAjustes(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // =========================
         // USUARIO ACTUAL
-        // =========================
 
         Text(
             text = "Conectado como:",
@@ -110,15 +110,11 @@ fun PantallaAjustes(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // =========================
         // OPCIONES SOLO USUARIO
-        // =========================
 
         if (!esInvitado) {
 
-            // =========================
             // CAMBIAR NOMBRE
-            // =========================
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -158,9 +154,7 @@ fun PantallaAjustes(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // =========================
             // CAMBIAR CONTRASEÑA
-            // =========================
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -171,6 +165,7 @@ fun PantallaAjustes(
 
                 onClick = {
 
+                    passwordActual = ""
                     nuevaPassword = ""
 
                     mostrarDialogPassword = true
@@ -199,9 +194,7 @@ fun PantallaAjustes(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // =========================
             // ELIMINAR CUENTA
-            // =========================
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -239,9 +232,7 @@ fun PantallaAjustes(
             Spacer(modifier = Modifier.height(16.dp))
         }
 
-        // =========================
         // TEMA DADOS
-        // =========================
 
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -325,9 +316,7 @@ fun PantallaAjustes(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // =========================
         // MODO OSCURO
-        // =========================
 
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -380,11 +369,9 @@ fun PantallaAjustes(
             }
         }
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(32.dp))
 
-        // =========================
         // INFO APP
-        // =========================
 
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -402,9 +389,7 @@ fun PantallaAjustes(
         Spacer(modifier = Modifier.height(24.dp))
     }
 
-    // =========================
     // DIALOG CAMBIAR NOMBRE
-    // =========================
 
     if (mostrarDialogNombre) {
 
@@ -474,9 +459,7 @@ fun PantallaAjustes(
         )
     }
 
-    // =========================
     // DIALOG CAMBIAR PASSWORD
-    // =========================
 
     if (mostrarDialogPassword) {
 
@@ -499,6 +482,31 @@ fun PantallaAjustes(
                 Column {
 
                     OutlinedTextField(
+                        value = passwordActual,
+
+                        onValueChange = {
+
+                            passwordActual = it
+
+                            mensajePassword = ""
+                        },
+
+                        label = {
+                            Text("Contraseña actual")
+                        },
+
+                        singleLine = true,
+
+                        visualTransformation =
+                            if (passwordVisible)
+                                VisualTransformation.None
+                            else
+                                PasswordVisualTransformation()
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    OutlinedTextField(
                         value = nuevaPassword,
 
                         onValueChange = {
@@ -512,7 +520,13 @@ fun PantallaAjustes(
                             Text("Nueva contraseña")
                         },
 
-                        singleLine = true
+                        singleLine = true,
+
+                        visualTransformation =
+                            if (passwordVisible)
+                                VisualTransformation.None
+                            else
+                                PasswordVisualTransformation()
                     )
 
                     if (mensajePassword.isNotEmpty()) {
@@ -547,21 +561,54 @@ fun PantallaAjustes(
                             return@TextButton
                         }
 
-                        usuarioActual
-                            ?.updatePassword(
-                                nuevaPassword.trim()
+                        val email =
+                            usuarioActual?.email
+
+                        if (
+                            email == null ||
+                            passwordActual.isBlank()
+                        ) {
+
+                            mensajePassword =
+                                "Introduce tu contraseña actual"
+
+                            return@TextButton
+                        }
+
+                        val credential =
+                            EmailAuthProvider.getCredential(
+                                email,
+                                passwordActual.trim()
                             )
-                            ?.addOnCompleteListener { task ->
 
-                                if (task.isSuccessful) {
+                        usuarioActual
+                            .reauthenticate(credential)
+                            .addOnCompleteListener { authTask ->
 
-                                    mensajePassword =
-                                        "Contraseña actualizada"
+                                if (authTask.isSuccessful) {
+
+                                    usuarioActual
+                                        .updatePassword(
+                                            nuevaPassword.trim()
+                                        )
+                                        .addOnCompleteListener { task ->
+
+                                            if (task.isSuccessful) {
+
+                                                mensajePassword =
+                                                    "Contraseña actualizada"
+
+                                            } else {
+
+                                                mensajePassword =
+                                                    "Error al actualizar contraseña"
+                                            }
+                                        }
 
                                 } else {
 
                                     mensajePassword =
-                                        "Error al actualizar contraseña"
+                                        "La contraseña actual es incorrecta"
                                 }
                             }
                     }
@@ -579,15 +626,13 @@ fun PantallaAjustes(
                     }
                 ) {
 
-                    Text("Cancelar")
+                    Text("Atrás")
                 }
             }
         )
     }
 
-    // =========================
     // DIALOG ELIMINAR CUENTA
-    // =========================
 
     if (mostrarDialogEliminar) {
 
