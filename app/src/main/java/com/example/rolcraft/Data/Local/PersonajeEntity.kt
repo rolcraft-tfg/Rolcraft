@@ -43,5 +43,7 @@ data class PersonajeEntity(
 
     val hp: Int = 0,
 
-    val usuarioId: String = ""
+    val usuarioId: String = "",
+
+    val firebaseId: String = ""
 )

@@ -38,20 +38,20 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun PantallaFichaPersonaje(
-    id: Int,
+    firebaseId: String,
     viewModel: PersonajeViewModel,
 ) {
     var expanded by remember { mutableStateOf(false) }
     var selectedTab by remember { mutableStateOf("características") }
 
-    // Cargar personaje desde BD
-    LaunchedEffect(id) {
-        viewModel.cargarPersonaje(id)
+    // Cargar personaje desde Firebase
+    LaunchedEffect(firebaseId) {
+        viewModel.cargarPersonaje(firebaseId)
     }
 
     val personaje = viewModel.personaje
 
-    if (viewModel.modoEdicion && personaje.id == 0) {
+    if (viewModel.modoEdicion && personaje.firebaseId.isBlank()) {
         Text("Cargando...", color = MaterialTheme.colorScheme.onBackground)
         return
     }

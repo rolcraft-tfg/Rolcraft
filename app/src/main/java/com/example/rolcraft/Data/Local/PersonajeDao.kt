@@ -2,6 +2,7 @@ package com.example.rolcraft.Data.Local
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 
@@ -9,7 +10,7 @@ import androidx.room.Update
 interface PersonajeDao {
 
     // Guardar personaje
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertarPersonaje(personaje: PersonajeEntity)
 
     // Obtener los personajes del usuario actual
@@ -21,6 +22,12 @@ interface PersonajeDao {
     // Obtener personaje por ID
     @Query("SELECT * FROM personajes WHERE id = :id LIMIT 1")
     suspend fun obtenerPersonajePorId(id: Int): PersonajeEntity?
+
+    // Obtener personaje por firebase id
+    @Query("SELECT * FROM personajes WHERE firebaseId = :firebaseId LIMIT 1")
+    suspend fun obtenerPersonajePorFirebaseId(
+        firebaseId: String
+    ): PersonajeEntity?
 
     // Eliminar personaje
     @Query("DELETE FROM personajes WHERE id = :id")

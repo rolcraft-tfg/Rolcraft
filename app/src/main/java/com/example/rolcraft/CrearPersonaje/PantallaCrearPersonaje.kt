@@ -49,29 +49,55 @@ fun PantallaCrearPersonaje(
     val pj = viewModel.personaje
     val modoEdicion = viewModel.modoEdicion
 
+    // Valores posibles para atributos
     val valoresIniciales = listOf<Int?>(null, 15, 14, 13, 12, 10, 8)
-    var valoresDisponibles by remember { mutableStateOf(valoresIniciales) }
 
-    var fuerza by remember { mutableStateOf<Int?>(null) }
-    var destreza by remember { mutableStateOf<Int?>(null) }
-    var constitucion by remember { mutableStateOf<Int?>(null) }
-    var inteligencia by remember { mutableStateOf<Int?>(null) }
-    var sabiduria by remember { mutableStateOf<Int?>(null) }
-    var carisma by remember { mutableStateOf<Int?>(null) }
+    // Atributos actuales desde el ViewModel
+    val fuerza = pj.fuerza
+    val destreza = pj.destreza
+    val constitucion = pj.constitucion
+    val inteligencia = pj.inteligencia
+    val sabiduria = pj.sabiduria
+    val carisma = pj.carisma
+
+    // Valores ya usados
+    val usados = listOf(fuerza, destreza, constitucion, inteligencia, sabiduria, carisma)
+    val valoresDisponibles = valoresIniciales.filter { it !in usados }
+
+    // Función simple para actualizar atributos sin duplicar estados
+    fun actualizarAtributos(
+        fuerza: Int? = pj.fuerza,
+        destreza: Int? = pj.destreza,
+        constitucion: Int? = pj.constitucion,
+        inteligencia: Int? = pj.inteligencia,
+        sabiduria: Int? = pj.sabiduria,
+        carisma: Int? = pj.carisma
+    ) {
+        viewModel.actualizarAtributos(
+            fuerza,
+            destreza,
+            constitucion,
+            inteligencia,
+            sabiduria,
+            carisma
+        )
+        viewModel.aplicarEstadisticas()
+    }
+
+    // Validación de atributos
+    fun atributoFaltante(): String? {
+        return when {
+            fuerza == null -> "Fuerza"
+            destreza == null -> "Destreza"
+            constitucion == null -> "Constitución"
+            inteligencia == null -> "Inteligencia"
+            sabiduria == null -> "Sabiduría"
+            carisma == null -> "Carisma"
+            else -> null
+        }
+    }
 
     var campoFaltante by remember { mutableStateOf<String?>(null) }
-
-    LaunchedEffect(pj) {
-        fuerza = pj.fuerza
-        destreza = pj.destreza
-        constitucion = pj.constitucion
-        inteligencia = pj.inteligencia
-        sabiduria = pj.sabiduria
-        carisma = pj.carisma
-
-        val usados = listOf(fuerza, destreza, constitucion, inteligencia, sabiduria, carisma)
-        valoresDisponibles = valoresIniciales.filter { it !in usados }
-    }
 
     if (campoFaltante != null) {
         AlertDialog(
@@ -84,38 +110,6 @@ fun PantallaCrearPersonaje(
                 }
             }
         )
-    }
-
-    //Función para sacar de la lista los valores ya seleccionados de atributos
-
-    fun actualizarValor(
-        nuevo: Int?,
-        actual: Int?,
-        setter: (Int?) -> Unit
-    ) {
-        if (actual != null) {
-            valoresDisponibles = valoresDisponibles + actual
-        }
-
-        setter(nuevo)
-
-        if (nuevo != null) {
-            valoresDisponibles = valoresDisponibles - nuevo
-        }
-    }
-
-    //Función para obtener el nombre de un atributo no seleccionado
-
-    fun atributoFaltante(): String? {
-        return when {
-            fuerza == null -> "Fuerza"
-            destreza == null -> "Destreza"
-            constitucion == null -> "Constitución"
-            inteligencia == null -> "Inteligencia"
-            sabiduria == null -> "Sabiduría"
-            carisma == null -> "Carisma"
-            else -> null
-        }
     }
 
     Column(
@@ -165,27 +159,17 @@ fun PantallaCrearPersonaje(
 
         Spacer(Modifier.height(24.dp))
 
-        val nombreState = remember { mutableStateOf(TextFieldValue(pj.nombre)) }
-
-        LaunchedEffect(pj.nombre) {
-            if (nombreState.value.text != pj.nombre) {
-                nombreState.value = TextFieldValue(pj.nombre)
-            }
-        }
-
+        // Nombre
         TextField(
-            value = nombreState.value,
-            onValueChange = { nuevo ->
-                val texto = nuevo.text.take(20)
-                nombreState.value = nuevo.copy(text = texto)
-                viewModel.actualizarNombre(texto)
-            },
+            value = pj.nombre,
+            onValueChange = { viewModel.actualizarNombre(it) },
             label = { Text("Nombre") },
             modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(Modifier.height(16.dp))
 
+        // Desplegables
         Desplegable("Género", listaGeneros, pj.genero, null) {
             viewModel.actualizarGenero(it)
         }
@@ -225,95 +209,37 @@ fun PantallaCrearPersonaje(
             viewModel.actualizarAlineamiento(it)
         }
 
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(24.dp))
 
-        // Selectores de atributos
-
+        // Atributos
         Text("Atributos", style = MaterialTheme.typography.headlineSmall)
-
         Spacer(Modifier.height(12.dp))
 
         SelectorHabilidad("Fuerza", fuerza, valoresDisponibles) { nuevo ->
-            actualizarValor(nuevo, fuerza) { fuerza = it }
-            viewModel.actualizarAtributos(
-                fuerza = nuevo,
-                destreza = destreza,
-                constitucion = constitucion,
-                inteligencia = inteligencia,
-                sabiduria = sabiduria,
-                carisma = carisma
-            )
-            viewModel.aplicarEstadisticas()
+            actualizarAtributos(fuerza = nuevo)
         }
 
         SelectorHabilidad("Destreza", destreza, valoresDisponibles) { nuevo ->
-            actualizarValor(nuevo, destreza) { destreza = it }
-            viewModel.actualizarAtributos(
-                fuerza = fuerza,
-                destreza = nuevo,
-                constitucion = constitucion,
-                inteligencia = inteligencia,
-                sabiduria = sabiduria,
-                carisma = carisma
-            )
-            viewModel.aplicarEstadisticas()
+            actualizarAtributos(destreza = nuevo)
         }
 
         SelectorHabilidad("Constitución", constitucion, valoresDisponibles) { nuevo ->
-            actualizarValor(nuevo, constitucion) { constitucion = it }
-            viewModel.actualizarAtributos(
-                fuerza = fuerza,
-                destreza = destreza,
-                constitucion = nuevo,
-                inteligencia = inteligencia,
-                sabiduria = sabiduria,
-                carisma = carisma
-            )
-            viewModel.aplicarEstadisticas()
+            actualizarAtributos(constitucion = nuevo)
         }
 
         SelectorHabilidad("Inteligencia", inteligencia, valoresDisponibles) { nuevo ->
-            actualizarValor(nuevo, inteligencia) { inteligencia = it }
-            viewModel.actualizarAtributos(
-                fuerza = fuerza,
-                destreza = destreza,
-                constitucion = constitucion,
-                inteligencia = nuevo,
-                sabiduria = sabiduria,
-                carisma = carisma
-            )
-            viewModel.aplicarEstadisticas()
+            actualizarAtributos(inteligencia = nuevo)
         }
 
         SelectorHabilidad("Sabiduría", sabiduria, valoresDisponibles) { nuevo ->
-            actualizarValor(nuevo, sabiduria) { sabiduria = it }
-            viewModel.actualizarAtributos(
-                fuerza = fuerza,
-                destreza = destreza,
-                constitucion = constitucion,
-                inteligencia = inteligencia,
-                sabiduria = nuevo,
-                carisma = carisma
-            )
-            viewModel.aplicarEstadisticas()
+            actualizarAtributos(sabiduria = nuevo)
         }
 
         SelectorHabilidad("Carisma", carisma, valoresDisponibles) { nuevo ->
-            actualizarValor(nuevo, carisma) { carisma = it }
-            viewModel.actualizarAtributos(
-                fuerza = fuerza,
-                destreza = destreza,
-                constitucion = constitucion,
-                inteligencia = inteligencia,
-                sabiduria = sabiduria,
-                carisma = nuevo
-            )
-            viewModel.aplicarEstadisticas()
+            actualizarAtributos(carisma = nuevo)
         }
 
         Spacer(Modifier.height(32.dp))
-
-        // Aviso de campo no introducido
 
         Button(
             onClick = {
@@ -329,16 +255,7 @@ fun PantallaCrearPersonaje(
                     return@Button
                 }
 
-                viewModel.actualizarAtributos(
-                    fuerza!!,
-                    destreza!!,
-                    constitucion!!,
-                    inteligencia!!,
-                    sabiduria!!,
-                    carisma!!
-                )
                 viewModel.aplicarEstadisticas()
-
                 onSiguiente()
             },
             modifier = Modifier.fillMaxWidth()
@@ -347,6 +264,8 @@ fun PantallaCrearPersonaje(
         }
     }
 }
+
+
 
 @Composable
 fun SelectorHabilidad(

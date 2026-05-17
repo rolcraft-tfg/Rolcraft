@@ -6,7 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.rolcraft.Data.Local.PersonajeEntity
 import com.example.rolcraft.Data.Repository.PersonajeRepository
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class PersonajeViewModel(
     private val repository: PersonajeRepository
@@ -19,8 +21,6 @@ class PersonajeViewModel(
 
     var modoEdicion by mutableStateOf(false)
         private set
-
-    private var personajeOriginal: Int? = null
 
     private fun actualizar(update: Personaje.() -> Personaje) {
         personaje = personaje.update()
@@ -87,7 +87,7 @@ class PersonajeViewModel(
             listOf(15, 14, 13, 12, 10, 8)
                 .shuffled()
 
-        personaje = Personaje(
+        personaje = personaje.copy(
             nombre = nombre,
             genero = genero,
             raza = listaRazas.random(),
@@ -107,7 +107,7 @@ class PersonajeViewModel(
             calcularEstadisticas(personaje)
     }
 
-    //  GUARDAR
+    //guardar personaje
 
     fun guardarPersonaje() {
 
@@ -121,20 +121,15 @@ class PersonajeViewModel(
                     .trim()
                     .replace(Regex("\\s+"), " ")
 
-            var personajeFinal =
+            val personajeFinal =
                 pjConStats.copy(
                     nombre = nombreLimpio
                 )
 
             if (
                 modoEdicion &&
-                personajeOriginal != null
+                personajeFinal.firebaseId.isNotBlank()
             ) {
-
-                personajeFinal =
-                    personajeFinal.copy(
-                        id = personajeOriginal!!
-                    )
 
                 repository.actualizarPersonaje(
                     personajeFinal.toEntity()
@@ -142,15 +137,17 @@ class PersonajeViewModel(
 
             } else {
 
-                personajeFinal =
-                    personajeFinal.copy(id = 0)
-
                 repository.insertarPersonaje(
-                    personajeFinal.toEntity()
+                    personajeFinal
+                        .copy(id = 0)
+                        .toEntity()
                 )
             }
-
-            resetearPersonaje()
+            if (modoEdicion) {
+                // No resetear nada
+            } else {
+                resetearPersonaje()
+            }
 
             cargarPersonajes()
         }
@@ -181,6 +178,7 @@ class PersonajeViewModel(
 
                     Personaje(
                         id = it.id,
+                        firebaseId = it.firebaseId,
                         nombre = it.nombre,
                         genero = it.genero,
                         raza = it.raza,
@@ -204,19 +202,47 @@ class PersonajeViewModel(
         }
     }
 
-    // CARGAR PARA EDITAR
+    //sincronizar personajes desde firebase
 
-    fun cargarPersonaje(id: Int) {
+    fun sincronizarFirebase() {
 
         viewModelScope.launch {
 
-            val entity =
-                repository.obtenerPersonajePorId(id)
+            val usuarioId =
+                FirebaseAuth
+                    .getInstance()
+                    .currentUser
+                    ?.uid ?: return@launch
+
+            repository.sincronizarDesdeFirebase(
+                usuarioId
+            )
+
+            cargarPersonajes()
+        }
+    }
+
+    // CARGAR PARA EDITAR
+
+    fun cargarPersonaje(firebaseId: String) {
+        viewModelScope.launch {
+            val usuarioId = FirebaseAuth.getInstance().currentUser?.uid ?: return@launch
+
+            val snapshot = FirebaseFirestore.getInstance()
+                .collection("usuarios")
+                .document(usuarioId)
+                .collection("personajes")
+                .document(firebaseId)
+                .get()
+                .await()
+
+            val entity = snapshot.toObject(PersonajeEntity::class.java)
 
             if (entity != null) {
-
                 personaje = Personaje(
                     id = entity.id,
+                    firebaseId = entity.firebaseId,
+                    usuarioId = entity.usuarioId,
                     nombre = entity.nombre,
                     genero = entity.genero,
                     raza = entity.raza,
@@ -236,23 +262,22 @@ class PersonajeViewModel(
                     hp = entity.hp
                 )
 
-                personajeOriginal = entity.id
-
                 modoEdicion = true
             }
         }
     }
 
-    // ELIMINAR
+    // Eliminar personaje
 
-    fun eliminarPersonaje(
-        personaje: Personaje
-    ) {
+    fun eliminarPersonaje(personaje: Personaje) {
 
         viewModelScope.launch {
 
+            val personajeEliminar =
+                personaje.toEntity()
+
             repository.eliminarPersonaje(
-                personaje.id
+                personajeEliminar
             )
 
             cargarPersonajes()
@@ -289,8 +314,6 @@ class PersonajeViewModel(
         personaje = Personaje()
 
         modoEdicion = false
-
-        personajeOriginal = null
     }
 
     //  ENTITY
@@ -300,6 +323,8 @@ class PersonajeViewModel(
         return PersonajeEntity(
 
             id = this.id,
+
+            firebaseId = this.firebaseId,
 
             nombre = this.nombre,
 

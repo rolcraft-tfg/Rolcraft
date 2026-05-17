@@ -13,15 +13,27 @@ class PersonajeRepository(
 
     //insertar personaje
 
-    suspend fun insertarPersonaje(personaje: PersonajeEntity) {
+    suspend fun insertarPersonaje(
+        personaje: PersonajeEntity
+    ) {
 
-        dao.insertarPersonaje(personaje)
-
-        db.collection("usuarios")
+        val documento = db.collection("usuarios")
             .document(personaje.usuarioId)
             .collection("personajes")
-            .add(personaje)
+            .document()
+
+        val personajeFirebase =
+            personaje.copy(
+                firebaseId = documento.id
+            )
+
+        documento
+            .set(personajeFirebase)
             .await()
+
+        dao.insertarPersonaje(
+            personajeFirebase
+        )
     }
 
     //obtener personajes
@@ -34,9 +46,32 @@ class PersonajeRepository(
             .get()
             .await()
 
-        return snapshot.documents.mapNotNull {
+        return snapshot.documents.mapNotNull { document ->
 
-            it.toObject(PersonajeEntity::class.java)
+            document.toObject(PersonajeEntity::class.java)
+                ?.copy(firebaseId = document.id)
+        }
+    }
+
+    //sincronizar personajes desde firebase
+
+    suspend fun sincronizarDesdeFirebase(usuarioId: String) {
+
+        val snapshot = db.collection("usuarios")
+            .document(usuarioId)
+            .collection("personajes")
+            .get()
+            .await()
+
+        val personajesFirebase = snapshot.documents.mapNotNull { document ->
+
+            document.toObject(PersonajeEntity::class.java)
+                ?.copy(firebaseId = document.id)
+        }
+
+        personajesFirebase.forEach {
+
+            dao.insertarPersonaje(it)
         }
     }
 
@@ -45,19 +80,35 @@ class PersonajeRepository(
     suspend fun actualizarPersonaje(personaje: PersonajeEntity) {
 
         dao.actualizarPersonaje(personaje)
+
+        db.collection("usuarios")
+            .document(personaje.usuarioId)
+            .collection("personajes")
+            .document(personaje.firebaseId)
+            .set(personaje)
+            .await()
     }
 
     //eliminar personaje
 
-    suspend fun eliminarPersonaje(id: Int) {
+    suspend fun eliminarPersonaje(personaje: PersonajeEntity) {
 
-        dao.eliminarPersonaje(id)
+        dao.eliminarPersonaje(personaje.id)
+
+        db.collection("usuarios")
+            .document(personaje.usuarioId)
+            .collection("personajes")
+            .document(personaje.firebaseId)
+            .delete()
+            .await()
     }
 
-    //obtener personaje por id
+    suspend fun obtenerPersonajePorFirebaseId(
+        firebaseId: String
+    ): PersonajeEntity? {
 
-    suspend fun obtenerPersonajePorId(id: Int): PersonajeEntity? {
-
-        return dao.obtenerPersonajePorId(id)
+        return dao.obtenerPersonajePorFirebaseId(
+            firebaseId
+        )
     }
 }

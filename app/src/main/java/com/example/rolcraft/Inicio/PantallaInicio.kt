@@ -25,6 +25,8 @@ import com.example.rolcraft.CrearPersonaje.Personaje
 import com.example.rolcraft.CrearPersonaje.PersonajeViewModel
 import com.example.rolcraft.R
 
+//obtener imagen según la clase
+
 fun obtenerImagenClase(clase: String): Int {
     return when (clase.lowercase().trim()) {
         "mago" -> R.drawable.mago
@@ -35,13 +37,14 @@ fun obtenerImagenClase(clase: String): Int {
     }
 }
 
-// COLOR POR CLASE
+//obtener color según la clase
+
 fun obtenerColorClase(clase: String): Color {
     return when (clase.lowercase().trim()) {
-        "mago" -> Color(0xFF2196F3)      // azul
-        "guerrero" -> Color(0xFFE53935)  // rojo
-        "pícaro", "picaro" -> Color(0xFF43A047) // verde
-        "clérigo", "clerigo" -> Color(0xFFFDD835) // amarillo
+        "mago" -> Color(0xFF2196F3)
+        "guerrero" -> Color(0xFFE53935)
+        "pícaro", "picaro" -> Color(0xFF43A047)
+        "clérigo", "clerigo" -> Color(0xFFFDD835)
         else -> Color.Gray
     }
 }
@@ -50,8 +53,11 @@ fun obtenerColorClase(clase: String): Color {
 fun PantallaInicio(
     viewModel: PersonajeViewModel,
     onCrearPersonaje: () -> Unit,
-    onPantallaFichaPersonaje: (Int) -> Unit
+    onPantallaFichaPersonaje: (String) -> Unit,
+    onEditarPersonaje: () -> Unit
 ) {
+
+    //cargar personajes
 
     LaunchedEffect(Unit) {
         viewModel.cargarPersonajes()
@@ -76,6 +82,8 @@ fun PantallaInicio(
                     .padding(16.dp)
             ) {
 
+                //título
+
                 Text(
                     text = "Mis personajes",
                     color = MaterialTheme.colorScheme.onBackground,
@@ -83,6 +91,8 @@ fun PantallaInicio(
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
+
+                //lista de personajes
 
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
@@ -99,15 +109,17 @@ fun PantallaInicio(
                                 val copia = pj.copy(nombre = "${pj.nombre} Copy", id = 0)
                                 viewModel.guardarPersonajeDuplicado(copia)
                             },
-                                    onEditar = { pj ->
-                                viewModel.cargarPersonaje(pj.id)
-                                onCrearPersonaje()
+                            onEditar = { pj ->
+                                viewModel.cargarPersonaje(pj.firebaseId)
+                                onEditarPersonaje()
                             },
                             onClick = onPantallaFichaPersonaje
                         )
                     }
                 }
             }
+
+            //botón crear personaje
 
             Button(
                 onClick = {
@@ -134,20 +146,26 @@ fun PantallaInicio(
     }
 }
 
-
 @Composable
 fun TarjetaPersonaje(
     personaje: Personaje,
-    onEliminar: () -> Unit,
+    onEliminar: (Personaje) -> Unit,
     onDuplicar: (Personaje) -> Unit,
     onEditar: (Personaje) -> Unit,
-    onClick: (Int) -> Unit
+    onClick: (String) -> Unit
 ) {
 
+    //mostrar diálogo eliminar
+
     var mostrarDialogo by remember { mutableStateOf(false) }
+
+    //mostrar menú desplegable
+
     var menuExpandido by remember { mutableStateOf(false) }
 
     val colorClase = obtenerColorClase(personaje.clase)
+
+    //diálogo eliminar personaje
 
     if (mostrarDialogo) {
         AlertDialog(
@@ -157,7 +175,7 @@ fun TarjetaPersonaje(
             confirmButton = {
                 TextButton(onClick = {
                     mostrarDialogo = false
-                    onEliminar()
+                    onEliminar(personaje)
                 }) {
                     Text("Sí")
                 }
@@ -172,10 +190,12 @@ fun TarjetaPersonaje(
         )
     }
 
+    //tarjeta personaje
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick(personaje.id) },   // ⭐ AQUÍ VA EL CLICKABLE
+            .clickable { onClick(personaje.firebaseId) },
         shape = RoundedCornerShape(12.dp),
         border = BorderStroke(2.dp, colorClase),
         colors = CardDefaults.cardColors(
@@ -183,13 +203,14 @@ fun TarjetaPersonaje(
         )
     ) {
 
-
-    Row(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+
+            //imagen personaje
 
             Image(
                 painter = painterResource(
@@ -203,6 +224,8 @@ fun TarjetaPersonaje(
             )
 
             Spacer(modifier = Modifier.width(12.dp))
+
+            //datos personaje
 
             Column(
                 modifier = Modifier.weight(1f)
@@ -228,6 +251,8 @@ fun TarjetaPersonaje(
                 )
             }
 
+            //menú opciones
+
             Box {
                 IconButton(
                     onClick = { menuExpandido = true }
@@ -244,6 +269,8 @@ fun TarjetaPersonaje(
                     modifier = Modifier.pointerInput(Unit) {}
                 ) {
 
+                    //editar personaje
+
                     DropdownMenuItem(
                         text = { Text("Editar") },
                         onClick = {
@@ -252,6 +279,8 @@ fun TarjetaPersonaje(
                         }
                     )
 
+                    //duplicar personaje
+
                     DropdownMenuItem(
                         text = { Text("Duplicar") },
                         onClick = {
@@ -259,6 +288,8 @@ fun TarjetaPersonaje(
                             onDuplicar(personaje)
                         }
                     )
+
+                    //eliminar personaje
 
                     DropdownMenuItem(
                         text = {

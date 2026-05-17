@@ -8,16 +8,18 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 
-// ICONOS
+//iconos
+
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 
-// FIREBASE
+//firebase
+
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 
-// VALIDACIÓN PASSWORD
+//función para validar que la contraseña tenga un mínimo de 8 caracteres
 fun esPasswordValida(password: String): Boolean {
 
     val regex = Regex("^.{8,}$")
@@ -46,7 +48,7 @@ fun PantallaRegistro(
         mutableStateOf("")
     }
 
-    // CONTROL
+    //control de la contraseña
 
     var passwordError by remember {
         mutableStateOf(false)
@@ -60,19 +62,18 @@ fun PantallaRegistro(
         mutableStateOf(false)
     }
 
-    // MENSAJES
+    //mensajes
 
     var mensaje by remember {
         mutableStateOf("")
     }
 
-    // LOADING
-
+    //controla el estado de carga mientras se realiza el login o registro
     var cargando by remember {
         mutableStateOf(false)
     }
 
-    // FIREBASE
+    //Autentificación de firebase
 
     val auth = FirebaseAuth.getInstance()
 
@@ -84,9 +85,7 @@ fun PantallaRegistro(
         verticalArrangement = Arrangement.Center
     ) {
 
-        // =========================
-        // TÍTULO
-        // =========================
+        //título
 
         Text(
             text = "Registro",
@@ -95,9 +94,7 @@ fun PantallaRegistro(
 
         Spacer(Modifier.height(32.dp))
 
-        // =========================
-        // USUARIO
-        // =========================
+        //usuario
 
         OutlinedTextField(
             value = usuario,
@@ -117,9 +114,7 @@ fun PantallaRegistro(
 
         Spacer(Modifier.height(16.dp))
 
-        // =========================
-        // EMAIL
-        // =========================
+        //email
 
         OutlinedTextField(
             value = email,
@@ -139,9 +134,7 @@ fun PantallaRegistro(
 
         Spacer(Modifier.height(16.dp))
 
-        // =========================
-        // CONTRASEÑA
-        // =========================
+        //Texto para introducir la contraseña
 
         OutlinedTextField(
             value = password,
@@ -208,9 +201,7 @@ fun PantallaRegistro(
 
         Spacer(Modifier.height(12.dp))
 
-        // =========================
-        // CONFIRMAR CONTRASEÑA
-        // =========================
+        //confirmar contraseña
 
         OutlinedTextField(
             value = confirmPassword,
@@ -276,16 +267,14 @@ fun PantallaRegistro(
 
         Spacer(Modifier.height(24.dp))
 
-        // =========================
-        // BOTÓN REGISTRO
-        // =========================
+        //botón de registro
 
         Button(
             onClick = {
 
                 mensaje = ""
 
-                // VALIDAR VACÍOS
+                //validar campos vacíos
 
                 if (
                     usuario.isBlank() ||
@@ -300,7 +289,7 @@ fun PantallaRegistro(
                     return@Button
                 }
 
-                // VALIDAR PASSWORD
+                //validar password
 
                 if (!esPasswordValida(password)) {
 
@@ -310,7 +299,7 @@ fun PantallaRegistro(
                     return@Button
                 }
 
-                // VALIDAR COINCIDENCIA
+                //validar coincidencia de ambas contraseñas
 
                 if (password != confirmPassword) {
 
@@ -367,9 +356,7 @@ fun PantallaRegistro(
             }
         }
 
-        // =========================
-        // MENSAJE
-        // =========================
+        //mensaje
 
         if (mensaje.isNotEmpty()) {
 
@@ -389,9 +376,7 @@ fun PantallaRegistro(
 
         Spacer(Modifier.height(12.dp))
 
-        // =========================
-        // VOLVER
-        // =========================
+        //volver al login
 
         TextButton(
             onClick = {
