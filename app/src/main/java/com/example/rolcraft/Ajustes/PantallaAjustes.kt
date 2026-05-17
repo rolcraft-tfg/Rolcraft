@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import com.example.rolcraft.Dados.DiceTheme
 import com.example.rolcraft.Registro.esPasswordValida
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
@@ -24,15 +23,13 @@ fun PantallaAjustes(
     onCerrarSesion: () -> Unit
 ) {
 
-    // FIREBASE
+    // Firebase
 
     val usuarioActual =
         FirebaseAuth.getInstance().currentUser
 
     val esInvitado =
         usuarioActual == null
-
-    // DIALOG CAMBIAR NOMBRE
 
     var mostrarDialogNombre by remember {
         mutableStateOf(false)
@@ -41,8 +38,6 @@ fun PantallaAjustes(
     var nuevoNombre by remember {
         mutableStateOf("")
     }
-
-    // DIALOG CAMBIAR PASSWORD
 
     var mostrarDialogPassword by remember {
         mutableStateOf(false)
@@ -60,8 +55,6 @@ fun PantallaAjustes(
         mutableStateOf(false)
     }
 
-    // DIALOG ELIMINAR
-
     var mostrarDialogEliminar by remember {
         mutableStateOf(false)
     }
@@ -75,8 +68,6 @@ fun PantallaAjustes(
             .padding(16.dp)
     ) {
 
-        // TÍTULO
-
         Text(
             text = "Ajustes",
             style = MaterialTheme.typography.headlineLarge,
@@ -84,8 +75,6 @@ fun PantallaAjustes(
         )
 
         Spacer(modifier = Modifier.height(12.dp))
-
-        // USUARIO ACTUAL
 
         Text(
             text = "Conectado como:",
@@ -106,11 +95,11 @@ fun PantallaAjustes(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // OPCIONES SOLO USUARIO
+        // Opciones de usuario (no aparecen en invitado)
 
         if (!esInvitado) {
 
-            // CAMBIAR NOMBRE
+            // Cambio de nombre
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -150,7 +139,7 @@ fun PantallaAjustes(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // CAMBIAR CONTRASEÑA
+            // Cambio de contraseña
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -190,7 +179,7 @@ fun PantallaAjustes(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // ELIMINAR CUENTA
+            // Eliminar cuenta
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -228,7 +217,7 @@ fun PantallaAjustes(
             Spacer(modifier = Modifier.height(16.dp))
         }
 
-        // MODO OSCURO
+        // Selector modo oscuro
 
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -283,8 +272,6 @@ fun PantallaAjustes(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // INFO APP
-
         Column(
             modifier = Modifier.fillMaxWidth(),
 
@@ -300,8 +287,6 @@ fun PantallaAjustes(
 
         Spacer(modifier = Modifier.height(24.dp))
     }
-
-    // DIALOG CAMBIAR NOMBRE
 
     if (mostrarDialogNombre) {
 
@@ -370,8 +355,6 @@ fun PantallaAjustes(
             }
         )
     }
-
-    // DIALOG CAMBIAR PASSWORD
 
     if (mostrarDialogPassword) {
 
@@ -543,8 +526,6 @@ fun PantallaAjustes(
             }
         )
     }
-
-    // DIALOG ELIMINAR CUENTA
 
     if (mostrarDialogEliminar) {
 

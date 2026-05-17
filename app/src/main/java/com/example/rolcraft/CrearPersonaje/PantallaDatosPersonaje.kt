@@ -55,7 +55,7 @@ fun PantallaDatosPersonaje(
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface // tarjeta oscura
+                containerColor = MaterialTheme.colorScheme.surface
             )
         ) {
             Column(
@@ -68,6 +68,8 @@ fun PantallaDatosPersonaje(
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.onSurface
                 )
+
+                // Filas con la información introducida desde la pantalla de creación
 
                 FilaDato("Género", personaje.genero)
                 FilaDato("Raza", personaje.raza)

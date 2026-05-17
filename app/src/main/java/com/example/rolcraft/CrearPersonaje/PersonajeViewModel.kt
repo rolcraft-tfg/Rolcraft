@@ -26,7 +26,7 @@ class PersonajeViewModel(
         personaje = personaje.update()
     }
 
-    // ACTUALIZACIONES
+    // Actualizaciones de campos
 
     fun actualizarNombre(n: String) = actualizar {
         copy(nombre = n.take(20))
@@ -56,7 +56,7 @@ class PersonajeViewModel(
         copy(alineamiento = a)
     }
 
-    // GENERAR
+    // Función para generar valores aleatorios en cada campo
 
     fun generarAleatorio() {
 
@@ -107,7 +107,7 @@ class PersonajeViewModel(
             calcularEstadisticas(personaje)
     }
 
-    //  GUARDAR
+    //  Función que guarda el personaje en room
 
     fun guardarPersonaje() {
 
@@ -156,7 +156,7 @@ class PersonajeViewModel(
         }
     }
 
-    // CARGAR LISTA
+    // Función que carga la lista de personajes desde room
 
     fun cargarPersonajes() {
 
@@ -204,7 +204,7 @@ class PersonajeViewModel(
         }
     }
 
-    // CARGAR PARA EDITAR
+    // Función que carga un personaje para poder editarlo
 
     fun cargarPersonaje(id: Int) {
 
@@ -243,7 +243,7 @@ class PersonajeViewModel(
         }
     }
 
-    // ELIMINAR
+    // Función que elimina el personaje de room
 
     fun eliminarPersonaje(
         personaje: Personaje
@@ -259,7 +259,7 @@ class PersonajeViewModel(
         }
     }
 
-    //VALIDAR
+    // Función que valida que todos los campos sean válidos y no queden null
 
     fun validarCampos(): String? {
 
@@ -282,7 +282,7 @@ class PersonajeViewModel(
             ?.key
     }
 
-    //RESET
+    // Función para resetear a 0 los campos de crear personaje después del guardado
 
     fun resetearPersonaje() {
 
@@ -292,8 +292,6 @@ class PersonajeViewModel(
 
         personajeOriginal = null
     }
-
-    //  ENTITY
 
     private fun Personaje.toEntity(): PersonajeEntity {
 
@@ -343,7 +341,7 @@ class PersonajeViewModel(
         )
     }
 
-    // ATRIBUTOS
+    // Función para actualizar la lista de atributos
 
     fun actualizarAtributos(
         fuerza: Int?,
@@ -364,7 +362,7 @@ class PersonajeViewModel(
         )
     }
 
-    // STATS
+    // Función para el calculo de estadísticas de los personajes
 
     fun calcularEstadisticas(
         personaje: Personaje
@@ -427,7 +425,7 @@ class PersonajeViewModel(
             calcularEstadisticas(personaje)
     }
 
-    // DUPLICAR
+    // Función para crear una copia de un personaje
 
     fun guardarPersonajeDuplicado(
         personaje: Personaje

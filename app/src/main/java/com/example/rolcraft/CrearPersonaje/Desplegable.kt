@@ -28,6 +28,7 @@ fun Desplegable(
     Column(modifier = Modifier.fillMaxWidth()) {
 
         // Fila clicable
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -46,6 +47,7 @@ fun Desplegable(
         }
 
         // Descripción debajo del valor seleccionado
+
         if (!descripcion.isNullOrBlank()) {
             Text(
                 text = descripcion,
@@ -55,6 +57,7 @@ fun Desplegable(
         }
 
         // Lista expandida con descripción dentro
+
         if (expanded) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 opciones.forEach { opcion ->
@@ -79,13 +82,11 @@ fun Desplegable(
                     ) {
                         Column(modifier = Modifier.padding(12.dp)) {
 
-                            // Nombre de la opción
                             Text(
                                 text = opcion,
                                 style = MaterialTheme.typography.bodyLarge
                             )
 
-                            // Descripción debajo
                             if (!desc.isNullOrBlank()) {
                                 Text(
                                     text = desc,

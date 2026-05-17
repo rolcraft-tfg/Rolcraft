@@ -15,6 +15,9 @@ import kotlinx.coroutines.isActive
 
 class DiceAnimatorCompose(private val context: Context) {
 
+    // Función que activa la vibración del dispositivo durante los milisegundos que se pasan por parámetro
+    // Usa la API (VibrationEffect) en Android 8.0+ y la API clásica en versiones anteriores
+
     private fun vibrar(ms: Long) {
         val vib = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -22,9 +25,24 @@ class DiceAnimatorCompose(private val context: Context) {
         } else vib.vibrate(ms)
     }
 
+    // Función que reproduce el sonido de los dados
+
     private fun sonido() {
         MediaPlayer.create(context, com.example.rolcraft.R.raw.dice).start()
     }
+
+    /**
+     * Anima un dado rebotando por la pantalla hasta que se detiene
+     * y devuelve el resultado
+     *
+     * @param dice              Tipo de dado
+     * @param screenWidth       Ancho de la pantalla
+     * @param screenHeight      Alto de la pantalla
+     * @param onUpdateFace      Callback para actualizar la cara mostrada del dado
+     * @param onUpdatePosition  Callback para actualizar la posición en pantalla
+     * @param onUpdateRotation  Callback para actualizar la rotación del dado
+     * @param onFinish          Callback que recibe el resultado final del dado
+     */
 
     suspend fun animateDice(
         dice: DiceType,
@@ -35,15 +53,20 @@ class DiceAnimatorCompose(private val context: Context) {
         onUpdateRotation: (Float) -> Unit,
         onFinish: (Int) -> Unit
     ) {
+        // Posición inicial del dado
         var pos = Offset(0f, 0f)
 
+        // Velocidad mínima y máxima
         val minSpeed = 4000f
         val maxSpeed = 9000f
 
+        // Genera una velocidad aleatoria entre minSpeed y maxSpeed,
+        // con dirección positiva o negativa.
         fun randomSpeed() =
             (minSpeed + Random.nextFloat() * (maxSpeed - minSpeed)) *
                     if (Random.nextBoolean()) 1 else -1
 
+        // Velocidad inicial del dado en X e Y
         var vel = Offset(
             randomSpeed(),
             randomSpeed()
@@ -107,8 +130,6 @@ class DiceAnimatorCompose(private val context: Context) {
 
             if (bounceCount > maxBounces) break
 
-            // ⭐⭐⭐ CAMBIO IMPORTANTE ⭐⭐⭐
-            // Enviar el NÚMERO DE CARA, NO el drawable ID
             val randomFace = (1..dice.faces).random()
             onUpdateFace(randomFace)
 
@@ -119,8 +140,6 @@ class DiceAnimatorCompose(private val context: Context) {
             yield()
         }
 
-        // ⭐⭐⭐ CAMBIO IMPORTANTE ⭐⭐⭐
-        // Igual aquí: enviar el número de cara
         val result = Random.nextInt(1, dice.faces + 1)
         onUpdateFace(result)
 
