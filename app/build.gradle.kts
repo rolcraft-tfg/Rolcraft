@@ -46,47 +46,30 @@ android {
 }
 
 dependencies {
-
-    // ⭐ Compose BOM (controla TODAS las versiones)
     implementation(platform(libs.androidx.compose.bom))
-
-    // ⭐ Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
     implementation("com.google.firebase:firebase-auth-ktx")
-
-    // ⭐ Compose UI (sin versiones fijas)
+    implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.foundation:foundation")
     implementation("androidx.compose.animation:animation")
-
-    // ⭐ Core y Activity Compose
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
-
-    // ⭐ Navegación y ViewModel Compose
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
-
-    // ⭐ Iconos
     implementation("androidx.compose.material:material-icons-extended")
-
-    // ⭐ Room Database (KSP)
     implementation("androidx.room:room-runtime:2.5.2")
     implementation("androidx.room:room-ktx:2.5.2")
     ksp("androidx.room:room-compiler:2.5.2")
-
-    // ⭐ Tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }

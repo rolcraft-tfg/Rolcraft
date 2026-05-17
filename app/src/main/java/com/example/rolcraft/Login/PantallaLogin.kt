@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import com.example.rolcraft.CrearPersonaje.PersonajeViewModel
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
@@ -20,7 +21,8 @@ fun PantallaLogin(
     onLoginCorrecto: () -> Unit,
     onRegisterClick: () -> Unit,
     onForgotPasswordClick: () -> Unit,
-    onGuestLogin: () -> Unit
+    onGuestLogin: () -> Unit,
+    viewModel: PersonajeViewModel
 ) {
 
     var usuario by remember {
@@ -31,23 +33,29 @@ fun PantallaLogin(
         mutableStateOf("")
     }
 
+    //mostrar u ocultar contraseña
+
     var passwordVisible by remember {
         mutableStateOf(false)
     }
+
+    //mensaje de error
 
     var mensajeError by remember {
         mutableStateOf("")
     }
 
+    //carga
+
     var cargando by remember {
         mutableStateOf(false)
     }
 
+    //firebase
+
     val auth = FirebaseAuth.getInstance()
 
-    // =========================
-    // SHARED PREFERENCES
-    // =========================
+    //shared preferences
 
     val context = LocalContext.current
 
@@ -56,9 +64,7 @@ fun PantallaLogin(
         Context.MODE_PRIVATE
     )
 
-    // =========================
-    // RECORDAR SESIÓN
-    // =========================
+    //recordar sesión
 
     var recordarSesion by remember {
 
@@ -70,9 +76,7 @@ fun PantallaLogin(
         )
     }
 
-    // =========================
-    // CARGAR DATOS GUARDADOS
-    // =========================
+    //cargar datos guardados
 
     LaunchedEffect(Unit) {
 
@@ -100,9 +104,7 @@ fun PantallaLogin(
         verticalArrangement = Arrangement.Center
     ) {
 
-        // =========================
-        // TÍTULO
-        // =========================
+        //título
 
         Text(
             text = "Inicio de sesión",
@@ -111,9 +113,7 @@ fun PantallaLogin(
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        // =========================
-        // EMAIL
-        // =========================
+        //email
 
         OutlinedTextField(
             value = usuario,
@@ -133,9 +133,7 @@ fun PantallaLogin(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // =========================
-        // CONTRASEÑA
-        // =========================
+        //contraseña
 
         OutlinedTextField(
             value = password,
@@ -181,9 +179,7 @@ fun PantallaLogin(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // =========================
-        // RECORDAR SESIÓN
-        // =========================
+        //recordar sesión
 
         Row(
             verticalAlignment = Alignment.CenterVertically
@@ -204,16 +200,14 @@ fun PantallaLogin(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // =========================
-        // BOTÓN LOGIN
-        // =========================
+        //botón login
 
         Button(
             onClick = {
 
                 mensajeError = ""
 
-                // VALIDAR CAMPOS VACÍOS
+                //validar campos vacíos
 
                 if (
                     usuario.isBlank() ||
@@ -290,9 +284,7 @@ fun PantallaLogin(
             }
         }
 
-        // =========================
-        // MENSAJE ERROR
-        // =========================
+        //mostrar mensaje de error
 
         if (mensajeError.isNotEmpty()) {
 
@@ -306,9 +298,7 @@ fun PantallaLogin(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // =========================
-        // RECUPERAR
-        // =========================
+        //recuperar contraseña
 
         TextButton(
             onClick = {
@@ -323,9 +313,7 @@ fun PantallaLogin(
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        // =========================
-        // REGISTRO
-        // =========================
+        //registro
 
         TextButton(
             onClick = {
@@ -340,9 +328,7 @@ fun PantallaLogin(
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        // =========================
-        // INVITADO
-        // =========================
+        //invitado
 
         TextButton(
             onClick = {

@@ -9,23 +9,41 @@ data class PersonajeEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 
-    val nombre: String,
-    val raza: String,
-    val clase: String,
-    val nivel: Int,
-    val genero: String,
-    val subclase: String,
-    val trasfondo: String,
-    val alineamiento: String,
-    val fuerza: Int,
-    val destreza: Int,
-    val constitucion: Int,
-    val inteligencia: Int,
-    val sabiduria: Int,
-    val carisma: Int,
-    val ac: Int,
-    val iniciativa: Int,
-    val hp: Int,
-    // UID del usuario autenticado en Firebase
-    val usuarioId: String
+    val nombre: String = "",
+
+    val raza: String = "",
+
+    val clase: String = "",
+
+    val nivel: Int = 1,
+
+    val genero: String = "",
+
+    val subclase: String = "",
+
+    val trasfondo: String = "",
+
+    val alineamiento: String = "",
+
+    val fuerza: Int = 0,
+
+    val destreza: Int = 0,
+
+    val constitucion: Int = 0,
+
+    val inteligencia: Int = 0,
+
+    val sabiduria: Int = 0,
+
+    val carisma: Int = 0,
+
+    val ac: Int = 0,
+
+    val iniciativa: Int = 0,
+
+    val hp: Int = 0,
+
+    val usuarioId: String = "",
+
+    val firebaseId: String = ""
 )

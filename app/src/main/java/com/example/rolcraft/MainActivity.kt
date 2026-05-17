@@ -187,6 +187,8 @@ fun AppNavegacion(
 
                 PantallaLogin(
 
+                    viewModel = viewModel,
+
                     onLoginCorrecto = {
 
                         navController.navigate("inicio") {
@@ -258,7 +260,6 @@ fun AppNavegacion(
                     viewModel = viewModel,
 
                     onCrearPersonaje = {
-                        viewModel.resetearPersonaje()
 
                         navController.navigate("crear")
                     },
@@ -266,6 +267,9 @@ fun AppNavegacion(
                     onPantallaFichaPersonaje = { id ->
 
                         navController.navigate("ficha/$id")
+                    },
+                    onEditarPersonaje = {
+                        navController.navigate("editarPersonaje")
                     }
                 )
             }
@@ -277,30 +281,24 @@ fun AppNavegacion(
             }
 
             composable("crear") {
-
-                LaunchedEffect(Unit) {
-
-                    if (!viewModel.modoEdicion) {
-
-                        viewModel.resetearPersonaje()
-                    }
-                }
+                // aquí SÍ se resetea
 
                 PantallaCrearPersonaje(
-
                     viewModel = viewModel,
-
-                    onSiguiente = {
-
-                        navController.navigate("verFicha")
-                    },
-
-                    onVolver = {
-
-                        navController.popBackStack()
-                    }
+                    onSiguiente = { navController.navigate("verFicha") },
+                    onVolver = { navController.popBackStack() }
                 )
             }
+
+            composable("editarPersonaje") {
+                // aquí NO se resetea
+                PantallaCrearPersonaje(
+                    viewModel = viewModel,
+                    onSiguiente = { navController.navigate("verFicha") },
+                    onVolver = { navController.popBackStack() }
+                )
+            }
+
 
             // VER FICHA
 
@@ -323,17 +321,17 @@ fun AppNavegacion(
                 )
             }
 
-            // FICHA
+            // ficha
 
-            composable("ficha/{id}") { backStackEntry ->
+            composable("ficha/{firebaseId}") { backStackEntry ->
 
-                val id =
+                val firebaseId =
                     backStackEntry.arguments
-                        ?.getString("id")!!
-                        .toInt()
+                        ?.getString("firebaseId")
+                        ?: ""
 
                 PantallaFichaPersonaje(
-                    id = id,
+                    firebaseId = firebaseId,
                     viewModel = viewModel
                 )
             }

@@ -3,6 +3,8 @@ package com.example.rolcraft.CrearPersonaje
 data class Personaje(
 
     val id : Int = 0,
+    val firebaseId: String = "",
+    val usuarioId: String = "",
     val nombre: String = "",
     val genero: String = "",
     val raza: String = "",

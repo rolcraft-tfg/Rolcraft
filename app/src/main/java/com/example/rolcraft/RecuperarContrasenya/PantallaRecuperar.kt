@@ -17,13 +17,19 @@ fun PantallaRecuperar(
         mutableStateOf("")
     }
 
+    //mensaje
+
     var mensaje by remember {
         mutableStateOf("")
     }
 
+    //carga de la página
+
     var cargando by remember {
         mutableStateOf(false)
     }
+
+    //implementación del firebase
 
     val auth = FirebaseAuth.getInstance()
 
@@ -35,9 +41,7 @@ fun PantallaRecuperar(
         verticalArrangement = Arrangement.Center
     ) {
 
-        // =========================
-        // TÍTULO
-        // =========================
+        //título
 
         Text(
             text = "Recuperar contraseña",
@@ -46,9 +50,7 @@ fun PantallaRecuperar(
 
         Spacer(Modifier.height(12.dp))
 
-        // =========================
-        // DESCRIPCIÓN
-        // =========================
+        //descripción
 
         Text(
             text = "Introduce tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña (recuerda mirar en spam).",
@@ -58,9 +60,7 @@ fun PantallaRecuperar(
 
         Spacer(Modifier.height(32.dp))
 
-        // =========================
-        // EMAIL
-        // =========================
+        //email
 
         OutlinedTextField(
             value = email,
@@ -80,16 +80,14 @@ fun PantallaRecuperar(
 
         Spacer(Modifier.height(24.dp))
 
-        // =========================
-        // BOTÓN
-        // =========================
+        //botón
 
         Button(
             onClick = {
 
                 mensaje = ""
 
-                // EMAIL VACÍO
+                //email vacío
 
                 if (email.isBlank()) {
 
@@ -99,7 +97,7 @@ fun PantallaRecuperar(
                     return@Button
                 }
 
-                // VALIDAR FORMATO EMAIL
+                //validar formato email
 
                 if (
                     !Patterns.EMAIL_ADDRESS
@@ -115,7 +113,7 @@ fun PantallaRecuperar(
 
                 cargando = true
 
-                // ENVIAR CORREO
+                //enviar correo
 
                 auth.sendPasswordResetEmail(
                     email.trim()
@@ -152,9 +150,7 @@ fun PantallaRecuperar(
             }
         }
 
-        // =========================
-        // MENSAJE
-        // =========================
+        //mensaje de texto que aparece debajo del botón dependiendo de lo que ocurra
 
         if (mensaje.isNotEmpty()) {
 
@@ -174,9 +170,7 @@ fun PantallaRecuperar(
 
         Spacer(Modifier.height(12.dp))
 
-        // =========================
-        // VOLVER
-        // =========================
+        //volver al login
 
         TextButton(
             onClick = {

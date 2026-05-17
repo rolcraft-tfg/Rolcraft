@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "853709188389",
-    "project_id": "rolcraft-e4769",
-    "storage_bucket": "rolcraft-e4769.firebasestorage.app"
+    "project_number": "722664383999",
+    "project_id": "rolcraft-database",
+    "storage_bucket": "rolcraft-database.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:853709188389:android:9f20d2a277de96d205fecc",
+        "mobilesdk_app_id": "1:722664383999:android:12246e3007c4ed7cf873ca",
         "android_client_info": {
           "package_name": "com.example.rolcraft"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCKzSOC6_LECyd6-RZEkyT3DHJ4rjyzIis"
+          "current_key": "AIzaSyB9hLkc6fA7OOsmF9spRdXhd_JGRKA6e2c"
         }
       ],
       "services": {

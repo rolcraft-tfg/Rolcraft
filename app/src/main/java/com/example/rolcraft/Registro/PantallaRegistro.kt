@@ -13,7 +13,7 @@ import androidx.compose.material.icons.filled.VisibilityOff
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 
-// VALIDACIÓN PASSWORD
+//función para validar que la contraseña tenga un mínimo de 8 caracteres
 fun esPasswordValida(password: String): Boolean {
 
     val regex = Regex("^.{8,}$")
@@ -49,7 +49,7 @@ fun PantallaRegistro(
         Text("Registro", style = MaterialTheme.typography.headlineMedium)
         Spacer(Modifier.height(32.dp))
 
-        // USUARIO
+        // Usuario
         OutlinedTextField(
             value = usuario,
             onValueChange = { usuario = it },
@@ -60,7 +60,8 @@ fun PantallaRegistro(
 
         Spacer(Modifier.height(16.dp))
 
-        // EMAIL
+        //email
+
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
@@ -71,7 +72,8 @@ fun PantallaRegistro(
 
         Spacer(Modifier.height(16.dp))
 
-        // PASSWORD
+        //Texto para introducir la contraseña
+
         OutlinedTextField(
             value = password,
             onValueChange = {
@@ -104,7 +106,8 @@ fun PantallaRegistro(
 
         Spacer(Modifier.height(12.dp))
 
-        // CONFIRM PASSWORD
+        //confirmar contraseña
+
         OutlinedTextField(
             value = confirmPassword,
             onValueChange = {
@@ -136,20 +139,35 @@ fun PantallaRegistro(
 
         Spacer(Modifier.height(24.dp))
 
-        // BOTÓN REGISTRO
+        //botón de registro
+
         Button(
             onClick = {
                 mensaje = ""
 
-                if (usuario.isBlank() || email.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
-                    mensaje = "Faltan campos por rellenar"
+                //validar campos vacíos
+
+                if (
+                    usuario.isBlank() ||
+                    email.isBlank() ||
+                    password.isBlank() ||
+                    confirmPassword.isBlank()
+                ) {
+
+                    mensaje =
+                        "Faltan campos por rellenar"
+
                     return@Button
                 }
+
+                //validar password
 
                 if (!esPasswordValida(password)) {
                     mensaje = "La contraseña debe tener mínimo 8 caracteres"
                     return@Button
                 }
+
+                //validar coincidencia de ambas contraseñas
 
                 if (password != confirmPassword) {
                     mensaje = "Las contraseñas no coinciden"
@@ -198,6 +216,8 @@ fun PantallaRegistro(
             }
         }
 
+        //mensaje
+
         if (mensaje.isNotEmpty()) {
             Spacer(Modifier.height(12.dp))
             Text(
@@ -207,6 +227,8 @@ fun PantallaRegistro(
         }
 
         Spacer(Modifier.height(12.dp))
+
+        //volver al login
 
         TextButton(
             onClick = { onVolver() },
