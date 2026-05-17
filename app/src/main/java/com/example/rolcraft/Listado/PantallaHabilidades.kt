@@ -45,6 +45,7 @@ fun PantallaHabilidades() {
         Habilidad("Contundente", "Golpe físico pesado.", R.drawable.contundente),
         Habilidad("Cortante", "Daño de corte.", R.drawable.cortante),
         Habilidad("Fuerza", "Energía mágica pura.", R.drawable.fuerza),
+        Habilidad("Fuego", "LLamarada abrasadora.", R.drawable.fuego),
         Habilidad("Hielo", "Daño de frío.", R.drawable.hielo),
         Habilidad("Necrótico", "Energía oscura.", R.drawable.necrotico),
         Habilidad("Perforante", "Ataque punzante.", R.drawable.perforante),
