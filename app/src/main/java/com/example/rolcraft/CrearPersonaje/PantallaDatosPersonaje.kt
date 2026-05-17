@@ -113,8 +113,7 @@ fun PantallaDatosPersonaje(
         }
 
         Spacer(modifier = Modifier.height(32.dp))
-        Text("DEBUG modoEdicion = ${viewModel.modoEdicion}")
-        Text("DEBUG firebaseId = '${viewModel.personaje.firebaseId}'")
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
