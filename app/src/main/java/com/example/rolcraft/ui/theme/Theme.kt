@@ -4,7 +4,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-// modo oscuro
+// Modo oscuro
 private val DarkColorScheme = darkColorScheme(
     primary = Color(0xFF7EA7FF),
     secondary = Color(0xFF1B2733),
@@ -20,7 +20,7 @@ private val DarkColorScheme = darkColorScheme(
     onSurface = Color.White
 )
 
-// modo claro
+// Modo claro
 private val LightColorScheme = lightColorScheme(
     primary = Color(0xFF4A6FD6),
     secondary = Color(0xFFE3EAF5),

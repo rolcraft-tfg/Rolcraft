@@ -13,7 +13,7 @@ import androidx.compose.material.icons.filled.VisibilityOff
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 
-//función para validar que la contraseña tenga un mínimo de 8 caracteres
+// Función para validar que la contraseña tenga un mínimo de 8 caracteres
 fun esPasswordValida(password: String): Boolean {
 
     val regex = Regex("^.{8,}$")
@@ -60,7 +60,7 @@ fun PantallaRegistro(
 
         Spacer(Modifier.height(16.dp))
 
-        //email
+        // Email
 
         OutlinedTextField(
             value = email,
@@ -72,7 +72,7 @@ fun PantallaRegistro(
 
         Spacer(Modifier.height(16.dp))
 
-        //Texto para introducir la contraseña
+        // Texto para introducir la contraseña
 
         OutlinedTextField(
             value = password,
@@ -106,7 +106,7 @@ fun PantallaRegistro(
 
         Spacer(Modifier.height(12.dp))
 
-        //confirmar contraseña
+        // Confirmar contraseña
 
         OutlinedTextField(
             value = confirmPassword,
@@ -139,13 +139,13 @@ fun PantallaRegistro(
 
         Spacer(Modifier.height(24.dp))
 
-        //botón de registro
+        // Botón de registro
 
         Button(
             onClick = {
                 mensaje = ""
 
-                //validar campos vacíos
+                // Validar campos vacíos
 
                 if (
                     usuario.isBlank() ||
@@ -160,14 +160,14 @@ fun PantallaRegistro(
                     return@Button
                 }
 
-                //validar password
+                // Validar contraseña
 
                 if (!esPasswordValida(password)) {
                     mensaje = "La contraseña debe tener mínimo 8 caracteres"
                     return@Button
                 }
 
-                //validar coincidencia de ambas contraseñas
+                // Validar coincidencia de ambas contraseñas
 
                 if (password != confirmPassword) {
                     mensaje = "Las contraseñas no coinciden"
@@ -216,7 +216,7 @@ fun PantallaRegistro(
             }
         }
 
-        //mensaje
+        // Mensaje
 
         if (mensaje.isNotEmpty()) {
             Spacer(Modifier.height(12.dp))
@@ -228,7 +228,7 @@ fun PantallaRegistro(
 
         Spacer(Modifier.height(12.dp))
 
-        //volver al login
+        // Volver al login
 
         TextButton(
             onClick = { onVolver() },

@@ -181,7 +181,7 @@ fun AppNavegacion(
             modifier = Modifier.padding(padding)
         ) {
 
-            // LOGIN
+            // Pantalla login
 
             composable("login") {
 
@@ -207,25 +207,11 @@ fun AppNavegacion(
                     onForgotPasswordClick = {
 
                         navController.navigate("recuperar")
-                    },
-
-                    // =========================
-                    // INVITADO
-                    // =========================
-
-                    onGuestLogin = {
-
-                        navController.navigate("inicio") {
-
-                            popUpTo("login") {
-                                inclusive = true
-                            }
-                        }
                     }
                 )
             }
 
-            // REGISTRO
+            // Pantalla registro
 
             composable("registro") {
 
@@ -238,7 +224,7 @@ fun AppNavegacion(
                 )
             }
 
-            // RECUPERAR
+            // Pantalla recuperar
 
             composable("recuperar") {
 
@@ -251,7 +237,7 @@ fun AppNavegacion(
                 )
             }
 
-            // INICIO
+            // Pantalla inicio
 
             composable("inicio") {
 
@@ -274,15 +260,13 @@ fun AppNavegacion(
                 )
             }
 
-            // HABILIDADES
+            // Pantalla habilidades
 
             composable("habilidades") {
                 PantallaHabilidades()
             }
 
             composable("crear") {
-                // aquí SÍ se resetea
-
                 PantallaCrearPersonaje(
                     viewModel = viewModel,
                     onSiguiente = { navController.navigate("verFicha") },
@@ -291,7 +275,6 @@ fun AppNavegacion(
             }
 
             composable("editarPersonaje") {
-                // aquí NO se resetea
                 PantallaCrearPersonaje(
                     viewModel = viewModel,
                     onSiguiente = { navController.navigate("verFicha") },
@@ -300,7 +283,7 @@ fun AppNavegacion(
             }
 
 
-            // VER FICHA
+            // Ver ficha personaje
 
             composable("verFicha") {
 
@@ -321,7 +304,7 @@ fun AppNavegacion(
                 )
             }
 
-            // ficha
+            // Ficha
 
             composable("ficha/{firebaseId}") { backStackEntry ->
 
@@ -336,7 +319,7 @@ fun AppNavegacion(
                 )
             }
 
-            // AJUSTES
+            // Ajustes
 
             composable("ajustes") {
 

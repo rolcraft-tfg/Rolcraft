@@ -17,19 +17,19 @@ fun PantallaRecuperar(
         mutableStateOf("")
     }
 
-    //mensaje
+    // Mensaje
 
     var mensaje by remember {
         mutableStateOf("")
     }
 
-    //carga de la página
+    // Carga de la página
 
     var cargando by remember {
         mutableStateOf(false)
     }
 
-    //implementación del firebase
+    // Implementación del firebase
 
     val auth = FirebaseAuth.getInstance()
 
@@ -41,8 +41,6 @@ fun PantallaRecuperar(
         verticalArrangement = Arrangement.Center
     ) {
 
-        //título
-
         Text(
             text = "Recuperar contraseña",
             style = MaterialTheme.typography.headlineMedium
@@ -50,7 +48,7 @@ fun PantallaRecuperar(
 
         Spacer(Modifier.height(12.dp))
 
-        //descripción
+        // Descripción
 
         Text(
             text = "Introduce tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña (recuerda mirar en spam).",
@@ -60,7 +58,7 @@ fun PantallaRecuperar(
 
         Spacer(Modifier.height(32.dp))
 
-        //email
+        // Email
 
         OutlinedTextField(
             value = email,
@@ -80,14 +78,10 @@ fun PantallaRecuperar(
 
         Spacer(Modifier.height(24.dp))
 
-        //botón
-
         Button(
             onClick = {
 
                 mensaje = ""
-
-                //email vacío
 
                 if (email.isBlank()) {
 
@@ -97,7 +91,7 @@ fun PantallaRecuperar(
                     return@Button
                 }
 
-                //validar formato email
+                // Validar formato email
 
                 if (
                     !Patterns.EMAIL_ADDRESS
@@ -113,7 +107,7 @@ fun PantallaRecuperar(
 
                 cargando = true
 
-                //enviar correo
+                // Enviar correo
 
                 auth.sendPasswordResetEmail(
                     email.trim()
@@ -150,7 +144,7 @@ fun PantallaRecuperar(
             }
         }
 
-        //mensaje de texto que aparece debajo del botón dependiendo de lo que ocurra
+        // Mensaje de texto que aparece debajo del botón dependiendo de lo que ocurra
 
         if (mensaje.isNotEmpty()) {
 
@@ -170,7 +164,7 @@ fun PantallaRecuperar(
 
         Spacer(Modifier.height(12.dp))
 
-        //volver al login
+        // Volver al login
 
         TextButton(
             onClick = {

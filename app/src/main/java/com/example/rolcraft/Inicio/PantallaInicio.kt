@@ -25,7 +25,7 @@ import com.example.rolcraft.CrearPersonaje.Personaje
 import com.example.rolcraft.CrearPersonaje.PersonajeViewModel
 import com.example.rolcraft.R
 
-//obtener imagen según la clase
+// Obtener imagen según la clase
 
 fun obtenerImagenClase(clase: String): Int {
     return when (clase.lowercase().trim()) {
@@ -37,7 +37,7 @@ fun obtenerImagenClase(clase: String): Int {
     }
 }
 
-//obtener color según la clase
+// Obtener color según la clase
 
 fun obtenerColorClase(clase: String): Color {
     return when (clase.lowercase().trim()) {
@@ -57,7 +57,7 @@ fun PantallaInicio(
     onEditarPersonaje: () -> Unit
 ) {
 
-    //cargar personajes
+    // Cargar personajes
 
     LaunchedEffect(Unit) {
         viewModel.cargarPersonajes()
@@ -82,7 +82,7 @@ fun PantallaInicio(
                     .padding(16.dp)
             ) {
 
-                //título
+                // Título
 
                 Text(
                     text = "Mis personajes",
@@ -92,7 +92,7 @@ fun PantallaInicio(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                //lista de personajes
+                // Lista de personajes
 
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
@@ -119,7 +119,7 @@ fun PantallaInicio(
                 }
             }
 
-            //botón crear personaje
+            // Botón crear personaje
 
             Button(
                 onClick = {
@@ -155,17 +155,17 @@ fun TarjetaPersonaje(
     onClick: (String) -> Unit
 ) {
 
-    //mostrar diálogo eliminar
+    // Mostrar diálogo eliminar
 
     var mostrarDialogo by remember { mutableStateOf(false) }
 
-    //mostrar menú desplegable
+    // Mostrar menú desplegable
 
     var menuExpandido by remember { mutableStateOf(false) }
 
     val colorClase = obtenerColorClase(personaje.clase)
 
-    //diálogo eliminar personaje
+    // Diálogo eliminar personaje
 
     if (mostrarDialogo) {
         AlertDialog(
@@ -190,7 +190,7 @@ fun TarjetaPersonaje(
         )
     }
 
-    //tarjeta personaje
+    // Tarjeta personaje
 
     Card(
         modifier = Modifier
@@ -210,7 +210,7 @@ fun TarjetaPersonaje(
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            //imagen personaje
+            // Imagen personaje
 
             Image(
                 painter = painterResource(
@@ -225,7 +225,7 @@ fun TarjetaPersonaje(
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            //datos personaje
+            // Datos personaje
 
             Column(
                 modifier = Modifier.weight(1f)
@@ -251,7 +251,7 @@ fun TarjetaPersonaje(
                 )
             }
 
-            //menú opciones
+            // Menú opciones
 
             Box {
                 IconButton(
@@ -269,7 +269,7 @@ fun TarjetaPersonaje(
                     modifier = Modifier.pointerInput(Unit) {}
                 ) {
 
-                    //editar personaje
+                    // Editar personaje
 
                     DropdownMenuItem(
                         text = { Text("Editar") },
@@ -279,7 +279,7 @@ fun TarjetaPersonaje(
                         }
                     )
 
-                    //duplicar personaje
+                    // Duplicar personaje
 
                     DropdownMenuItem(
                         text = { Text("Duplicar") },
@@ -289,7 +289,7 @@ fun TarjetaPersonaje(
                         }
                     )
 
-                    //eliminar personaje
+                    // Eliminar personaje
 
                     DropdownMenuItem(
                         text = {

@@ -81,7 +81,7 @@ fun PantallaHabilidades() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // BUSCADOR
+            // Buscador de habilidades
             OutlinedTextField(
                 value = busqueda,
                 onValueChange = { busqueda = it },
@@ -91,7 +91,6 @@ fun PantallaHabilidades() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // GRID
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -106,7 +105,7 @@ fun PantallaHabilidades() {
         }
     }
 
-    // POPUP
+    // Popup
     habilidadSeleccionada?.let { habilidad ->
         Dialog(onDismissRequest = { habilidadSeleccionada = null }) {
 

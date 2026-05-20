@@ -106,9 +106,9 @@ fun PantallaDatosPersonaje(
                     "Carisma",
                     "${personaje.carisma ?: "–"} (${mod(personaje.carisma)})"
                 )
-                FilaDato("AC", personaje.ac.toString())
+                FilaDato("CA", personaje.ac.toString())
                 FilaDato("Iniciativa", personaje.iniciativa.toString())
-                FilaDato("HP", personaje.hp.toString())
+                FilaDato("PV", personaje.hp.toString())
             }
         }
 

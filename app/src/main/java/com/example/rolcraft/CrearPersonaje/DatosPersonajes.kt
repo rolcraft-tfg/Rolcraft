@@ -74,5 +74,10 @@ val descripcionAlineamiento = mapOf(
     "Legal Bueno" to "Justo y honorable.",
     "Neutral Bueno" to "Ayuda sin reglas estrictas.",
     "Caótico Bueno" to "Hace el bien a su manera.",
-    "Neutral" to "Equilibrado y práctico."
+    "Legal Neutral" to "Cumple las leyes y el orden por encima de todo.",
+    "Neutral" to "Equilibrado y práctico.",
+    "Caótico Neutral" to "Valora su libertad por encima de cualquier norma.",
+    "Legal Malvado" to "Usa las reglas para dominar o manipular.",
+    "Neutral Malvado" to "Actúa solo por interés propio.",
+    "Caótico Malvado" to "Destructivo e impredecible."
 )

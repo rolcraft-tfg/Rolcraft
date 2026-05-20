@@ -21,7 +21,6 @@ fun PantallaLogin(
     onLoginCorrecto: () -> Unit,
     onRegisterClick: () -> Unit,
     onForgotPasswordClick: () -> Unit,
-    onGuestLogin: () -> Unit,
     viewModel: PersonajeViewModel
 ) {
 
@@ -33,29 +32,29 @@ fun PantallaLogin(
         mutableStateOf("")
     }
 
-    //mostrar u ocultar contraseña
+    // Mostrar u ocultar contraseña
 
     var passwordVisible by remember {
         mutableStateOf(false)
     }
 
-    //mensaje de error
+    // Mensaje de error
 
     var mensajeError by remember {
         mutableStateOf("")
     }
 
-    //carga
+    // Carga
 
     var cargando by remember {
         mutableStateOf(false)
     }
 
-    //firebase
+    // Firebase
 
     val auth = FirebaseAuth.getInstance()
 
-    //shared preferences
+    // Preferencias
 
     val context = LocalContext.current
 
@@ -64,7 +63,7 @@ fun PantallaLogin(
         Context.MODE_PRIVATE
     )
 
-    //recordar sesión
+    // Recordar sesión
 
     var recordarSesion by remember {
 
@@ -76,7 +75,7 @@ fun PantallaLogin(
         )
     }
 
-    //cargar datos guardados
+    // Cargar datos guardados
 
     LaunchedEffect(Unit) {
 
@@ -104,8 +103,6 @@ fun PantallaLogin(
         verticalArrangement = Arrangement.Center
     ) {
 
-        //título
-
         Text(
             text = "Inicio de sesión",
             style = MaterialTheme.typography.headlineMedium
@@ -113,7 +110,6 @@ fun PantallaLogin(
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        //email
 
         OutlinedTextField(
             value = usuario,
@@ -132,8 +128,6 @@ fun PantallaLogin(
         )
 
         Spacer(modifier = Modifier.height(20.dp))
-
-        //contraseña
 
         OutlinedTextField(
             value = password,
@@ -179,7 +173,7 @@ fun PantallaLogin(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        //recordar sesión
+        // Recordar sesión
 
         Row(
             verticalAlignment = Alignment.CenterVertically
@@ -200,14 +194,12 @@ fun PantallaLogin(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        //botón login
-
         Button(
             onClick = {
 
                 mensajeError = ""
 
-                //validar campos vacíos
+                // Validar campos vacíos
 
                 if (
                     usuario.isBlank() ||
@@ -235,9 +227,7 @@ fun PantallaLogin(
 
                         if (user != null && user.isEmailVerified) {
 
-                            // =========================
-                            // GUARDAR DATOS
-                            // =========================
+                            // Guardar contraseña y nombre
 
                             if (recordarSesion) {
 
@@ -284,7 +274,7 @@ fun PantallaLogin(
             }
         }
 
-        //mostrar mensaje de error
+        // Mostrar mensaje de error
 
         if (mensajeError.isNotEmpty()) {
 
@@ -298,7 +288,7 @@ fun PantallaLogin(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        //recuperar contraseña
+        // Recuperar contraseña
 
         TextButton(
             onClick = {
@@ -313,7 +303,7 @@ fun PantallaLogin(
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        //registro
+        // Registro
 
         TextButton(
             onClick = {
@@ -324,21 +314,6 @@ fun PantallaLogin(
         ) {
 
             Text("¿No tienes cuenta? Regístrate")
-        }
-
-        Spacer(modifier = Modifier.height(4.dp))
-
-        //invitado
-
-        TextButton(
-            onClick = {
-                onGuestLogin()
-            },
-
-            modifier = Modifier.fillMaxWidth()
-        ) {
-
-            Text("Entrar como invitado")
         }
     }
 }

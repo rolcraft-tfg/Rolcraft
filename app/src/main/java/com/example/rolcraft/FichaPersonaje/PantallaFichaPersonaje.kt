@@ -184,12 +184,12 @@ fun EncabezadoFicha(personaje: Personaje) {
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth()
         ) {
-            EncabezadoStat("AC", personaje.ac.toString())
+            EncabezadoStat("CA", personaje.ac.toString())
             EncabezadoStat(
                 "Iniciativa",
                 if (personaje.iniciativa >= 0) "+${personaje.iniciativa}" else personaje.iniciativa.toString()
             )
-            EncabezadoStat("HP", "${personaje.hp}/${personaje.hp}")
+            EncabezadoStat("PV", "${personaje.hp}/${personaje.hp}")
         }
     }
 }
@@ -228,12 +228,12 @@ fun SeccionHabilidades(personaje: Personaje) {
 
         Spacer(Modifier.height(16.dp))
 
-        HabilidadItem("Strength", personaje.fuerza)
-        HabilidadItem("Dexterity", personaje.destreza)
-        HabilidadItem("Constitution", personaje.constitucion)
-        HabilidadItem("Intelligence", personaje.inteligencia)
-        HabilidadItem("Wisdom", personaje.sabiduria)
-        HabilidadItem("Charisma", personaje.carisma)
+        HabilidadItem("Fuerza", personaje.fuerza)
+        HabilidadItem("Destreza", personaje.destreza)
+        HabilidadItem("Constitución", personaje.constitucion)
+        HabilidadItem("Inteligencia", personaje.inteligencia)
+        HabilidadItem("Sabiduria", personaje.sabiduria)
+        HabilidadItem("Carisma", personaje.carisma)
     }
 }
 
@@ -286,19 +286,19 @@ fun HabilidadItem(nombre: String, valor: Int?) {
 fun PantallaDadosInterna() {
 
     val context = LocalContext.current
-    val animator = remember { DiceAnimatorCompose(context) }
-    val scope = rememberCoroutineScope()
+    val animator = remember { DiceAnimatorCompose(context) } // Crea el animador de dados
+    val scope = rememberCoroutineScope() // Permite lanzar corrutinas
 
-    var imagenActual by remember { mutableStateOf<Int?>(null) }
-    var mostrarResultado by remember { mutableStateOf(false) }
-    var resultado by remember { mutableStateOf(0) }
+    var imagenActual by remember { mutableStateOf<Int?>(null) } // Cara actual del dado
+    var mostrarResultado by remember { mutableStateOf(false) } // Muestra el número final
+    var resultado by remember { mutableStateOf(0) } // Resultado de la tirada
 
-    var position by remember { mutableStateOf(Offset(0f, 0f)) }
-    var rotation by remember { mutableStateOf(0f) }
+    var position by remember { mutableStateOf(Offset(0f, 0f)) } // Posición del dado
+    var rotation by remember { mutableStateOf(0f) } // Rotación del dado
 
-    var smoothX by remember { mutableStateOf(0f) }
-    var smoothY by remember { mutableStateOf(0f) }
-    var smoothRot by remember { mutableStateOf(0f) }
+    var smoothX by remember { mutableStateOf(0f) } // Movimiento suavizado en X
+    var smoothY by remember { mutableStateOf(0f) } // Movimiento suavizado en Y
+    var smoothRot by remember { mutableStateOf(0f) } // Rotación suavizada
 
     var volverAlCentro by remember { mutableStateOf(false) }
     var dadoVisible by remember { mutableStateOf(true) }
@@ -306,20 +306,20 @@ fun PantallaDadosInterna() {
     var screenWidth by remember { mutableStateOf(0f) }
     var screenHeight by remember { mutableStateOf(0f) }
 
-    var bloqueado by remember { mutableStateOf(false) }
+    var bloqueado by remember { mutableStateOf(false) } // Bloquea la UI durante la tirada
 
     LaunchedEffect(Unit) {
         while (true) {
             if (volverAlCentro) {
-                smoothX += (0f - smoothX) * 0.08f
-                smoothY += (0f - smoothY) * 0.08f
-                smoothRot += (0f - smoothRot) * 0.08f
+                smoothX += (0f - smoothX) * 0.08f // Suaviza vuelta al centro en X
+                smoothY += (0f - smoothY) * 0.08f // Suaviza vuelta al centro en Y
+                smoothRot += (0f - smoothRot) * 0.08f // Suaviza rotación al centro
             } else {
-                smoothX += (position.x - smoothX) * 0.20f
-                smoothY += (position.y - smoothY) * 0.20f
-                smoothRot += (rotation - smoothRot) * 0.20f
+                smoothX += (position.x - smoothX) * 0.20f // Suaviza movimiento normal X
+                smoothY += (position.y - smoothY) * 0.20f // Suaviza movimiento normal Y
+                smoothRot += (rotation - smoothRot) * 0.20f // Suaviza rotación normal
             }
-            delay(16)
+            delay(16) // Simula fluidez
         }
     }
 
@@ -327,8 +327,8 @@ fun PantallaDadosInterna() {
         modifier = Modifier
             .fillMaxSize()
             .onGloballyPositioned {
-                screenWidth = it.size.width.toFloat() / 2f
-                screenHeight = it.size.height.toFloat() / 2f
+                screenWidth = it.size.width.toFloat() / 2f // Centro horizontal
+                screenHeight = it.size.height.toFloat() / 2f // Centro vertical
             }
     ) {
 
@@ -366,10 +366,10 @@ fun PantallaDadosInterna() {
                 ) {
                     Button(
                         onClick = {
-                            bloqueado = true
+                            bloqueado = true // Bloquea la pantalla
                             mostrarResultado = false
                             volverAlCentro = false
-                            dadoVisible = true
+                            dadoVisible = true // Muestra el dado
 
                             scope.launch {
                                 animator.animateDice(
@@ -377,24 +377,23 @@ fun PantallaDadosInterna() {
                                     screenWidth = screenWidth,
                                     screenHeight = screenHeight,
                                     onUpdateFace = { face ->
-                                        imagenActual = dice.images[face - 1]
+                                        imagenActual = dice.images[face - 1] // Actualiza cara
                                     },
-                                    onUpdatePosition = { position = it },
-                                    onUpdateRotation = { rotation = it },
+                                    onUpdatePosition = { position = it }, // Actualiza posición
+                                    onUpdateRotation = { rotation = it }, // Actualiza rotación
 
                                     onFinish = { res ->
-                                        resultado = res
+                                        resultado = res // Guarda resultado final
                                         launch {
-                                            delay(800)
-                                            volverAlCentro = true
-                                            mostrarResultado = true
-                                            bloqueado = false
+                                            delay(800) // Espera antes de mostrar
+                                            volverAlCentro = true // Vuelve al centro
+                                            mostrarResultado = true // Muestra resultado
                                         }
                                     }
                                 )
                             }
                         },
-                        enabled = !mostrarResultado,
+                        enabled = !bloqueado,
                         interactionSource = interaction,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Transparent,
@@ -413,14 +412,14 @@ fun PantallaDadosInterna() {
             imagenActual?.let { img ->
                 if (img != 0) {
                     Image(
-                        painter = painterResource(id = img),
+                        painter = painterResource(id = img), // Imagen del dado
                         contentDescription = null,
                         modifier = Modifier
-                            .size(150.dp)
+                            .size(150.dp) // Tamaño del dado
                             .graphicsLayer {
-                                translationX = smoothX
-                                translationY = smoothY
-                                rotationZ = smoothRot
+                                translationX = smoothX // Movimiento suavizado X
+                                translationY = smoothY // Movimiento suavizado Y
+                                rotationZ = smoothRot // Rotación suavizada
                             }
                             .align(Alignment.Center)
                             .zIndex(30f),
@@ -432,8 +431,8 @@ fun PantallaDadosInterna() {
 
         AnimatedVisibility(
             visible = mostrarResultado,
-            enter = fadeIn() + scaleIn(),
-            exit = fadeOut(),
+            enter = fadeIn() + scaleIn(), // Animación de entrada
+            exit = fadeOut(), // Animación de salida
             modifier = Modifier
                 .align(Alignment.Center)
                 .offset(y = 180.dp)
@@ -455,9 +454,10 @@ fun PantallaDadosInterna() {
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Button(onClick = {
-                    mostrarResultado = false
-                    dadoVisible = false
-                    volverAlCentro = false
+                    mostrarResultado = false // Oculta resultado
+                    dadoVisible = false // Oculta dado
+                    volverAlCentro = false // Detiene animación de retorno
+                    bloqueado = false // Desbloquea la pantalla
                 }) {
                     Text("Aceptar")
                 }
